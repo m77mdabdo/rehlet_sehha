@@ -12,6 +12,7 @@ use App\Models\IntakeForm;
 use App\Models\Patient;
 use App\Models\Service;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
@@ -42,13 +43,17 @@ class DemoAppointmentSeeder extends Seeder
             return;
         }
 
-        $doctor = User::query()->firstOrCreate(
-            ['email' => 'doctor@rehletsehha.test'],
-            ['name' => 'د. رنا سالم', 'password' => 'demo-password-not-for-production'],
-        );
+        // The practitioner is seeded by DoctorUserSeeder, which runs earlier:
+        // she is real staff, not demo data, because the working-hours schedule
+        // belongs to her and that schedule is production configuration.
+        $doctor = User::query()
+            ->whereHas('roles', fn (Builder $roles) => $roles->where('name', 'doctor'))
+            ->first();
 
-        if (! $doctor->hasRole('doctor')) {
-            $doctor->assignRole('doctor');
+        if ($doctor === null) {
+            $this->command?->warn('DemoAppointmentSeeder skipped: no doctor user. Run DoctorUserSeeder first.');
+
+            return;
         }
 
         $patients = Patient::factory()->count(10)->create();

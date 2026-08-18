@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\Gender;
 use App\Models\Patient;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -26,7 +27,7 @@ class PatientFactory extends Factory
             'birth_date' => fake()->boolean(60)
                 ? fake()->dateTimeBetween('-60 years', '-18 years')->format('Y-m-d')
                 : null,
-            'gender' => fake()->randomElement(['female', 'male', null]),
+            'gender' => fake()->randomElement([Gender::Female, Gender::Male, null]),
             'notes' => null,
         ];
     }
