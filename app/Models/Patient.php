@@ -39,7 +39,10 @@ class Patient extends Model
     /** @use HasFactory<PatientFactory> */
     use HasFactory;
 
-    use LogsActivity;
+    use LogsActivity {
+        buildChanges as private buildLoggedChanges;
+        shouldSkipEmptyLog as private shouldSkipEmptyLoggedChanges;
+    }
     use SoftDeletes;
 
     /** @var list<string> */
@@ -142,12 +145,113 @@ class Patient extends Model
         return $this->hasManyThrough(IntakeForm::class, Appointment::class);
     }
 
+    /**
+     * Attributes whose CHANGE is worth auditing but whose VALUE must never
+     * reach the audit trail.
+     *
+     * A phone number and an email address identify a person on their own, and
+     * a birth date is quasi-identifying. Writing their before/after values into
+     * activity_log would rebuild, row by row, the very contact history we
+     * encrypt elsewhere — and activity_log is plaintext JSON that lands in
+     * every backup and every mysqldump.
+     *
+     * @var list<string>
+     */
+    public const CONFIDENTIAL_ATTRIBUTES = ['phone', 'email', 'birth_date'];
+
+    /**
+     * What the audit trail records for a patient.
+     *
+     * Only `name` is logged with its values: staff genuinely need to see that
+     * "أ. راوية غانم" became "راوية غانم أحمد", otherwise a rename looks like a
+     * different person. Everything in CONFIDENTIAL_ATTRIBUTES is excluded here,
+     * so those values are never collected in the first place — the redaction is
+     * "do not gather", not "gather then strip", which cannot leak through a
+     * path we forgot to scrub.
+     *
+     * `gender` is dropped from the log entirely: it is clinical data with no
+     * accountability value in an audit trail, and logging it would put a health
+     * attribute in plaintext next to the name.
+     *
+     * That a confidential field changed is still recorded — see buildChanges().
+     */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'phone', 'email', 'birth_date', 'gender'])
+            ->logOnly(['name'])
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
             ->useLogName('patient');
+    }
+
+    /**
+     * Record THAT a confidential attribute changed, without recording what it
+     * changed from or to.
+     *
+     * The result of this method becomes activity_log.attribute_changes, so a
+     * patient whose phone and email were corrected produces:
+     *
+     *     {"redacted": ["phone", "email"]}
+     *
+     * which answers "was this record touched, when, and by whom" — the whole
+     * point of an audit trail — while answering nothing about the values.
+     *
+     * @return array<string, mixed>
+     */
+    protected function buildChanges(string $processingEvent): array
+    {
+        $changes = $this->buildLoggedChanges($processingEvent);
+
+        $redacted = $this->confidentialAttributesTouchedBy($processingEvent);
+
+        if ($redacted !== []) {
+            $changes['redacted'] = $redacted;
+        }
+
+        return $changes;
+    }
+
+    /**
+     * Keep an entry that carries only a redaction list.
+     *
+     * dontLogEmptyChanges() would otherwise discard a phone-only update as
+     * "nothing logged", because `name` did not change — losing the audit record
+     * of a real edit. A change to something we deliberately do not log is still
+     * a change worth knowing about.
+     *
+     * @param  array<string, mixed>  $changes
+     */
+    protected function shouldSkipEmptyLog(array $changes): bool
+    {
+        if (! empty($changes['redacted'] ?? [])) {
+            return false;
+        }
+
+        return $this->shouldSkipEmptyLoggedChanges($changes);
+    }
+
+    /**
+     * Which confidential attributes this event touched, by name only.
+     *
+     * @return list<string>
+     */
+    protected function confidentialAttributesTouchedBy(string $processingEvent): array
+    {
+        $touched = match ($processingEvent) {
+            // On create, "changed" means "arrived with a value". A patient
+            // booked without an email should not be reported as having set one.
+            'created' => array_filter(
+                self::CONFIDENTIAL_ATTRIBUTES,
+                fn (string $attribute): bool => $this->getAttribute($attribute) !== null,
+            ),
+            'updated' => array_filter(
+                self::CONFIDENTIAL_ATTRIBUTES,
+                fn (string $attribute): bool => array_key_exists($attribute, $this->getChanges()),
+            ),
+            // Deleting or restoring a patient changes no contact detail.
+            default => [],
+        };
+
+        return array_values($touched);
     }
 }
