@@ -6,8 +6,10 @@ namespace App\Models;
 
 use App\Enums\NotificationChannel;
 use Database\Factories\NotificationLogFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -31,6 +33,8 @@ class NotificationLog extends Model
     /** @use HasFactory<NotificationLogFactory> */
     use HasFactory;
 
+    use Prunable;
+
     /** @var list<string> */
     protected $fillable = [
         'appointment_id',
@@ -49,8 +53,31 @@ class NotificationLog extends Model
     {
         return [
             'channel' => NotificationChannel::class,
+            // The patient's email address or phone number. Encrypted because
+            // this table would otherwise accumulate a plaintext directory of
+            // every patient contact detail. Safe to encrypt precisely because
+            // nothing queries by it — lookups go through appointment_id.
+            'recipient' => 'encrypted',
             'sent_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Rows older than the retention window are deleted by `model:prune`, which
+     * runs daily from the scheduler.
+     *
+     * A delivery log is operational data: useful for a few weeks to answer
+     * "did the reminder actually go out?", and pure liability after that, since
+     * every row ties a contact detail to an appointment. Ninety days is the
+     * default; override with CLINIC_NOTIFICATION_LOG_RETENTION_DAYS.
+     *
+     * @return Builder<static>
+     */
+    public function prunable(): Builder
+    {
+        $days = (int) config('clinic.notification_log_retention_days', 90);
+
+        return static::query()->where('created_at', '<=', Carbon::now()->subDays($days));
     }
 
     /**
