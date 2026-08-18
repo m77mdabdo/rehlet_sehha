@@ -23,9 +23,24 @@
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
+
+        <!--
+            Tests run against a real MySQL 8 database, NOT sqlite :memory:.
+
+            The appointment double-booking guarantee is enforced by a UNIQUE
+            index on appointments.slot_key, relying on MySQL's rule that a
+            unique index permits unlimited NULLs (so a cancelled appointment
+            releases its slot). SQLite's type affinity, its differing FK
+            enforcement, and its divergent behaviour around JSON columns and
+            decimal precision mean a green sqlite suite would not prove that
+            the constraint actually holds in production. Only the credentials
+            are inherited from .env — the database name is pinned here so a
+            test run can never touch the development database.
+        -->
+        <env name="DB_CONNECTION" value="mysql"/>
+        <env name="DB_DATABASE" value="rehlet_sehha_test"/>
         <env name="DB_URL" value=""/>
+
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>

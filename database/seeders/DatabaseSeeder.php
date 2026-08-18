@@ -1,25 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
-     * Seed the application's database.
+     * Order matters:
+     *   roles must exist before the admin user can be given one;
+     *   services and working hours must exist before demo appointments can
+     *   reference a service and land on a real clinic hour.
+     * Everything after that is independent content.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            RoleSeeder::class,
+            AdminUserSeeder::class,
+            ServiceSeeder::class,
+            WorkingHoursSeeder::class,
+            FaqSeeder::class,
+            TestimonialSeeder::class,
+            VideoSeeder::class,
+            PostSeeder::class,
+            DemoAppointmentSeeder::class,
         ]);
     }
 }
