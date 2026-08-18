@@ -65,7 +65,13 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
+    // Always UTC. The clinic operates in Africa/Cairo, which observes DST: on the
+    // spring-forward night a wall-clock hour never happens, and on the autumn
+    // fall-back night one happens twice. Storing local time would therefore make
+    // some appointment timestamps nonexistent and others ambiguous (two distinct
+    // real instants sharing one stored value, with no way to tell them apart).
+    // We store UTC and convert to config('clinic.timezone') only at display time.
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
