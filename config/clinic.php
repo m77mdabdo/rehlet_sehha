@@ -29,4 +29,20 @@ return [
 
     'timezone' => env('CLINIC_TIMEZONE', 'Africa/Cairo'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Notification Log Retention
+    |--------------------------------------------------------------------------
+    |
+    | How many days of delivery logs to keep before `model:prune` deletes them.
+    |
+    | Each notification_logs row ties a patient contact detail to an
+    | appointment. That is genuinely useful for a few weeks — it answers "did
+    | the reminder actually go out?" — and is pure stored liability afterwards.
+    | Ninety days comfortably covers any dispute about a missed appointment.
+    |
+    */
+
+    'notification_log_retention_days' => (int) env('CLINIC_NOTIFICATION_LOG_RETENTION_DAYS', 90),
+
 ];

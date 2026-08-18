@@ -13,7 +13,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int|null $staff_id
+ * @property int $staff_id
  * @property int $day_of_week
  * @property string $start_time
  * @property string $end_time
@@ -21,7 +21,7 @@ use Illuminate\Support\Carbon;
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read User|null $staff
+ * @property-read User $staff
  *
  * @method static \Database\Factories\WorkingHourFactory factory($count = null, $state = [])
  */
@@ -67,6 +67,8 @@ class WorkingHour extends Model
     }
 
     /**
+     * Never null: every schedule block belongs to a specific practitioner.
+     *
      * @return BelongsTo<User, $this>
      */
     public function staff(): BelongsTo
