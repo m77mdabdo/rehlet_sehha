@@ -63,11 +63,15 @@ it('keeps decrypted clinical data out of the activity log', function () {
 
     $intake->update(['conditions' => 'حالة سرية محدثة', 'goal' => 'إنقاص الوزن']);
 
-    $properties = DB::table('activity_log')
+    // Both json columns: in activitylog v5 model changes land in
+    // `attribute_changes`, not `properties`, so checking only the latter would
+    // pass without proving anything.
+    $logged = DB::table('activity_log')
         ->where('subject_type', $intake->getMorphClass())
         ->where('subject_id', $intake->id)
-        ->pluck('properties')
+        ->get()
+        ->map(fn (object $row): string => ($row->attribute_changes ?? '').' '.($row->properties ?? ''))
         ->implode(' ');
 
-    expect($properties)->not->toContain('حالة سرية');
+    expect($logged)->not->toContain('حالة سرية');
 });

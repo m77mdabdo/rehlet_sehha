@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ActivityLog;
 use App\Models\NotificationLog;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -42,10 +43,19 @@ Schedule::command('clinic:verify-key')
     });
 
 /*
- * Delete notification logs past their retention window. Each row ties a patient
- * contact detail to an appointment, so they are pruned rather than kept
- * forever. See config('clinic.notification_log_retention_days').
+ * Delete log rows past their retention window.
+ *
+ * notification_logs: 90 days. Each row ties a patient contact detail to an
+ * appointment, useful for a few weeks and pure liability after that.
+ *
+ * activity_log: 365 days. An audit trail earns longer because it answers who
+ * changed a patient record and when — a question that can arrive months later.
+ * Not forever, though: even with contact values redacted it accumulates a
+ * timeline of every patient interaction.
+ *
+ * See config('clinic.notification_log_retention_days') and
+ * config('clinic.activity_log_retention_days').
  */
-Schedule::command('model:prune', ['--model' => [NotificationLog::class]])
+Schedule::command('model:prune', ['--model' => [NotificationLog::class, ActivityLog::class]])
     ->dailyAt('03:30')
     ->timezone(config('clinic.timezone'));

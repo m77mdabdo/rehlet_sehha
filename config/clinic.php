@@ -45,4 +45,24 @@ return [
 
     'notification_log_retention_days' => (int) env('CLINIC_NOTIFICATION_LOG_RETENTION_DAYS', 90),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Log Retention
+    |--------------------------------------------------------------------------
+    |
+    | How many days of audit trail to keep before `model:prune` deletes it.
+    |
+    | Deliberately longer than the notification log. An audit trail answers who
+    | changed a patient record, when, and what it said before — a question that
+    | can genuinely arrive months after the fact, when a clinical decision is
+    | reviewed. A delivery log never carries that weight.
+    |
+    | Not forever, though. Even with contact values redacted, this table builds
+    | a timeline of every patient interaction, and records nobody has a use for
+    | can only be lost or subpoenaed.
+    |
+    */
+
+    'activity_log_retention_days' => (int) env('CLINIC_ACTIVITY_LOG_RETENTION_DAYS', 365),
+
 ];
