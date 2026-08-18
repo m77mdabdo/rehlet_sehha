@@ -1,8 +1,8 @@
 <?php
 
+use App\Models\ActivityLog;
 use Spatie\Activitylog\Actions\CleanActivityLogAction;
 use Spatie\Activitylog\Actions\LogActivityAction;
-use Spatie\Activitylog\Models\Activity;
 
 return [
 
@@ -40,7 +40,10 @@ return [
      * It should implement the Spatie\Activitylog\Contracts\Activity interface
      * and extend Illuminate\Database\Eloquent\Model.
      */
-    'activity_model' => Activity::class,
+    // App\Models\ActivityLog extends Spatie's Activity solely to add the
+    // Prunable trait, putting the audit trail on a retention clock. See
+    // config('clinic.activity_log_retention_days').
+    'activity_model' => ActivityLog::class,
 
     /*
      * These attributes will be excluded from logging for all models.
