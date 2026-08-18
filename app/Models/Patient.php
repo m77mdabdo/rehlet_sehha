@@ -155,9 +155,15 @@ class Patient extends Model
      * encrypt elsewhere — and activity_log is plaintext JSON that lands in
      * every backup and every mysqldump.
      *
+     * `notes` is here for the opposite reason: not because it identifies the
+     * patient, but because it is free text a clinician writes ABOUT them. Its
+     * content is clinical and must stay out of the trail, while the fact that
+     * someone edited it is exactly the sort of thing an audit trail exists to
+     * capture — a note quietly rewritten after the fact should leave a mark.
+     *
      * @var list<string>
      */
-    public const CONFIDENTIAL_ATTRIBUTES = ['phone', 'email', 'birth_date'];
+    public const CONFIDENTIAL_ATTRIBUTES = ['phone', 'email', 'birth_date', 'notes'];
 
     /**
      * What the audit trail records for a patient.

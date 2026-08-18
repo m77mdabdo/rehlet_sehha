@@ -69,23 +69,25 @@ it('redacts every confidential attribute changed in one update', function () {
         'phone' => '+201011111111',
         'email' => 'before@example.com',
         'birth_date' => '1990-01-01',
+        'notes' => 'ملاحظة قديمة',
     ]);
 
     $patient->update([
         'phone' => '+201022222222',
         'email' => 'after@example.com',
         'birth_date' => '1991-02-02',
+        'notes' => 'ملاحظة جديدة',
     ]);
 
     $trail = auditTrailText($patient);
 
-    foreach (['+201011111111', '+201022222222', 'before@example.com', 'after@example.com', '1990-01-01', '1991-02-02'] as $secret) {
+    foreach (['+201011111111', '+201022222222', 'before@example.com', 'after@example.com', '1990-01-01', '1991-02-02', 'ملاحظة قديمة', 'ملاحظة جديدة'] as $secret) {
         expect($trail)->not->toContain($secret);
     }
 
     $entry = ActivityLog::query()->where('event', 'updated')->latest('id')->firstOrFail();
 
-    expect($entry->attribute_changes?->get('redacted'))->toBe(['phone', 'email', 'birth_date']);
+    expect($entry->attribute_changes?->get('redacted'))->toBe(['phone', 'email', 'birth_date', 'notes']);
 });
 
 it('still logs the name with its values so a rename is legible', function () {
@@ -128,11 +130,34 @@ it('never writes gender into the audit trail', function () {
         ->and(auditTrailText($patient))->not->toContain('male');
 });
 
+it('records that clinical notes changed without recording what they say', function () {
+    $patient = Patient::factory()->create(['notes' => 'الملاحظة الأصلية']);
+
+    $patient->update(['notes' => 'المريضة أبلغت عن دوخة متكررة بعد الوجبات']);
+
+    $trail = auditTrailText($patient);
+
+    // A note quietly rewritten after the fact must leave a mark — but the
+    // clinical content itself never belongs in a plaintext audit table.
+    expect($trail)->not->toContain('الملاحظة الأصلية')
+        ->and($trail)->not->toContain('دوخة متكررة');
+
+    $entry = ActivityLog::query()
+        ->where('subject_id', $patient->id)
+        ->where('event', 'updated')
+        ->latest('id')
+        ->firstOrFail();
+
+    expect($entry->attribute_changes?->get('redacted'))->toBe(['notes']);
+});
+
 it('does not log a change to an unaudited field', function () {
     $patient = Patient::factory()->create();
     $before = ActivityLog::count();
 
-    $patient->update(['notes' => 'ملاحظة داخلية']);
+    // gender stays out of the trail entirely: clinical data with no
+    // accountability value, so not even a redacted marker.
+    $patient->update(['gender' => Gender::Male]);
 
     expect(ActivityLog::count())->toBe($before);
 });
