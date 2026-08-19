@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ManageAppointmentController;
 use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SpecialtyController;
@@ -36,12 +37,23 @@ Route::prefix('{locale}')
          * the locale group because the manifest carries lang, dir and the app
          * name, and an English visitor should not install an Arabic app.
          */
-        /*
-         * Booking. A placeholder page until Task 5 fills in the form — it
-         * exists now so the packages section can deep-link a preselected
-         * service instead of pointing the homepage at a 404.
-         */
+        // The booking wizard. ?service={slug} preselects and opens on step 2.
         Route::get('booking', BookingController::class)->name('booking');
+
+        /*
+         * Cancel or reschedule, authenticated by an unguessable token rather
+         * than a login. A clinic whose patients needed an account to cancel
+         * would have patients who simply do not turn up instead.
+         *
+         * The token is a bearer credential: it is noindex'd, it is never put
+         * in an outbound link, and it must not be handed to any third party.
+         */
+        Route::get('appointment/{token}', ManageAppointmentController::class)
+            ->name('appointment.manage')
+            ->where('token', '[A-Za-z0-9]{32,80}');
+
+        // Stub. The consent notice links here, so it must resolve today.
+        Route::view('privacy', 'pages.privacy')->name('privacy');
 
         /*
          * Clinical areas. Landing pages for search traffic — someone who

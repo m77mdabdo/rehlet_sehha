@@ -3,6 +3,18 @@
     'description' => null,
     'footerServices' => null,
     'schema' => null,
+    /*
+     * Whether this page may be advertised to the outside world.
+     *
+     * false suppresses canonical, hreflang and og:url, and emits a robots
+     * noindex. Those three tags all echo the CURRENT URL, and on a page whose
+     * URL carries a bearer token — the appointment self-service page — that
+     * publishes a working cancellation link to every search engine that reads
+     * the canonical tag and to every chat app that renders a link preview.
+     *
+     * A test asserts the token never appears in any of them.
+     */
+    'indexable' => true,
 ])
 
 @php
@@ -59,7 +71,9 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $pageDescription }}">
-    <meta property="og:url" content="{{ url()->current() }}">
+    @if ($indexable)
+        <meta property="og:url" content="{{ url()->current() }}">
+    @endif
     <meta property="og:locale" content="{{ $locale === 'ar' ? 'ar_EG' : 'en_GB' }}">
     @foreach (Locales::all() as $alternate)
         @if ($alternate !== $locale)
@@ -76,11 +90,16 @@
         languages, not duplicate content competing with each other. x-default
         names the version to serve someone whose language we do not publish.
     --}}
-    @foreach (Locales::all() as $alternate)
-        <link rel="alternate" hreflang="{{ $alternate }}" href="{{ Locales::alternateUrl($alternate) }}">
-    @endforeach
-    <link rel="alternate" hreflang="x-default" href="{{ Locales::alternateUrl(Locales::DEFAULT) }}">
-    <link rel="canonical" href="{{ url()->current() }}">
+    @if ($indexable)
+        @foreach (Locales::all() as $alternate)
+            <link rel="alternate" hreflang="{{ $alternate }}" href="{{ Locales::alternateUrl($alternate) }}">
+        @endforeach
+        <link rel="alternate" hreflang="x-default" href="{{ Locales::alternateUrl(Locales::DEFAULT) }}">
+        <link rel="canonical" href="{{ url()->current() }}">
+    @else
+        <meta name="robots" content="noindex, nofollow, noarchive">
+        <meta name="referrer" content="no-referrer">
+    @endif
 
     {{--
         Brand assets. The SVG favicon is the real one — it stays sharp at any
