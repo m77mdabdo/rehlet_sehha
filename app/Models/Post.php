@@ -19,7 +19,7 @@ use Spatie\Translatable\HasTranslations;
  * @property array<string, string>|string|null $excerpt
  * @property array<string, string>|string $body
  * @property string|null $cover_path
- * @property string|null $category
+ * @property array<string, string>|string|null $category
  * @property int|null $reading_minutes
  * @property Carbon|null $published_at
  * @property bool $is_featured
@@ -51,7 +51,7 @@ class Post extends Model
     ];
 
     /** @var array<int, string> */
-    public array $translatable = ['title', 'excerpt', 'body'];
+    public array $translatable = ['title', 'excerpt', 'body', 'category'];
 
     /**
      * @return array<string, string>

@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             WorkingHoursSeeder::class,
             ServiceSeeder::class,
             SpecialtySeeder::class,
+            ServiceSpecialtySeeder::class,
             FaqSeeder::class,
             TestimonialSeeder::class,
             VideoSeeder::class,

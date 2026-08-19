@@ -18,6 +18,8 @@
 
     <x-sections.how-it-works />
 
+    <x-sections.about />
+
     <x-sections.stories :testimonials="$testimonials" />
 
     <x-sections.articles :posts="$posts" />

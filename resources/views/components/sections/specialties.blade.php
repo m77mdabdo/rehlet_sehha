@@ -24,17 +24,32 @@
             <ul class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($specialties as $specialty)
                     <li class="reveal">
-                        <x-card class="h-full">
+                        <x-card class="flex h-full flex-col">
                             <span class="inline-flex size-12 items-center justify-center rounded-md bg-sage text-accent">
                                 <x-icon :name="$specialty->icon" :size="24" />
                             </span>
 
+                            {{-- The heading is the link, not the whole card: a
+                                 block-level anchor makes a screen reader read
+                                 the entire card as one enormous link name. --}}
                             <h3 class="mt-4 font-display text-base font-semibold text-ink">
-                                {{ $specialty->name }}
+                                <a
+                                    href="{{ route('specialties.show', ['slug' => $specialty->slug]) }}"
+                                    class="rounded-sm transition-colors hover:text-accent-dark"
+                                >
+                                    {{ $specialty->name }}
+                                </a>
                             </h3>
 
-                            <p class="mt-2 text-sm leading-relaxed text-muted">
+                            <p class="mt-2 flex-1 text-sm leading-relaxed text-muted">
                                 {{ $specialty->description }}
+                            </p>
+
+                            <p class="mt-4 inline-flex items-center gap-2 text-sm font-medium text-accent-dark" aria-hidden="true">
+                                {{ __('specialties.see_packages') }}
+                                <svg class="size-4 rtl:-scale-x-100" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 10h11M11 5l5 5-5 5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
                             </p>
                         </x-card>
                     </li>

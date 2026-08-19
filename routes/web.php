@@ -4,6 +4,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\SpecialtyController;
 use App\Support\Locales;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,16 @@ Route::prefix('{locale}')
          * service instead of pointing the homepage at a 404.
          */
         Route::get('booking', BookingController::class)->name('booking');
+
+        /*
+         * Clinical areas. Landing pages for search traffic — someone who
+         * searched their own condition arrives here, not on the homepage.
+         * Note for whoever builds the sitemap: THESE PAGES BELONG IN IT,
+         * along with the article pages. They are the reason the specialties
+         * table exists as its own entity rather than a list of strings.
+         */
+        Route::get('specialties/{slug}', [SpecialtyController::class, 'show'])
+            ->name('specialties.show');
 
         /*
          * Articles. Only the single-post page exists; an index belongs to

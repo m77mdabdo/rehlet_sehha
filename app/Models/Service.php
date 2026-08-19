@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use LogicException;
@@ -140,6 +141,23 @@ class Service extends Model
     public function scopeActive(Builder $query): void
     {
         $query->where('is_active', true)->orderBy('sort_order');
+    }
+
+    /**
+     * The clinical areas this package is a sensible fit for.
+     *
+     * Not every package suits every area, and saying so is the point: a
+     * specialty page that lists all four packages has told the visitor
+     * nothing.
+     *
+     * @return BelongsToMany<Specialty, $this>
+     */
+    public function specialties(): BelongsToMany
+    {
+        return $this->belongsToMany(Specialty::class)
+            ->withPivot('sort_order')
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
     }
 
     /**

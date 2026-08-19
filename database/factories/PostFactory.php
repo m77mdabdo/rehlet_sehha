@@ -38,7 +38,11 @@ class PostFactory extends Factory
                 'en' => 'A habit that lasts does not start with a big decision. It starts with a small step repeated daily until it becomes routine.',
             ],
             'cover_path' => null,
-            'category' => fake()->randomElement(['تغذية', 'صحة عامة', 'وصفات']),
+            'category' => fake()->randomElement([
+                ['ar' => 'تغذية', 'en' => 'Nutrition'],
+                ['ar' => 'صحة عامة', 'en' => 'General health'],
+                ['ar' => 'وصفات', 'en' => 'Recipes'],
+            ]),
             'reading_minutes' => fake()->numberBetween(2, 12),
             'published_at' => Carbon::now()->subDays(fake()->numberBetween(1, 120)),
             'is_featured' => false,
