@@ -19,8 +19,6 @@ use Database\Seeders\ServiceSeeder;
 use Database\Seeders\WorkingHoursSeeder;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
-use LogicException;
-use RuntimeException;
 
 /**
  * The write path, without a browser.

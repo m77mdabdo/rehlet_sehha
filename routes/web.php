@@ -49,6 +49,7 @@ Route::prefix('{locale}')
          * in an outbound link, and it must not be handed to any third party.
          */
         Route::get('appointment/{token}', ManageAppointmentController::class)
+            ->middleware('token-url')
             ->name('appointment.manage')
             ->where('token', '[A-Za-z0-9]{32,80}');
 

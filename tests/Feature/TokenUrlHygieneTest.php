@@ -1,0 +1,230 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Enums\AppointmentStatus;
+use App\Models\Appointment;
+use App\Models\Service;
+use App\Services\Availability\AvailabilityEngine;
+use Carbon\CarbonImmutable;
+use Database\Seeders\DoctorUserSeeder;
+use Database\Seeders\RoleSeeder;
+use Database\Seeders\ServiceSeeder;
+use Database\Seeders\WorkingHoursSeeder;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Route;
+
+/**
+ * The cancel token is a bearer credential.
+ *
+ * Anyone holding it can read a patient's medical history, move their
+ * appointment, and delete their clinical record — with no password. So the one
+ * thing that must never happen is the URL escaping the message it was sent in.
+ *
+ * The leak this guards against already happened once: the layout emitted
+ * canonical, hreflang and og:url tags echoing the current URL, which on this
+ * page contains the token. Every one of those tags exists specifically to be
+ * handed to a search engine or a link-preview generator.
+ */
+beforeEach(function () {
+    CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-06-08 06:00:00', 'Africa/Cairo'));
+    Carbon::setTestNow(CarbonImmutable::getTestNow());
+
+    $this->seed(RoleSeeder::class);
+    $this->seed(DoctorUserSeeder::class);
+    $this->seed(WorkingHoursSeeder::class);
+    $this->seed(ServiceSeeder::class);
+});
+
+afterEach(function () {
+    CarbonImmutable::setTestNow();
+    Carbon::setTestNow();
+});
+
+function tokenAppointment(): Appointment
+{
+    $service = Service::active()->firstOrFail();
+
+    $slot = app(AvailabilityEngine::class)->availableSlots(
+        CarbonImmutable::now()->utc(),
+        CarbonImmutable::now()->addDays(7)->utc(),
+        null,
+        $service,
+    )->firstOrFail();
+
+    return Appointment::factory()->create([
+        'service_id' => $service->id,
+        'staff_id' => $slot->staffId,
+        'starts_at' => $slot->startsAtUtc,
+        'ends_at' => $slot->startsAtUtc->addMinutes($service->duration_minutes),
+        'status' => AppointmentStatus::Confirmed,
+    ]);
+}
+
+/**
+ * Every route whose URL carries a token.
+ *
+ * Hardcoded, and held to the real route table by the drift check below.
+ *
+ * It cannot be derived here: Pest resolves datasets before the application
+ * boots, so Route::getRoutes() is still empty at this point. Deriving it
+ * produced an empty dataset and a file that reported green while testing
+ * nothing at all — which is the exact failure mode this file exists to
+ * prevent elsewhere.
+ *
+ * @return list<string>
+ */
+function tokenBearingRouteNames(): array
+{
+    return ['appointment.manage'];
+}
+
+it('guards every token-bearing route the application actually registers', function () {
+    /*
+     * The drift check. The list above is hardcoded because a dataset cannot
+     * read the route table, so this is what stops it going stale: register a
+     * second route with a {token} segment and this fails until it is added.
+     *
+     * A test that silently guards nothing is worse than no test.
+     */
+    $registered = [];
+
+    foreach (Route::getRoutes() as $route) {
+        if (in_array('token', $route->parameterNames(), true) && $route->getName() !== null) {
+            $registered[] = $route->getName();
+        }
+    }
+
+    sort($registered);
+    $covered = tokenBearingRouteNames();
+    sort($covered);
+
+    expect($registered)->toBe(
+        $covered,
+        "Token-bearing routes have changed.\n"
+        .'Registered: '.implode(', ', $registered)."\n"
+        .'Covered:    '.implode(', ', $covered)."\n"
+        .'Add the new route to tokenBearingRouteNames() so it is checked too.'
+    );
+
+    expect($covered)->not->toBeEmpty();
+});
+
+it('never emits the token in a tag meant for machines', function (string $routeName) {
+    $appointment = tokenAppointment();
+
+    $content = $this->get(route($routeName, ['locale' => 'ar', 'token' => $appointment->cancel_token]))
+        ->assertOk()
+        ->getContent();
+
+    $token = $appointment->cancel_token;
+
+    /*
+     * link and meta tags are, by definition, the things a page hands to
+     * something that is not a person: search engines, previewers, archivers.
+     * The token must appear in none of them — not canonical, not hreflang, not
+     * og:url, not any future tag somebody adds without thinking about this.
+     */
+    preg_match_all('/<(link|meta)\b[^>]*>/i', $content, $tags);
+
+    $leaking = array_values(array_filter(
+        $tags[0],
+        fn (string $tag): bool => str_contains($tag, $token),
+    ));
+
+    expect($leaking)->toBeEmpty(
+        'The cancel token appears in '.count($leaking)." machine-readable tag(s).\n"
+        ."Anything in a <link> or <meta> is meant to be given away.\n\n"
+        .implode("\n", $leaking)."\n"
+    );
+})->with(tokenBearingRouteNames());
+
+it('never advertises a token url to a crawler as a translation', function (string $routeName) {
+    $appointment = tokenAppointment();
+
+    $content = $this->get(route($routeName, ['locale' => 'ar', 'token' => $appointment->cancel_token]))
+        ->assertOk()
+        ->getContent();
+
+    /*
+     * The language switcher necessarily links to this same page in the other
+     * language, so its href contains the token. That is navigation, and it is
+     * acceptable: same-origin, the patient already holds the token, and
+     * Referrer-Policy: no-referrer stops it travelling anywhere else.
+     *
+     * What is not acceptable is rel="alternate" and hreflang on that anchor.
+     * Those tell a crawler the URL is a translation worth following and
+     * indexing — the same instruction the <link> tags carry, which is why
+     * those are suppressed here too.
+     */
+    preg_match_all('/<a\b[^>]*'.preg_quote($appointment->cancel_token, '/').'[^>]*>/i', $content, $anchors);
+
+    expect($anchors[0])->not->toBeEmpty('Expected the language switcher to be on this page.');
+
+    foreach ($anchors[0] as $anchor) {
+        expect($anchor)->not->toContain('rel="alternate"');
+        expect($anchor)->not->toContain('hreflang');
+    }
+})->with(tokenBearingRouteNames());
+
+it('never sends a token to somewhere that is not us', function (string $routeName) {
+    $appointment = tokenAppointment();
+
+    $content = $this->get(route($routeName, ['locale' => 'ar', 'token' => $appointment->cancel_token]))
+        ->assertOk()
+        ->getContent();
+
+    // Any absolute URL carrying the token must point at our own host. A token
+    // in a third-party URL — an analytics beacon, a font CDN, an embedded
+    // widget — is the credential leaving the building.
+    preg_match_all(
+        '#(?:href|src|action|content)="(https?://[^"]*'.preg_quote($appointment->cancel_token, '/').'[^"]*)"#i',
+        $content,
+        $urls,
+    );
+
+    foreach ($urls[1] as $url) {
+        expect(parse_url($url, PHP_URL_HOST))->toBe(parse_url(config('app.url'), PHP_URL_HOST));
+    }
+})->with(tokenBearingRouteNames());
+
+it('tells crawlers to stay away in a header, not only a meta tag', function (string $routeName) {
+    $appointment = tokenAppointment();
+
+    /*
+     * A meta tag only works on something that parses the HTML. Link-preview
+     * generators, HEAD requests, archivers and proxies read headers and often
+     * never build a DOM at all.
+     */
+    $response = $this->get(route($routeName, ['locale' => 'ar', 'token' => $appointment->cancel_token]))->assertOk();
+
+    expect($response->headers->get('X-Robots-Tag'))->toBe('noindex, nofollow, noarchive');
+
+    // Without this, clicking the privacy link hands the token to the next page
+    // in the Referer header.
+    expect($response->headers->get('Referrer-Policy'))->toBe('no-referrer');
+
+    // And a shared cache must not hold one patient's page for another.
+    expect($response->headers->get('Cache-Control'))->toContain('no-store');
+})->with(tokenBearingRouteNames());
+
+it('keeps those headers off ordinary pages', function () {
+    // The headers are correct for token pages and wrong everywhere else:
+    // no-referrer site-wide would strip analytics the clinic may want, and a
+    // stray noindex is the kind of mistake nobody notices for a month.
+    $response = $this->get('/ar')->assertOk();
+
+    expect($response->headers->get('X-Robots-Tag'))->toBeNull();
+    expect($response->headers->get('Referrer-Policy'))->toBeNull();
+});
+
+it('does not put the token in the confirmation page markup for a crawler to find', function () {
+    // The booking page renders a "manage this booking" link after a successful
+    // booking. Its own URL carries no token, so canonical and og:url are clean
+    // — but the link is in the body, and the page IS indexable. A crawler only
+    // ever sees step 1, because the confirmation exists solely in one
+    // visitor's component state.
+    $content = $this->get('/ar/booking')->assertOk()->getContent();
+
+    expect($content)->not->toContain('/appointment/');
+});

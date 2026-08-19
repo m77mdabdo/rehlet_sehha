@@ -162,13 +162,13 @@
                 </nav>
 
                 <div class="hidden items-center gap-3 lg:flex">
-                    @include('partials.language-switcher')
+                    @include('partials.language-switcher', ['indexable' => $indexable])
                     <x-button :href="route('booking')">{{ __('nav.book') }}</x-button>
                 </div>
 
                 {{-- Mobile: switcher stays reachable without opening the menu. --}}
                 <div class="flex items-center gap-2 lg:hidden">
-                    @include('partials.language-switcher', ['compact' => true])
+                    @include('partials.language-switcher', ['compact' => true, 'indexable' => $indexable])
 
                     <button
                         type="button"

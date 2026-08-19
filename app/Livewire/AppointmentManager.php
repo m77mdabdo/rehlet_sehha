@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Enums\AppointmentStatus;
+use App\Enums\IntakeGoal;
 use App\Livewire\Concerns\KeepsLocale;
 use App\Models\Appointment;
+use App\Models\IntakeForm;
 use App\Services\Availability\AvailabilityEngine;
 use App\Services\Availability\Slot;
 use App\Services\Booking\BookingService;
@@ -47,6 +49,34 @@ class AppointmentManager extends Component
     public ?string $slotKey = null;
 
     public bool $showReschedule = false;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Data subject rights
+    |--------------------------------------------------------------------------
+    |
+    | Access, correction and erasure, on the page the patient already has a
+    | link to. Egyptian law 151/2020 grants all three and the privacy page
+    | promises them; before this they were "telephone the clinic", which is a
+    | written promise without a mechanism.
+    |
+    */
+
+    public bool $showIntake = false;
+
+    public bool $editingIntake = false;
+
+    public bool $confirmingErasure = false;
+
+    public string $goal = '';
+
+    public string $medications = '';
+
+    public string $conditions = '';
+
+    public string $avoidFoods = '';
+
+    public string $note = '';
 
     public bool $slotWasTaken = false;
 
@@ -141,7 +171,7 @@ class AppointmentManager extends Component
         $appointment->cancel(__('booking.manage.cancelled_by_patient'));
 
         $this->showReschedule = false;
-        $this->flash = 'cancelled';
+        $this->flash = 'manage.cancelled';
     }
 
     public function startReschedule(): void
@@ -152,6 +182,144 @@ class AppointmentManager extends Component
 
         $this->showReschedule = true;
         $this->flash = null;
+    }
+
+    /**
+     * Show what the patient submitted, decrypted.
+     *
+     * No guard beyond holding the token: they wrote this about themselves, and
+     * a system that stores someone's medical history but will not show it back
+     * to them is not protecting them from anything.
+     */
+    public function toggleIntake(): void
+    {
+        $this->showIntake = ! $this->showIntake;
+        $this->editingIntake = false;
+        $this->confirmingErasure = false;
+    }
+
+    public function startEditingIntake(): void
+    {
+        $intake = $this->intake();
+
+        if ($intake === null || ! $intake->isCorrectable()) {
+            return;
+        }
+
+        // Load the current values into the form.
+        $content = $intake->clinicalContent();
+
+        $this->goal = (string) ($content['goal'] ?? '');
+        $this->medications = (string) ($content['medications'] ?? '');
+        $this->conditions = (string) ($content['conditions'] ?? '');
+        $this->avoidFoods = (string) ($content['avoid_foods'] ?? '');
+        $this->note = (string) ($content['note'] ?? '');
+
+        $this->showIntake = true;
+        $this->editingIntake = true;
+        $this->confirmingErasure = false;
+        $this->flash = null;
+    }
+
+    public function cancelEditingIntake(): void
+    {
+        $this->editingIntake = false;
+    }
+
+    /**
+     * Save a correction.
+     *
+     * Same validation as booking — a correction is not a lesser kind of
+     * clinical record. The activity log records that a correction happened and
+     * which fields, never the content; see IntakeForm::buildChanges().
+     */
+    public function saveIntake(): void
+    {
+        $intake = $this->intake();
+
+        if ($intake === null || ! $intake->isCorrectable()) {
+            return;
+        }
+
+        $this->validate([
+            'goal' => ['required', 'string', 'in:'.implode(',', IntakeGoal::values())],
+            'medications' => ['nullable', 'string', 'max:2000'],
+            'conditions' => ['nullable', 'string', 'max:2000'],
+            'avoidFoods' => ['nullable', 'string', 'max:2000'],
+            'note' => ['nullable', 'string', 'max:2000'],
+        ], [], [
+            'goal' => __('booking.fields.goal'),
+            'medications' => __('booking.fields.medications'),
+            'conditions' => __('booking.fields.conditions'),
+            'avoidFoods' => __('booking.fields.avoid_foods'),
+            'note' => __('booking.fields.note'),
+        ]);
+
+        $intake->update([
+            'goal' => $this->goal,
+            'medications' => $this->blankToNull($this->medications),
+            'conditions' => $this->blankToNull($this->conditions),
+            'avoid_foods' => $this->blankToNull($this->avoidFoods),
+            'note' => $this->blankToNull($this->note),
+        ]);
+
+        $this->editingIntake = false;
+        $this->flash = 'rights.updated';
+    }
+
+    public function startErasure(): void
+    {
+        if ($this->intake() === null || $this->intake()->isErased()) {
+            return;
+        }
+
+        $this->confirmingErasure = true;
+        $this->editingIntake = false;
+        $this->showIntake = true;
+        $this->flash = null;
+    }
+
+    public function cancelErasure(): void
+    {
+        $this->confirmingErasure = false;
+    }
+
+    /**
+     * Erase the clinical content. The appointment stays.
+     *
+     * Deliberately NOT a hard delete of the booking: the clinic ran that hour
+     * and has to account for it. What the patient has a right to remove is
+     * what they wrote about their health, and that is what goes.
+     *
+     * Available even after the appointment has passed — the right to erase
+     * clinical content does not expire when a consultation ends, unlike the
+     * right to rewrite it.
+     */
+    public function eraseIntake(): void
+    {
+        $intake = $this->intake();
+
+        if ($intake === null || $intake->isErased()) {
+            return;
+        }
+
+        $intake->eraseClinicalContent();
+
+        $this->confirmingErasure = false;
+        $this->editingIntake = false;
+        $this->flash = 'rights.erased';
+    }
+
+    public function intake(): ?IntakeForm
+    {
+        return $this->appointment()?->intakeForm;
+    }
+
+    private function blankToNull(string $value): ?string
+    {
+        $trimmed = trim($value);
+
+        return $trimmed === '' ? null : $trimmed;
     }
 
     public function selectDate(string $date): void
@@ -200,7 +368,7 @@ class AppointmentManager extends Component
 
         $this->showReschedule = false;
         $this->slotKey = null;
-        $this->flash = 'rescheduled';
+        $this->flash = 'manage.rescheduled';
     }
 
     /**
@@ -274,6 +442,8 @@ class AppointmentManager extends Component
     {
         return view('livewire.appointment-manager', [
             'appointment' => $this->appointment(),
+            'intake' => $this->intake(),
+            'goals' => IntakeGoal::options(),
         ]);
     }
 }

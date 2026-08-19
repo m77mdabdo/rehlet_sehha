@@ -162,9 +162,9 @@ it('does not log a change to an unaudited field', function () {
     expect(ActivityLog::count())->toBe($before);
 });
 
-it('keeps the intake form logging goal and consent only', function () {
+it('records that an intake changed without recording any of its content', function () {
     $intake = IntakeForm::factory()->create([
-        'goal' => 'إنقاص الوزن',
+        'goal' => 'weight_management',
         'medications' => 'ميتفورمين ٥٠٠ مجم',
         'conditions' => 'تكيس المبايض',
         'avoid_foods' => 'حساسية من المكسرات',
@@ -172,19 +172,63 @@ it('keeps the intake form logging goal and consent only', function () {
     ]);
 
     $intake->update([
-        'goal' => 'ضبط سكر الدم',
+        'goal' => 'medical_condition',
         'conditions' => 'تكيس المبايض وقصور الغدة الدرقية',
         'note' => 'ملاحظة سرية محدثة',
     ]);
 
     $trail = auditTrailText($intake);
 
-    // Task 1 behaviour, re-asserted against BOTH json columns this time.
     foreach (['ميتفورمين', 'تكيس المبايض', 'المكسرات', 'ملاحظة سرية'] as $clinical) {
         expect($trail)->not->toContain($clinical);
     }
 
-    expect($trail)->toContain('ضبط سكر الدم');
+    /*
+     * `goal` used to be logged with its value. It no longer is.
+     *
+     * It is stored unencrypted because the clinic counts on it, but
+     * "medical_condition" or "pregnancy" attached to an identifiable patient
+     * is a health attribute — and Patient already drops `gender` from its log
+     * for exactly that reason. A category being coarse does not make it
+     * non-clinical.
+     */
+    expect($trail)->not->toContain('weight_management');
+    expect($trail)->not->toContain('medical_condition');
+
+    // What survives is the FACT of the change, by field name only.
+    expect($trail)->toContain('redacted');
+    expect($trail)->toContain('goal');
+    expect($trail)->toContain('conditions');
+    expect($trail)->toContain('note');
+
+    // The correction was recorded at all — an edit to a clinical document must
+    // never vanish just because nothing loggable moved.
+    expect(ActivityLog::query()->where('subject_type', IntakeForm::class)->count())
+        ->toBeGreaterThanOrEqual(2);
+});
+
+it('logs an erasure as an event with a date but no content', function () {
+    $intake = IntakeForm::factory()->create([
+        'goal' => 'pregnancy',
+        'medications' => 'حمض الفوليك',
+        'conditions' => 'سكري حمل',
+        'avoid_foods' => 'كافيين',
+        'note' => 'ملاحظة خاصة',
+    ]);
+
+    $intake->eraseClinicalContent();
+
+    $trail = auditTrailText($intake);
+
+    // Nothing that was erased may survive in the trail that recorded the erasure.
+    foreach (['حمض الفوليك', 'سكري حمل', 'كافيين', 'ملاحظة خاصة', 'pregnancy'] as $clinical) {
+        expect($trail)->not->toContain($clinical);
+    }
+
+    // erased_at IS logged with its value: it is a timestamp about the
+    // patient's own decision, and it is the evidence the request was honoured.
+    expect($trail)->toContain('erased_at');
+    expect($intake->fresh()->erased_at)->not->toBeNull();
 });
 
 it('uses our prunable model for every logged entry', function () {
