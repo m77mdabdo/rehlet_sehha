@@ -20,8 +20,8 @@ class TestimonialSeeder extends Seeder
                     'en' => 'Three months programme',
                 ],
                 'quote' => [
-                    'ar' => 'أول مرة ألتزم بخطة غذائية لأكثر من شهر. الخطة كانت من أكل بيتي عادي ومش محتاجة حاجات غالية، ونزلت أربعة عشر كيلو في ثلاثة شهور من غير ما أحس إني محرومة.',
-                    'en' => 'The first time I have stuck to a plan for more than a month. It was built from ordinary home cooking with nothing expensive, and I lost fourteen kilos in three months without ever feeling deprived.',
+                    'ar' => 'أول مرة ألتزم بخطة غذائية لأكثر من شهر. الخطة كانت من أكل بيتي عادي ومش محتاجة حاجات غالية، وطاقتي في اليوم بقت مختلفة تمامًا ونومي انتظم، من غير ما أحس إني محرومة.',
+                    'en' => 'The first time I have stuck to a plan for more than a month. It was built from ordinary home cooking with nothing expensive, my energy through the day is completely different and my sleep settled — without ever feeling deprived.',
                 ],
                 'rating' => 5,
             ],

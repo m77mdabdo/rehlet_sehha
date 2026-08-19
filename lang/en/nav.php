@@ -6,6 +6,8 @@ return [
     'home' => 'Home',
     'services' => 'Services',
     'about' => 'About',
+    'packages' => 'Packages',
+    'how_it_works' => 'How it works',
     'articles' => 'Articles',
     'videos' => 'Videos',
     'faq' => 'FAQ',

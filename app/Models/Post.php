@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\FlushesPublicContentCache;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,6 +30,8 @@ use Spatie\Translatable\HasTranslations;
  */
 class Post extends Model
 {
+    use FlushesPublicContentCache;
+
     /** @use HasFactory<PostFactory> */
     use HasFactory;
 
