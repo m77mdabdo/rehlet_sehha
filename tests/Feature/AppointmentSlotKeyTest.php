@@ -23,10 +23,33 @@ it('derives a slot key from the staff member and start time', function () {
     expect($appointment->slot_key)->toBe("{$staff->id}-2026-09-01 10:00:00");
 });
 
-it('collapses an unassigned appointment onto the staff-zero key', function () {
-    $appointment = Appointment::factory()->at(slotAt())->create(['staff_id' => null]);
+it('will not create an appointment without a practitioner', function () {
+    /*
+     * This used to assert the opposite: an unassigned appointment collapsed
+     * onto the key "0-2026-09-01 10:00:00". That was correct with one doctor
+     * and wrong in both directions with two — it refused a second unassigned
+     * booking the clinic could have taken, and it locked nobody in particular.
+     *
+     * staff_id is NOT NULL now, so the collapse cannot happen. syncSlotKey
+     * throws before the database has to, so the message explains the rule
+     * instead of surfacing as a constraint violation.
+     */
+    expect(fn () => Appointment::factory()->at(slotAt())->create(['staff_id' => null]))
+        ->toThrow(LogicException::class);
+});
 
-    expect($appointment->slot_key)->toBe('0-2026-09-01 10:00:00');
+it('gives each practitioner their own key for the same instant', function () {
+    $rana = User::factory()->create();
+    $hala = User::factory()->create();
+    $slot = slotAt();
+
+    $first = Appointment::factory()->at($slot)->create(['staff_id' => $rana->id]);
+    $second = Appointment::factory()->at($slot)->create(['staff_id' => $hala->id]);
+
+    // Two people, one hour, two locks. Under the old collapsed key the second
+    // insert would have been refused.
+    expect($first->slot_key)->toBe("{$rana->id}-2026-09-01 10:00:00");
+    expect($second->slot_key)->toBe("{$hala->id}-2026-09-01 10:00:00");
 });
 
 it('refuses a second active appointment in the same slot', function () {
@@ -132,7 +155,7 @@ it('cannot have its slot key set through mass assignment', function () {
     expect($appointment->fresh()?->slot_key)->toBe("{$staff->id}-2026-09-01 10:00:00");
 });
 
-it('scopes out cancelled and no-show appointments as inactive', function () {
+it('separates the workload question from the is-this-hour-free question', function () {
     $staff = User::factory()->create();
 
     Appointment::factory()->at(slotAt('2026-09-01 10:00:00'))->create(['staff_id' => $staff->id]);
@@ -140,7 +163,17 @@ it('scopes out cancelled and no-show appointments as inactive', function () {
     Appointment::factory()->at(slotAt('2026-09-01 12:00:00'))->cancelled()->create(['staff_id' => $staff->id]);
     Appointment::factory()->at(slotAt('2026-09-01 13:00:00'))->noShow()->create(['staff_id' => $staff->id]);
 
-    expect(Appointment::active()->count())->toBe(2);
+    // Workload: the clinic did two appointments. The cancellation never
+    // happened and the no-show did not consume the practitioner's attention.
+    expect(Appointment::countsTowardWorkload()->count())->toBe(2);
+
+    // Occupancy: three hours are still spoken for. The no-show's hour was
+    // spent whether or not the patient turned up, and slot_key still holds it.
+    expect(Appointment::holdingSlot()->count())->toBe(3);
+
+    // The one-row difference between the two scopes IS the no-show. Anything
+    // reaching for the wrong one gets exactly this off-by-one, silently.
+    expect(Appointment::holdingSlot()->count() - Appointment::countsTowardWorkload()->count())->toBe(1);
 });
 
 it('scopes upcoming appointments to the future in start order', function () {

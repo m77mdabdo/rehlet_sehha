@@ -427,10 +427,11 @@ class AvailabilityEngine
     /**
      * Whether a row belonging to $rowStaffId constrains a slot for $slotStaffId.
      *
-     * A null on the ROW means clinic-wide: an unassigned appointment consumes
-     * the practitioner's hour (see Appointment::syncSlotKey), and a blocked
-     * slot with no staff is the clinic being shut. Both therefore apply to
-     * everyone.
+     * A null on the ROW means clinic-wide. That is now only reachable for
+     * BLOCKED SLOTS — a block with no staff is the clinic being shut, which is
+     * a real and useful thing to record. Appointments cannot be clinic-wide:
+     * staff_id is NOT NULL, so each one constrains exactly its own
+     * practitioner.
      */
     private function appliesToStaff(?int $rowStaffId, ?int $slotStaffId): bool
     {
@@ -484,13 +485,10 @@ class AvailabilityEngine
             ->holdingSlot()
             ->where('starts_at', '<', $to)
             ->where('ends_at', '>', $from)
-            ->when(
-                $staffId !== null,
-                // Unassigned bookings consume the practitioner's hour too.
-                fn ($query) => $query->where(function ($inner) use ($staffId): void {
-                    $inner->where('staff_id', $staffId)->orWhereNull('staff_id');
-                }),
-            )
+            // No orWhereNull: appointments.staff_id is NOT NULL, so every
+            // appointment belongs to exactly one practitioner and can only
+            // ever constrain that one.
+            ->when($staffId !== null, fn ($query) => $query->where('staff_id', $staffId))
             ->get(['id', 'staff_id', 'starts_at', 'ends_at', 'status']);
     }
 

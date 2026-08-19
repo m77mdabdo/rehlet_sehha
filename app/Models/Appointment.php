@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use LogicException;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -27,7 +28,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string $cancel_token
  * @property int $patient_id
  * @property int $service_id
- * @property int|null $staff_id
+ * @property int $staff_id
  * @property Carbon $starts_at
  * @property Carbon $ends_at
  * @property AppointmentMode $mode
@@ -45,7 +46,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property Carbon|null $deleted_at
  * @property-read Patient $patient
  * @property-read Service $service
- * @property-read User|null $staff
+ * @property-read User $staff
  * @property-read IntakeForm|null $intakeForm
  * @property-read Collection<int, NotificationLog> $notificationLogs
  *
@@ -149,10 +150,13 @@ class Appointment extends Model
      * because MySQL allows unlimited NULLs in a unique index the slot is
      * immediately free for someone else.
      *
-     * Unassigned appointments (staff_id NULL) collapse to the key "0-<time>",
-     * which means the clinic can hold only one unassigned booking per slot.
-     * That is the intended reading: with a single practitioner, an unassigned
-     * appointment still consumes her hour.
+     * staff_id is NOT NULL at the database level, so the key always names a
+     * real practitioner and the lock is genuinely per-person. It used to be
+     * nullable, and a NULL collapsed the key to "0-<time>" — harmless with one
+     * doctor, wrong in both directions with two: it refused a second
+     * unassigned booking the clinic could have taken, and it failed to lock
+     * whichever practitioner ended up doing it. See the migration that closed
+     * this for why it is a schema constraint rather than a guard.
      */
     public function syncSlotKey(): void
     {
@@ -162,12 +166,24 @@ class Appointment extends Model
             return;
         }
 
+        // getAttribute rather than $this->staff_id: the property is typed int
+        // because the column is NOT NULL, but an unsaved model can still be
+        // holding null, and that is exactly the case worth catching early.
+        if ($this->getAttribute('staff_id') === null) {
+            // The database would refuse this anyway; failing here says why.
+            throw new LogicException(
+                'An appointment must name the practitioner who will see the patient. '
+                .'staff_id is NOT NULL precisely so that slot_key locks one person\'s hour '
+                .'rather than collapsing to a clinic-wide "0-<time>" key.'
+            );
+        }
+
         // clone() because Carbon's utc() mutates in place, and the instance
         // here is the model's own cached starts_at attribute — converting it
         // directly would silently rewrite the value being saved.
         $this->slot_key = sprintf(
             '%d-%s',
-            $this->staff_id ?? 0,
+            $this->staff_id,
             $this->starts_at->clone()->utc()->format('Y-m-d H:i:s'),
         );
     }
@@ -211,20 +227,20 @@ class Appointment extends Model
     }
 
     /**
-     * Appointments that still OCCUPY their slot.
+     * Answers ONE question: is this hour still occupied?
      *
-     * Deliberately not the same set as scopeActive(), and the difference is
-     * the whole point: a no-show is not active, but it does not give its hour
-     * back either. It is a record of something that happened at that time, and
-     * the clinic has already spent the hour.
+     * Use this, and only this, for anything to do with availability. For
+     * "how much work did the clinic do" use countsTowardWorkload(), which is
+     * the WRONG tool here because it drops no-shows — and a no-show has not
+     * given its hour back.
      *
-     * This scope mirrors AppointmentStatus::releasesSlot() and therefore
-     * syncSlotKey(), which is what the UNIQUE index on slot_key is built from.
-     * The availability engine must use THIS scope: filtering by scopeActive()
-     * would offer a no-show's hour on the calendar, and the insert would then
-     * be refused by the index at the last step of the booking form — telling
-     * the patient the time they picked was never free, after they had already
-     * typed in their phone number.
+     * Mirrors AppointmentStatus::releasesSlot() and therefore syncSlotKey(),
+     * which is what the UNIQUE index on slot_key is built from. Only
+     * cancellation frees a slot. A no-show is a record of something that
+     * consumed that time; offering it again would produce a calendar that
+     * contradicts its own database, and an insert refused by the index at the
+     * last step of the booking form — telling a patient the time they picked
+     * was never free, after they had typed in their phone number.
      *
      * @param  Builder<self>  $query
      */
@@ -242,14 +258,20 @@ class Appointment extends Model
     }
 
     /**
-     * Not cancelled and not a no-show.
+     * Answers ONE question: which appointments consumed, or will consume,
+     * clinic capacity — excluding cancellations and no-shows?
      *
-     * For reporting and lists — "what is still on the books". For anything
-     * that asks whether an hour is FREE, use holdingSlot() instead.
+     * Reporting only. This is the WRONG tool for availability, because it
+     * drops no-shows and would therefore offer an hour the clinic has already
+     * spent and the slot_key index still holds; use holdingSlot() for that.
+     *
+     * Named at length on purpose. It was called scopeActive(), which sounds
+     * like the obvious answer to every question and is the right answer to
+     * only one of them.
      *
      * @param  Builder<self>  $query
      */
-    public function scopeActive(Builder $query): void
+    public function scopeCountsTowardWorkload(Builder $query): void
     {
         $query->whereNotIn('status', [
             AppointmentStatus::Cancelled->value,
@@ -274,6 +296,9 @@ class Appointment extends Model
     }
 
     /**
+     * Never null: every appointment names the practitioner who will see the
+     * patient. Enforced by the NOT NULL column, not by convention.
+     *
      * @return BelongsTo<User, $this>
      */
     public function staff(): BelongsTo
