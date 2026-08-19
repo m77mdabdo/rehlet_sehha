@@ -67,6 +67,76 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Booking Rules
+    |--------------------------------------------------------------------------
+    |
+    | Every number the availability engine uses. Nothing here is duplicated in
+    | code: App\Services\Availability\AvailabilityEngine reads all of it, so
+    | changing the clinic's policy is a config edit and a deploy, not a patch.
+    |
+    */
+
+    'booking' => [
+
+        /*
+         * How far ahead of now the earliest bookable slot sits.
+         *
+         * Protects the practitioner from a booking landing twenty minutes
+         * before it starts, which nobody sees in time to prepare for.
+         */
+        'lead_time_hours' => (int) env('CLINIC_LEAD_TIME_HOURS', 2),
+
+        /*
+         * How far into the future the calendar opens.
+         *
+         * Longer is not better: a schedule published six months out is a
+         * schedule the clinic cannot change without ringing people up.
+         */
+        'horizon_days' => (int) env('CLINIC_HORIZON_DAYS', 30),
+
+        /*
+         * Dead time after every appointment — notes, a break, overrun.
+         *
+         * Applied on BOTH sides when testing a candidate slot against an
+         * existing appointment, and required to fit inside the working window
+         * along with the service itself. A 45-minute service therefore needs
+         * 60 minutes of room before closing time.
+         */
+        'buffer_minutes' => (int) env('CLINIC_BUFFER_MINUTES', 15),
+
+        /*
+         * How close to the appointment a patient may still cancel or move it.
+         *
+         * FLAGGED, as requested: one hour is almost certainly lost revenue. A
+         * slot released at 09:00 for a 10:00 appointment will not be rebooked
+         * — nobody is browsing a clinic calendar with an hour's notice — so
+         * the practice eats the gap. Four to six hours is the usual choice,
+         * and gives the clinic a realistic chance to offer the slot to someone
+         * on a waiting list. Set here as one hour on instruction; it is a
+         * config change whenever the clinic wants it.
+         */
+        'reschedule_min_hours' => (int) env('CLINIC_RESCHEDULE_MIN_HOURS', 1),
+
+        /*
+         * Which appointment modes may be BOOKED right now.
+         *
+         * AppointmentMode::Clinic deliberately still exists in the enum and is
+         * NOT deleted. The clinic will very likely offer in-person visits
+         * later, and removing the case now would mean a migration plus a data
+         * backfill to bring it back — while any historical row carrying
+         * mode='clinic' would immediately fail to cast and take down every
+         * page that renders it.
+         *
+         * So the enum is the set of modes that have EVER been valid, and this
+         * list is the set that is SELECTABLE TODAY. Input validation reads this
+         * list; rendering reads the enum. An existing clinic-mode appointment
+         * keeps displaying correctly while no new one can be created.
+         */
+        'modes' => ['online'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Contact Details
     |--------------------------------------------------------------------------
     |
