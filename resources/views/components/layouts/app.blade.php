@@ -2,6 +2,7 @@
     'title' => null,
     'description' => null,
     'footerServices' => null,
+    'schema' => null,
 ])
 
 @php
@@ -37,8 +38,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? __('home.meta_title') }}</title>
-    <meta name="description" content="{{ $description ?? __('home.meta_description') }}">
+    @php
+        $pageTitle = $title ?? __('home.meta_title');
+        $pageDescription = $description ?? __('home.meta_description');
+    @endphp
+
+    <title>{{ $pageTitle }}</title>
+    <meta name="description" content="{{ $pageDescription }}">
+
+    {{--
+        OpenGraph and Twitter. No og:image yet — the 1200x630 file has not been
+        exported (see docs/og-image.html). A tag pointing at a missing image is
+        worse than no tag: WhatsApp and Facebook cache the failure, and the
+        preview stays broken long after the file appears.
+
+        og:locale uses the underscore form these consumers expect, which is not
+        the same string as the html lang attribute.
+    --}}
+    <meta property="og:site_name" content="{{ __('common.brand') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ $pageTitle }}">
+    <meta property="og:description" content="{{ $pageDescription }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:locale" content="{{ $locale === 'ar' ? 'ar_EG' : 'en_GB' }}">
+    @foreach (Locales::all() as $alternate)
+        @if ($alternate !== $locale)
+            <meta property="og:locale:alternate" content="{{ $alternate === 'ar' ? 'ar_EG' : 'en_GB' }}">
+        @endif
+    @endforeach
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ $pageTitle }}">
+    <meta name="twitter:description" content="{{ $pageDescription }}">
 
     {{--
         hreflang: tells a search engine these are the same page in two
@@ -75,6 +106,16 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    {{--
+        JSON-LD. Built from config and the working_hours rows rather than
+        written by hand, so the clinic's opening hours cannot be right on the
+        page and wrong in the structured data — nobody ever reads this block,
+        which is exactly why a hand-maintained copy rots.
+    --}}
+    @isset($schema)
+        <script type="application/ld+json">{!! $schema !!}</script>
+    @endisset
+
     @stack('head')
 </head>
 
@@ -103,7 +144,7 @@
 
                 <div class="hidden items-center gap-3 lg:flex">
                     @include('partials.language-switcher')
-                    <x-button :href="route('home').'#book'">{{ __('nav.book') }}</x-button>
+                    <x-button :href="route('booking')">{{ __('nav.book') }}</x-button>
                 </div>
 
                 {{-- Mobile: switcher stays reachable without opening the menu. --}}
@@ -134,7 +175,7 @@
                     @include('partials.nav-links', ['mobile' => true])
                 </nav>
                 <div class="pb-6">
-                    <x-button :href="route('home').'#book'" class="w-full">{{ __('nav.book') }}</x-button>
+                    <x-button :href="route('booking')" class="w-full">{{ __('nav.book') }}</x-button>
                 </div>
             </x-container>
         </div>
@@ -162,7 +203,7 @@
                     <ul class="mt-4 space-y-3 text-sm">
                         @foreach ($footerServices ?? [] as $service)
                             <li>
-                                <a href="{{ route('home') }}#services" class="transition-colors hover:text-white">
+                                <a href="{{ route('home') }}#packages" class="transition-colors hover:text-white">
                                     {{ $service->name }}
                                 </a>
                             </li>

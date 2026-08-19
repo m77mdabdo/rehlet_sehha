@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\FlushesPublicContentCache;
 use Database\Factories\TestimonialFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,6 +28,8 @@ use Spatie\Translatable\HasTranslations;
  */
 class Testimonial extends Model
 {
+    use FlushesPublicContentCache;
+
     /** @use HasFactory<TestimonialFactory> */
     use HasFactory;
 

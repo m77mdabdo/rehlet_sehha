@@ -48,8 +48,8 @@ class FaqSeeder extends Seeder
                     'en' => 'How long before I see results?',
                 ],
                 'answer' => [
-                    'ar' => 'معظم المتابعين يلاحظون فرقاً في مستوى الطاقة خلال أول أسبوعين، وتغيراً واضحاً في الوزن والقياسات خلال أربعة إلى ستة أسابيع. المعدل الصحي هو نصف إلى كيلو أسبوعياً.',
-                    'en' => 'Most people notice a difference in energy within the first two weeks, and a clear change in weight and measurements within four to six weeks. A healthy rate is half a kilo to a kilo per week.',
+                    'ar' => 'معظم المتابعين يلاحظون فرقاً في مستوى الطاقة خلال أول أسبوعين، وتغيراً واضحاً في القياسات وانتظام النوم خلال أربعة إلى ستة أسابيع. المتابعة عندنا بتتقاس بالالتزام والطاقة والتحاليل، مش برقم على الميزان.',
+                    'en' => 'Most people notice a difference in energy within the first two weeks, and a clear change in their measurements and sleep within four to six weeks. Progress here is measured by adherence, energy and lab results, not by a number on the scale.',
                 ],
             ],
             [

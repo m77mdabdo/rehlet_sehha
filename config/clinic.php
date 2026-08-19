@@ -119,6 +119,37 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Headline Figures
+    |--------------------------------------------------------------------------
+    |
+    | The four numbers in the stats band on the homepage. They live here rather
+    | than in a Blade file or a translation string for two reasons: they are
+    | facts about the clinic, not interface copy, so they must read identically
+    | in both languages; and they are the kind of number someone updates once a
+    | year, which is exactly the kind nobody can ever find when it is inlined in
+    | markup.
+    |
+    | `cases` and `years` are rendered with a "+" suffix by the view — they are
+    | deliberately approximate, and writing "500+" here would make the value
+    | unusable as a number the day anything wants to compare or sum it.
+    |
+    | `rating` is out of 5 and formatted to one decimal at render time.
+    |
+    | Nothing here is a clinical outcome. There is no average weight lost, no
+    | success rate, no before/after statistic — see the hero case card for why
+    | that is a standing rule on this site rather than an omission.
+    |
+    */
+
+    'stats' => [
+        'cases' => (int) env('CLINIC_STAT_CASES', 500),
+        'years' => (int) env('CLINIC_STAT_YEARS', 8),
+        'rating' => (float) env('CLINIC_STAT_RATING', 4.9),
+        'support_days' => (int) env('CLINIC_STAT_SUPPORT_DAYS', 6),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Brand Colours (mirror — not the source of truth)
     |--------------------------------------------------------------------------
     |

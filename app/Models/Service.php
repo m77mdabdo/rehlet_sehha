@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\FlushesPublicContentCache;
 use Database\Factories\ServiceFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -35,6 +36,8 @@ use Spatie\Translatable\HasTranslations;
  */
 class Service extends Model
 {
+    use FlushesPublicContentCache;
+
     /** @use HasFactory<ServiceFactory> */
     use HasFactory;
 
