@@ -25,10 +25,14 @@
                 {{--
                     The mark at display size, doubling as proof that the SVG
                     inherits currentColor and stays optically centred.
+
+                    mark-full, not mark: at 200px this reads as the logo, and
+                    the icon tier's simplification would be the wrong drawing —
+                    it is also what the home-screen icons show.
                 --}}
                 <div class="hidden justify-center lg:col-span-5 lg:flex">
                     <div class="rounded-lg bg-white/70 p-14 shadow-md ring-1 ring-line">
-                        <x-logo.mark :size="200" class="text-ink" />
+                        <x-logo.mark-full :size="200" class="text-ink" />
                     </div>
                 </div>
             </div>
