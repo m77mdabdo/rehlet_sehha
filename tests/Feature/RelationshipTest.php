@@ -68,10 +68,13 @@ it('resolves the staff schedule relationships in both directions', function () {
         ->and($staff->blockedSlots()->pluck('id')->all())->toContain($blockedSlot->id);
 });
 
-it('leaves an unassigned appointment with a null staff relation', function () {
-    $appointment = Appointment::factory()->create(['staff_id' => null]);
+it('always resolves an appointment to the practitioner who will see the patient', function () {
+    // staff_id is NOT NULL, so this relation can no longer come back empty.
+    // The test used to assert the opposite; see the migration that closed it.
+    $appointment = Appointment::factory()->create();
 
-    expect($appointment->staff)->toBeNull();
+    expect($appointment->staff)->not->toBeNull();
+    expect($appointment->staff->id)->toBe($appointment->staff_id);
 });
 
 it('cascades the intake form away when its appointment is force deleted', function () {

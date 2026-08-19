@@ -10,6 +10,7 @@ use App\Enums\BookingSource;
 use App\Models\Appointment;
 use App\Models\Patient;
 use App\Models\Service;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
@@ -44,7 +45,11 @@ class AppointmentFactory extends Factory
             'cancel_token' => Appointment::generateCancelToken(),
             'patient_id' => Patient::factory(),
             'service_id' => Service::factory(),
-            'staff_id' => null,
+            // Every appointment names a practitioner: staff_id is NOT NULL so
+            // that slot_key locks one person's hour. Pass an explicit staff_id
+            // when a test needs two appointments to share, or to avoid, a
+            // practitioner.
+            'staff_id' => User::factory(),
             'starts_at' => $startsAt,
             'ends_at' => $startsAt->clone()->addMinutes(45),
             'mode' => fake()->randomElement(AppointmentMode::cases()),

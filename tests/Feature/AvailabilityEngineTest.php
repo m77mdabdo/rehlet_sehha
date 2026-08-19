@@ -12,6 +12,7 @@ use App\Models\WorkingHour;
 use App\Services\Availability\AvailabilityEngine;
 use App\Services\Availability\Slot;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -489,31 +490,136 @@ it('does not let one practitioner block another', function () {
     )))->toContain('11:00');
 });
 
-it('treats an unassigned appointment as consuming the practitioner hour', function () {
-    CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-06-08 06:00:00', CAIRO));
-    Carbon::setTestNow(CarbonImmutable::getTestNow());
-
+it('refuses to create an appointment with no practitioner', function () {
     $staff = practitionerWith([['day' => 1, 'start' => '10:00', 'end' => '14:00', 'slot' => 60]]);
     $service = serviceOf(45);
 
-    $start = CarbonImmutable::parse('2026-06-08 11:00:00', CAIRO)->utc();
-
-    // staff_id null. syncSlotKey collapses these to "0-<time>", and with one
-    // practitioner an unassigned booking still uses up her hour.
-    Appointment::factory()->create([
+    /*
+     * staff_id used to be nullable, and a NULL collapsed slot_key to
+     * "0-<instant>" — a clinic-wide lock wearing a practitioner-shaped name.
+     * It is NOT NULL now, and syncSlotKey throws before the database has to,
+     * so the failure says why rather than surfacing as a constraint violation.
+     */
+    expect(fn () => Appointment::factory()->create([
         'staff_id' => null,
         'service_id' => $service->id,
-        'starts_at' => $start,
-        'ends_at' => $start->addMinutes(45),
+        'starts_at' => CarbonImmutable::parse('2026-06-08 11:00:00', CAIRO)->utc(),
+        'ends_at' => CarbonImmutable::parse('2026-06-08 11:45:00', CAIRO)->utc(),
+    ]))->toThrow(LogicException::class);
+
+    expect($staff)->not->toBeNull();
+});
+
+it('lets two practitioners hold the same hour independently', function () {
+    /*
+     * THE CASE THE OLD MODEL GOT WRONG IN BOTH DIRECTIONS.
+     *
+     * With a nullable staff_id, two unassigned bookings at 11:00 collapsed to
+     * the same slot_key "0-2026-06-08 08:00:00" and the second insert was
+     * refused — the clinic could have taken both. And neither locked the
+     * practitioner who would actually do the work.
+     *
+     * Now each appointment names its practitioner, so the same hour is two
+     * distinct locks.
+     */
+    CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-06-08 06:00:00', CAIRO));
+    Carbon::setTestNow(CarbonImmutable::getTestNow());
+
+    $rana = practitionerWith([['day' => 1, 'start' => '10:00', 'end' => '14:00', 'slot' => 60]]);
+    $hala = practitionerWith([['day' => 1, 'start' => '10:00', 'end' => '14:00', 'slot' => 60]]);
+
+    $service = serviceOf(45);
+    $eleven = CarbonImmutable::parse('2026-06-08 11:00:00', CAIRO)->utc();
+
+    $first = Appointment::factory()->create([
+        'staff_id' => $rana->id,
+        'service_id' => $service->id,
+        'starts_at' => $eleven,
+        'ends_at' => $eleven->addMinutes(45),
         'status' => AppointmentStatus::Confirmed,
     ]);
+
+    // The clinic can take both: two people, one hour, two rooms.
+    $second = Appointment::factory()->create([
+        'staff_id' => $hala->id,
+        'service_id' => $service->id,
+        'starts_at' => $eleven,
+        'ends_at' => $eleven->addMinutes(45),
+        'status' => AppointmentStatus::Confirmed,
+    ]);
+
+    // Two distinct locks, each naming its practitioner — not one collapsed key.
+    expect($first->slot_key)->toBe("{$rana->id}-2026-06-08 08:00:00");
+    expect($second->slot_key)->toBe("{$hala->id}-2026-06-08 08:00:00");
+    expect($first->slot_key)->not->toBe($second->slot_key);
+
+    // And the calendar agrees: 11:00 is gone for both, free for neither.
+    expect(cairoTimes(engine()->availableSlots(
+        CarbonImmutable::parse('2026-06-08 00:00:00', CAIRO)->utc(),
+        CarbonImmutable::parse('2026-06-08 23:59:59', CAIRO)->utc(),
+        $rana->id,
+        $service,
+    )))->not->toContain('11:00');
 
     expect(cairoTimes(engine()->availableSlots(
         CarbonImmutable::parse('2026-06-08 00:00:00', CAIRO)->utc(),
         CarbonImmutable::parse('2026-06-08 23:59:59', CAIRO)->utc(),
-        $staff->id,
+        $hala->id,
         $service,
     )))->not->toContain('11:00');
+});
+
+it('still refuses two appointments for the same practitioner at the same hour', function () {
+    // The lock must not have been loosened by making it per-person.
+    CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-06-08 06:00:00', CAIRO));
+    Carbon::setTestNow(CarbonImmutable::getTestNow());
+
+    $rana = practitionerWith([['day' => 1, 'start' => '10:00', 'end' => '14:00', 'slot' => 60]]);
+    $service = serviceOf(45);
+    $eleven = CarbonImmutable::parse('2026-06-08 11:00:00', CAIRO)->utc();
+
+    Appointment::factory()->create([
+        'staff_id' => $rana->id,
+        'service_id' => $service->id,
+        'starts_at' => $eleven,
+        'ends_at' => $eleven->addMinutes(45),
+        'status' => AppointmentStatus::Confirmed,
+    ]);
+
+    expect(fn () => Appointment::factory()->create([
+        'staff_id' => $rana->id,
+        'service_id' => $service->id,
+        'starts_at' => $eleven,
+        'ends_at' => $eleven->addMinutes(45),
+        'status' => AppointmentStatus::Confirmed,
+    ]))->toThrow(QueryException::class);
+});
+
+it('keeps a clinic-wide block clinic-wide even though appointments cannot be', function () {
+    // staff_id stays nullable on blocked_slots, and that is deliberate: "the
+    // clinic is shut" is a real statement, whereas "an appointment with nobody"
+    // is not.
+    CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-06-08 06:00:00', CAIRO));
+    Carbon::setTestNow(CarbonImmutable::getTestNow());
+
+    $rana = practitionerWith([['day' => 1, 'start' => '10:00', 'end' => '14:00', 'slot' => 60]]);
+    $hala = practitionerWith([['day' => 1, 'start' => '10:00', 'end' => '14:00', 'slot' => 60]]);
+
+    BlockedSlot::query()->create([
+        'staff_id' => null,
+        'starts_at' => CarbonImmutable::parse('2026-06-08 00:00:00', CAIRO)->utc(),
+        'ends_at' => CarbonImmutable::parse('2026-06-09 00:00:00', CAIRO)->utc(),
+        'reason' => 'public holiday',
+    ]);
+
+    foreach ([$rana, $hala] as $staff) {
+        expect(engine()->availableSlots(
+            CarbonImmutable::parse('2026-06-08 00:00:00', CAIRO)->utc(),
+            CarbonImmutable::parse('2026-06-08 23:59:59', CAIRO)->utc(),
+            $staff->id,
+            serviceOf(45),
+        ))->toBeEmpty();
+    }
 });
 
 /*
