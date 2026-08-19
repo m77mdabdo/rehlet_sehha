@@ -166,7 +166,11 @@
                     <h2 class="font-display text-base font-semibold text-white">
                         {{ __('footer.contact_heading') }}
                     </h2>
-                    <ul class="mt-4 space-y-3 text-sm">
+
+                    {{-- Phone, WhatsApp, email and address, all from config. --}}
+                    <x-contact-details class="mt-4" />
+
+                    <ul class="mt-4 space-y-3 text-sm opacity-90">
                         <li>{{ __('footer.hours') }}</li>
                         <li>{{ __('footer.friday_closed') }}</li>
                     </ul>
