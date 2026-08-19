@@ -67,6 +67,58 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Contact Details
+    |--------------------------------------------------------------------------
+    |
+    | The single source of truth for how to reach the clinic. Nothing here is
+    | ever written into a Blade file: a phone number that appears in the footer,
+    | a contact block and a booking confirmation is a number that gets changed
+    | in two of those three places.
+    |
+    | Any value here may be null, and null means the site renders NOTHING for
+    | it — no empty link, no placeholder, no "TBD". A dead tel: link on a
+    | clinic site is worse than no link at all: it looks like a working way to
+    | reach a doctor and is not.
+    |
+    | The phone number is stored three times on purpose, because three
+    | different consumers need three different formats and deriving one from
+    | another at render time is where this goes wrong:
+    |
+    |   phone          E.164. What tel: links and every messaging API expect.
+    |                  Never shown to a human.
+    |   phone_display  What an Egyptian visitor actually reads and recognises.
+    |                  Latin digits, not Arabic-Indic (٠١٠٠): people copy
+    |                  numbers into dialers and contact apps, and a good many
+    |                  of those fail to parse Arabic-Indic numerals on paste.
+    |   whatsapp       Same number with no leading +, because wa.me rejects
+    |                  the plus. Stored rather than derived: "strip the +"
+    |                  looks obvious right up to the first number someone
+    |                  writes as 0020, and then it silently builds a dead link.
+    |
+    | Wherever the number is rendered inside Arabic text it must be wrapped in
+    | dir="ltr" — otherwise bidi reordering puts the + and the digit groups in
+    | the wrong order, and the number displayed is not the number stored.
+    |
+    */
+
+    'contact' => [
+        'email' => env('CLINIC_CONTACT_EMAIL', 'info@rehletsehha.com'),
+
+        'phone' => '+201004818303',
+        'phone_display' => '0100 481 8303',
+        'whatsapp' => '201004818303',
+
+        // Translated in config rather than in lang/ because it is a fact about
+        // the clinic, not a piece of interface copy — the booking confirmation
+        // and the footer want the same string, in whichever language is active.
+        'address' => [
+            'ar' => 'المعادي، القاهرة',
+            'en' => 'Maadi, Cairo',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Brand Colours (mirror — not the source of truth)
     |--------------------------------------------------------------------------
     |
