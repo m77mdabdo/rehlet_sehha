@@ -211,7 +211,41 @@ class Appointment extends Model
     }
 
     /**
+     * Appointments that still OCCUPY their slot.
+     *
+     * Deliberately not the same set as scopeActive(), and the difference is
+     * the whole point: a no-show is not active, but it does not give its hour
+     * back either. It is a record of something that happened at that time, and
+     * the clinic has already spent the hour.
+     *
+     * This scope mirrors AppointmentStatus::releasesSlot() and therefore
+     * syncSlotKey(), which is what the UNIQUE index on slot_key is built from.
+     * The availability engine must use THIS scope: filtering by scopeActive()
+     * would offer a no-show's hour on the calendar, and the insert would then
+     * be refused by the index at the last step of the booking form — telling
+     * the patient the time they picked was never free, after they had already
+     * typed in their phone number.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeHoldingSlot(Builder $query): void
+    {
+        $releasing = array_map(
+            fn (AppointmentStatus $status): string => $status->value,
+            array_filter(
+                AppointmentStatus::cases(),
+                fn (AppointmentStatus $status): bool => $status->releasesSlot(),
+            ),
+        );
+
+        $query->whereNotIn('status', $releasing);
+    }
+
+    /**
      * Not cancelled and not a no-show.
+     *
+     * For reporting and lists — "what is still on the books". For anything
+     * that asks whether an hour is FREE, use holdingSlot() instead.
      *
      * @param  Builder<self>  $query
      */
