@@ -5,7 +5,251 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+/*
+|------------------------------------------------------------------------------
+| Fonts — self-hosted, never Google
+|------------------------------------------------------------------------------
+|
+| These @font-face rules are written out by hand rather than importing the
+| @fontsource CSS entrypoints, because those ship every subset the family has
+| (latin-ext, vietnamese, cyrillic…) and we only ever render Arabic and Latin.
+| Declaring them here keeps the shipped bytes to exactly the four scripts we
+| use, and keeps the unicode-range split intact so a visitor reading the Arabic
+| site never downloads the Latin file at all.
+|
+| We self-host rather than linking fonts.googleapis.com for three reasons:
+|
+|   1. First paint costs no third-party round trip. A Google Fonts <link> means
+|      a DNS lookup, TLS handshake and CSS fetch to another origin before any
+|      text can render — on a 3G connection in Cairo that is most of a second.
+|   2. No visitor data leaves for Google. Every font request carries the
+|      visitor's IP and User-Agent to a third party. For a medical site, where
+|      merely visiting implies a health interest, that is data we have no right
+|      to hand over and no lawful basis to.
+|   3. The site does not depend on someone else's uptime or reachability. If
+|      fonts.gstatic.com is blocked, throttled or down, our text still renders.
+|
+| The URLs are relative into node_modules so Vite fingerprints the files and
+| emits them into the build — there is no copy step to forget.
+|
+*/
+
+/* Readex Pro Variable — display and headings, one family for both scripts. */
+@font-face {
+    font-family: 'Readex Pro Variable';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 160 700;
+    src: url('../../node_modules/@fontsource-variable/readex-pro/files/readex-pro-arabic-wght-normal.woff2')
+        format('woff2-variations');
+    unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E,
+        U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+
+@font-face {
+    font-family: 'Readex Pro Variable';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 160 700;
+    src: url('../../node_modules/@fontsource-variable/readex-pro/files/readex-pro-latin-wght-normal.woff2')
+        format('woff2-variations');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+        U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Tajawal — body copy. Three weights, no more. */
+@font-face {
+    font-family: 'Tajawal';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400;
+    src: url('../../node_modules/@fontsource/tajawal/files/tajawal-arabic-400-normal.woff2') format('woff2');
+    unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E,
+        U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+
+@font-face {
+    font-family: 'Tajawal';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400;
+    src: url('../../node_modules/@fontsource/tajawal/files/tajawal-latin-400-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+        U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Tajawal';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 500;
+    src: url('../../node_modules/@fontsource/tajawal/files/tajawal-arabic-500-normal.woff2') format('woff2');
+    unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E,
+        U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+
+@font-face {
+    font-family: 'Tajawal';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 500;
+    src: url('../../node_modules/@fontsource/tajawal/files/tajawal-latin-500-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+        U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Tajawal';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 700;
+    src: url('../../node_modules/@fontsource/tajawal/files/tajawal-arabic-700-normal.woff2') format('woff2');
+    unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E,
+        U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+
+@font-face {
+    font-family: 'Tajawal';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 700;
+    src: url('../../node_modules/@fontsource/tajawal/files/tajawal-latin-700-normal.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+        U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/*
+|------------------------------------------------------------------------------
+| Design tokens
+|------------------------------------------------------------------------------
+|
+| The single source of truth for the brand. Every colour, radius and shadow in
+| the project resolves back to a token declared here — no component may invent
+| a hex value of its own. If a design needs a colour that is not in this list,
+| that is a conversation about the brand, not a local decision.
+|
+*/
+
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    /* Type */
+    --font-display: 'Readex Pro Variable', 'Tajawal', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'Tajawal', 'Readex Pro Variable', ui-sans-serif, system-ui, sans-serif;
+
+    /* Navy — dark sections and headings */
+    --color-ink: #0e2e4d;
+    --color-ink-soft: #1c4a73;
+
+    /* Blue — buttons and links */
+    --color-accent: #1e82c4;
+    --color-accent-dark: #166a9f;
+
+    --color-teal: #48bbd4;
+
+    /* Gold — the pulse and its endpoint */
+    --color-gold: #e8a94a;
+
+    /* Surfaces */
+    --color-paper: #eef3f8;
+    --color-sage: #dce7f1;
+
+    --color-muted: #62809b;
+    --color-line: rgba(14, 46, 77, 0.14);
+
+    /* Radii */
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 22px;
+    --radius-pill: 999px;
+
+    /*
+     * Shadows are tinted with the navy rather than pure black. Black shadows
+     * over a cool paper background read as grey smudges; a navy-tinted shadow
+     * looks like the page's own light and keeps the palette coherent.
+     */
+    --shadow-sm: 0 1px 2px rgba(14, 46, 77, 0.06), 0 2px 8px rgba(14, 46, 77, 0.06);
+    --shadow-md: 0 4px 12px rgba(14, 46, 77, 0.08), 0 12px 32px rgba(14, 46, 77, 0.1);
+}
+
+/*
+|------------------------------------------------------------------------------
+| Base
+|------------------------------------------------------------------------------
+*/
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: var(--color-paper);
+        color: var(--color-ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-family: var(--font-display);
+        font-weight: 600;
+        line-height: 1.25;
+    }
+
+    /*
+     * Arabic sits lower on the line than Latin and needs more room to breathe,
+     * particularly with diacritics. Tie the adjustment to the document
+     * direction rather than the locale, so it follows the script being shown.
+     */
+    [dir='rtl'] body {
+        line-height: 1.85;
+    }
+
+    /*
+     * A single visible focus ring for every interactive element. Keyboard users
+     * must always be able to see where they are; :focus-visible keeps it off
+     * mouse clicks.
+     */
+    :focus-visible {
+        outline: 3px solid var(--color-accent);
+        outline-offset: 2px;
+        border-radius: 2px;
+    }
+
+    /*
+     * Respect a visitor who has asked their operating system for less motion.
+     * On a health site this is not decoration: vestibular disorders make
+     * animation genuinely unpleasant, and some visitors are here because of one.
+     */
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+}
+
+@layer utilities {
+    /* Visually hidden but available to screen readers — used by the skip link. */
+    .sr-only-focusable:not(:focus):not(:focus-within) {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+    }
 }
