@@ -150,6 +150,42 @@ return [
         'past' => 'This appointment has passed.',
     ],
 
+    'rights' => [
+        'heading' => 'Your medical information',
+        'lead' => 'This is what you wrote when you booked. You may read it, correct it, and delete it.',
+        'view' => 'Show my information',
+        'hide' => 'Hide',
+        'blank' => 'You left this blank',
+        'correct' => 'Correct this',
+        'save' => 'Save changes',
+        'cancel_edit' => 'Cancel',
+        'correction_closed' => 'This cannot be edited after the session has taken place, so the record the doctor read during your consultation stays as it was. If something is wrong and needs correcting, please call us.',
+        'updated_flash' => 'Your changes have been saved.',
+
+        'erase' => 'Delete my medical information',
+        'erase_confirm_title' => 'Delete your medical information?',
+        'erase_removes_heading' => 'This will be permanently removed:',
+        'erase_removes' => [
+            'goal' => 'What you came for',
+            'medications' => 'The medication you listed',
+            'conditions' => 'Your conditions and chronic illness',
+            'avoid' => 'The food you avoid',
+            'note' => 'Your notes',
+        ],
+        'erase_keeps_heading' => 'This will be kept:',
+        'erase_keeps' => [
+            'appointment' => 'The appointment and its time — the clinic needs it for its records and its accounts',
+            'identity' => 'Your name and mobile number — so we can reach you and know whose booking this is',
+            'consent' => 'The date you gave consent — evidence that consent was properly taken',
+        ],
+        'erase_upcoming_warning' => 'This appointment has not happened yet. If you delete this now, the doctor will arrive without your history and you will need to go through it again from the start.',
+        'erase_confirm' => 'Yes, delete my medical information',
+        'erase_cancel' => 'No, keep it',
+        'erased_title' => 'Your medical information has been deleted.',
+        'erased_on' => 'Deleted on :date. The appointment itself remains.',
+        'erased_flash' => 'Your medical information has been deleted. The appointment itself is unchanged.',
+    ],
+
     'errors' => [
         'service_unavailable' => 'That package is not available right now. Please choose another.',
         'mode_unavailable' => 'That consultation type is not available right now.',

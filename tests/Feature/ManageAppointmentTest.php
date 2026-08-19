@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Enums\AppointmentStatus;
 use App\Livewire\AppointmentManager;
 use App\Models\Appointment;
+use App\Models\IntakeForm;
 use App\Models\Service;
 use App\Services\Availability\AvailabilityEngine;
 use App\Services\Availability\Slot;
@@ -15,6 +16,7 @@ use Database\Seeders\RoleSeeder;
 use Database\Seeders\ServiceSeeder;
 use Database\Seeders\WorkingHoursSeeder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
 /**
@@ -82,7 +84,7 @@ it('cancels and hands the hour back to the calendar', function () {
 
     Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
         ->call('cancel')
-        ->assertSet('flash', 'cancelled');
+        ->assertSet('flash', 'manage.cancelled');
 
     $appointment->refresh();
 
@@ -110,7 +112,7 @@ it('moves an appointment to a new slot atomically', function () {
 
     $component->call('selectSlot', $replacement->key())
         ->call('confirmReschedule')
-        ->assertSet('flash', 'rescheduled');
+        ->assertSet('flash', 'manage.rescheduled');
 
     $appointment->refresh();
 
@@ -255,4 +257,202 @@ it('keeps the token out of anything indexable or outbound', function () {
     foreach ($og[0] as $tag) {
         expect($tag)->not->toContain($appointment->cancel_token);
     }
+});
+
+/*
+|------------------------------------------------------------------------------
+| Data subject rights: access, correction, erasure
+|------------------------------------------------------------------------------
+|
+| Egyptian law 151/2020 grants all three, and the privacy page now describes
+| them as buttons rather than as a phone call. These tests are what make that
+| description true.
+|
+*/
+
+function appointmentWithIntake(?CarbonImmutable $startsAt = null): Appointment
+{
+    $appointment = bookedAppointment($startsAt);
+
+    IntakeForm::factory()->create([
+        'appointment_id' => $appointment->id,
+        'goal' => 'weight_management',
+        'medications' => 'ميتفورمين 500',
+        'conditions' => 'تكيس مبايض',
+        'avoid_foods' => 'مكسرات',
+        'note' => 'بشتغل شيفتات',
+        'consent_at' => now(),
+        'consent_ip' => '203.0.113.4',
+    ]);
+
+    return $appointment->fresh();
+}
+
+it('shows the patient exactly what they submitted, decrypted', function () {
+    $appointment = appointmentWithIntake();
+
+    $component = Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
+        ->call('toggleIntake');
+
+    // They wrote it about themselves; a system that stores it but will not
+    // show it back is not protecting them from anything.
+    $component->assertSee('ميتفورمين 500', false)
+        ->assertSee('تكيس مبايض', false)
+        ->assertSee('مكسرات', false)
+        ->assertSee('بشتغل شيفتات', false)
+        ->assertSee(__('booking.goals.weight_management'), false);
+});
+
+it('lets the patient correct their answers while the appointment is ahead', function () {
+    $appointment = appointmentWithIntake();
+
+    Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
+        ->call('startEditingIntake')
+        ->assertSet('medications', 'ميتفورمين 500')
+        ->set('medications', 'ميتفورمين 850')
+        ->set('conditions', '')
+        ->call('saveIntake')
+        ->assertHasNoErrors()
+        ->assertSet('flash', 'rights.updated');
+
+    $intake = $appointment->intakeForm->fresh();
+
+    expect($intake->medications)->toBe('ميتفورمين 850');
+    // A cleared field becomes null, not an empty string — the patient said
+    // "none", and null is how the rest of the system spells that.
+    expect($intake->conditions)->toBeNull();
+});
+
+it('validates a correction exactly as it validates the booking', function () {
+    $appointment = appointmentWithIntake();
+
+    Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
+        ->call('startEditingIntake')
+        ->set('goal', 'not-a-real-goal')
+        ->call('saveIntake')
+        ->assertHasErrors('goal');
+
+    // A correction is not a lesser kind of clinical record.
+    expect($appointment->intakeForm->fresh()->goal)->toBe('weight_management');
+});
+
+it('closes correction once the consultation has happened', function () {
+    $appointment = appointmentWithIntake();
+    $appointment->forceFill(['starts_at' => CarbonImmutable::now()->subDay()])->saveQuietly();
+
+    $intake = $appointment->intakeForm->fresh();
+    expect($intake->isCorrectable())->toBeFalse();
+
+    $component = Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
+        ->call('toggleIntake');
+
+    // The record the clinician read during the session must not change
+    // afterwards, or the notes and the decision made from them disagree.
+    $component->call('startEditingIntake')->assertSet('editingIntake', false);
+    $component->set('medications', 'محاولة تعديل')->call('saveIntake');
+
+    expect($appointment->intakeForm->fresh()->medications)->toBe('ميتفورمين 500');
+
+    // And the page says why, and offers the phone number instead.
+    $component->assertSee(__('booking.rights.correction_closed'));
+});
+
+it('erases the clinical content and keeps the booking', function () {
+    $appointment = appointmentWithIntake();
+
+    Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
+        ->call('startErasure')
+        ->assertSet('confirmingErasure', true)
+        // The confirmation states what goes and what stays. An "are you sure?"
+        // that does not say what it deletes is not informed consent to delete.
+        ->assertSee(__('booking.rights.erase_removes_heading'))
+        ->assertSee(__('booking.rights.erase_keeps_heading'))
+        ->call('eraseIntake')
+        ->assertSet('flash', 'rights.erased');
+
+    $intake = $appointment->intakeForm->fresh();
+
+    foreach (['goal', 'medications', 'conditions', 'avoid_foods', 'note'] as $field) {
+        expect($intake->{$field})->toBeNull();
+    }
+
+    expect($intake->erased_at)->not->toBeNull();
+    expect($intake->isErased())->toBeTrue();
+
+    // Consent evidence survives: destroying it would leave the clinic unable
+    // to show it ever had permission for data it has since deleted.
+    expect($intake->consent_at)->not->toBeNull();
+    expect($intake->consent_ip)->toBe('203.0.113.4');
+
+    // THE BOOKING SURVIVES. Erasure is of clinical content, not of the
+    // clinic's record that the hour was used.
+    $appointment->refresh();
+    expect($appointment->exists)->toBeTrue();
+    expect($appointment->trashed())->toBeFalse();
+    expect($appointment->patient->name)->not->toBeNull();
+    expect($appointment->starts_at)->not->toBeNull();
+});
+
+it('erases the encrypted columns at rest, not just in the model', function () {
+    $appointment = appointmentWithIntake();
+
+    Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
+        ->call('startErasure')
+        ->call('eraseIntake');
+
+    // Read straight from the table: an erasure that only clears the accessor
+    // would leave the ciphertext sitting in every backup.
+    $raw = DB::table('intake_forms')->where('appointment_id', $appointment->id)->first();
+
+    foreach (['goal', 'medications', 'conditions', 'avoid_foods', 'note'] as $column) {
+        expect($raw->{$column})->toBeNull();
+    }
+
+    expect($raw->erased_at)->not->toBeNull();
+});
+
+it('warns that erasing an upcoming appointment leaves the doctor unprepared', function () {
+    $appointment = appointmentWithIntake();
+
+    Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
+        ->call('startErasure')
+        ->assertSee(__('booking.rights.erase_upcoming_warning'));
+});
+
+it('still allows erasure after the appointment has passed', function () {
+    // The right to have clinical content removed does not expire when the
+    // consultation ends; only the right to rewrite it does.
+    $appointment = appointmentWithIntake();
+    $appointment->forceFill(['starts_at' => CarbonImmutable::now()->subDay()])->saveQuietly();
+
+    Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
+        ->call('startErasure')
+        ->call('eraseIntake');
+
+    expect($appointment->intakeForm->fresh()->isErased())->toBeTrue();
+});
+
+it('says the record is erased rather than showing an empty form', function () {
+    $appointment = appointmentWithIntake();
+    $appointment->intakeForm->eraseClinicalContent();
+
+    Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
+        ->call('toggleIntake')
+        // An empty form reads like data loss; this reads like a request that
+        // was honoured.
+        ->assertSee(__('booking.rights.erased_title'))
+        ->assertDontSee(__('booking.rights.correct'));
+});
+
+it('will not erase twice', function () {
+    $appointment = appointmentWithIntake();
+    $appointment->intakeForm->eraseClinicalContent();
+
+    $first = $appointment->intakeForm->fresh()->erased_at;
+
+    Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
+        ->call('startErasure')
+        ->assertSet('confirmingErasure', false);
+
+    expect($appointment->intakeForm->fresh()->erased_at->timestamp)->toBe($first->timestamp);
 });

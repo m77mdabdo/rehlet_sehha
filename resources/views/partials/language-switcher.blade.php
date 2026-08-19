@@ -3,6 +3,22 @@
 ])
 
 @php
+    /*
+     * On a page whose URL carries a bearer token, this link necessarily
+     * contains that token — it points at the same page in the other language.
+     * That is fine as navigation: it is same-origin, the patient already holds
+     * the token, and Referrer-Policy: no-referrer stops it reaching anywhere
+     * else.
+     *
+     * What is NOT fine is rel="alternate" and hreflang. Those are instructions
+     * to a crawler that this URL is a translation worth indexing — the same
+     * signal the <link> tags carry, which is why those are suppressed on token
+     * pages too. The link stays; the invitation to index it goes.
+     */
+    $advertise = $indexable ?? true;
+@endphp
+
+@php
     use App\Support\Locales;
 
     $current = Locales::current();
@@ -14,10 +30,9 @@
 
 <a
     href="{{ Locales::alternateUrl($other) }}"
-    hreflang="{{ $other }}"
+    @if ($advertise) hreflang="{{ $other }}" rel="alternate" @endif
     lang="{{ $other }}"
     dir="{{ Locales::direction($other) }}"
-    rel="alternate"
     {{ $attributes->merge([
         'class' => 'inline-flex items-center justify-center rounded-pill px-3 py-2 text-sm font-medium text-ink ring-1 ring-line transition-colors hover:bg-sage',
     ]) }}
