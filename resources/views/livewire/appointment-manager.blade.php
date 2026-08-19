@@ -9,7 +9,7 @@
 
         @if ($flash)
             <div class="mt-6 rounded-lg bg-sage p-4 ring-1 ring-line" role="status" aria-live="polite">
-                <p class="text-sm font-medium text-ink">{{ __('booking.manage.'.$flash.'_flash') }}</p>
+                <p class="text-sm font-medium text-ink">{{ __('booking.'.$flash.'_flash') }}</p>
             </div>
         @endif
 
@@ -153,6 +153,151 @@
                     </x-button>
                 </div>
             </div>
+        @endif
+
+        {{--
+            Data subject rights: access, correction, erasure.
+
+            On the page the patient already has a link to, because a right that
+            requires telephoning during working hours is a right most people
+            never exercise.
+        --}}
+        @if ($intake)
+            <section class="mt-12 border-t border-line pt-8" aria-labelledby="rights-heading">
+                <h2 id="rights-heading" class="font-display text-lg font-semibold text-ink">
+                    {{ __('booking.rights.heading') }}
+                </h2>
+                <p class="mt-2 text-sm leading-relaxed text-muted">{{ __('booking.rights.lead') }}</p>
+
+                <div class="mt-5">
+                    <x-button variant="ghost" wire:click="toggleIntake" aria-expanded="{{ $showIntake ? 'true' : 'false' }}">
+                        {{ $showIntake ? __('booking.rights.hide') : __('booking.rights.view') }}
+                    </x-button>
+                </div>
+
+                @if ($showIntake)
+                    <x-card class="mt-5">
+                        @if ($intake->isErased())
+                            {{-- Erased. Say so plainly rather than showing an
+                                 empty form, which reads like data loss. --}}
+                            <p class="text-sm font-medium text-ink">{{ __('booking.rights.erased_title') }}</p>
+                            <p class="mt-2 text-sm leading-relaxed text-muted">
+                                {{ __('booking.rights.erased_on', [
+                                    'date' => $intake->erased_at->clone()->setTimezone(config('clinic.timezone'))->translatedFormat('j F Y'),
+                                ]) }}
+                            </p>
+                        @elseif ($editingIntake)
+                            <form wire:submit="saveIntake" class="space-y-4">
+                                <div>
+                                    <label for="goal" class="block text-sm font-medium text-ink">{{ __('booking.fields.goal') }}</label>
+                                    <select id="goal" wire:model.blur="goal"
+                                            class="mt-2 w-full rounded-md border-0 bg-white px-4 py-3 text-ink ring-1 ring-line">
+                                        @foreach ($goals as $value => $label)
+                                            <option value="{{ $value }}" @selected($goal === $value)>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('goal') <p class="mt-2 text-sm text-gold" role="alert">{{ $message }}</p> @enderror
+                                </div>
+
+                                @foreach (['medications' => 'medications', 'conditions' => 'conditions', 'avoidFoods' => 'avoid_foods', 'note' => 'note'] as $property => $key)
+                                    <div>
+                                        <label for="{{ $property }}" class="block text-sm font-medium text-ink">
+                                            {{ __('booking.fields.'.$key) }}
+                                        </label>
+                                        <textarea id="{{ $property }}" wire:model.blur="{{ $property }}" rows="2"
+                                                  class="mt-2 w-full rounded-md border-0 bg-white px-4 py-3 text-ink ring-1 ring-line">{{ $$property }}</textarea>
+                                        @error($property) <p class="mt-2 text-sm text-gold" role="alert">{{ $message }}</p> @enderror
+                                    </div>
+                                @endforeach
+
+                                <div class="flex flex-wrap gap-3 pt-2">
+                                    <x-button type="submit" wire:loading.attr="disabled">
+                                        <span wire:loading.remove wire:target="saveIntake">{{ __('booking.rights.save') }}</span>
+                                        <span wire:loading wire:target="saveIntake">{{ __('common.loading') }}</span>
+                                    </x-button>
+                                    <x-button type="button" variant="ghost" wire:click="cancelEditingIntake">
+                                        {{ __('booking.rights.cancel_edit') }}
+                                    </x-button>
+                                </div>
+                            </form>
+                        @else
+                            <dl class="space-y-4">
+                                @foreach ($intake->clinicalContent() as $key => $value)
+                                    <div>
+                                        <dt class="text-xs text-muted">{{ __('booking.fields.'.$key) }}</dt>
+                                        <dd class="mt-1 text-sm leading-relaxed text-ink">
+                                            @if ($key === 'goal' && $value)
+                                                {{ __('booking.goals.'.$value) }}
+                                            @else
+                                                {{ $value ?: __('booking.rights.blank') }}
+                                            @endif
+                                        </dd>
+                                    </div>
+                                @endforeach
+                            </dl>
+
+                            <div class="mt-6 flex flex-wrap gap-3 border-t border-line pt-5">
+                                @if ($intake->isCorrectable())
+                                    <x-button variant="ghost" wire:click="startEditingIntake">
+                                        {{ __('booking.rights.correct') }}
+                                    </x-button>
+                                @else
+                                    {{-- Correction closes once the consultation
+                                         has happened: a record read during a
+                                         session must not change afterwards. --}}
+                                    <p class="text-sm leading-relaxed text-muted">
+                                        {{ __('booking.rights.correction_closed') }}
+                                    </p>
+                                @endif
+
+                                <x-button variant="ghost" wire:click="startErasure">
+                                    {{ __('booking.rights.erase') }}
+                                </x-button>
+                            </div>
+                        @endif
+                    </x-card>
+                @endif
+
+                @if ($confirmingErasure && ! $intake->isErased())
+                    {{-- The confirmation states what goes and what stays. An
+                         "are you sure?" that does not say what it deletes is
+                         not informed consent to deletion. --}}
+                    <x-card class="mt-5 ring-2 ring-gold">
+                        <h3 class="font-display text-base font-semibold text-ink">{{ __('booking.rights.erase_confirm_title') }}</h3>
+
+                        <p class="mt-3 text-sm font-medium text-ink">{{ __('booking.rights.erase_removes_heading') }}</p>
+                        <ul class="mt-2 space-y-1 text-sm text-muted">
+                            @foreach (__('booking.rights.erase_removes') as $item)
+                                <li class="flex items-start gap-2"><span aria-hidden="true">—</span><span>{{ $item }}</span></li>
+                            @endforeach
+                        </ul>
+
+                        <p class="mt-4 text-sm font-medium text-ink">{{ __('booking.rights.erase_keeps_heading') }}</p>
+                        <ul class="mt-2 space-y-1 text-sm text-muted">
+                            @foreach (__('booking.rights.erase_keeps') as $item)
+                                <li class="flex items-start gap-2"><span aria-hidden="true">—</span><span>{{ $item }}</span></li>
+                            @endforeach
+                        </ul>
+
+                        @if ($appointment->starts_at->isFuture())
+                            {{-- The consequence that actually matters to them. --}}
+                            <p class="mt-4 rounded-md bg-gold/15 p-3 text-sm leading-relaxed text-ink">
+                                {{ __('booking.rights.erase_upcoming_warning') }}
+                            </p>
+                        @endif
+
+                        <div class="mt-6 flex flex-wrap gap-3">
+                            <x-button wire:click="eraseIntake" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="eraseIntake">{{ __('booking.rights.erase_confirm') }}</span>
+                                <span wire:loading wire:target="eraseIntake">{{ __('common.loading') }}</span>
+                            </x-button>
+                            <x-button variant="ghost" wire:click="cancelErasure">
+                                {{ __('booking.rights.erase_cancel') }}
+                            </x-button>
+                        </div>
+                    </x-card>
+                @endif
+            </section>
         @endif
     @endif
 </div>
