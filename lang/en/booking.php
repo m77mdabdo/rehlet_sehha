@@ -20,4 +20,5 @@ return [
     ],
     'submit' => 'Confirm booking',
     'optional' => 'optional',
+    'coming_soon' => 'The booking form is being built. Until it is ready, call or message us on WhatsApp and we will book it for you.',
 ];

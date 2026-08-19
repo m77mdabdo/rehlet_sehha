@@ -253,3 +253,88 @@
         border-width: 0;
     }
 }
+
+/*
+|------------------------------------------------------------------------------
+| Accordion
+|------------------------------------------------------------------------------
+|
+| The FAQ is native <details>/<summary>. That buys correct keyboard handling,
+| a real expanded/collapsed state for assistive technology, in-page find that
+| can open a closed answer, and working behaviour with JavaScript off — none of
+| which a div-and-click-handler accordion gets without a pile of ARIA that is
+| usually subtly wrong.
+|
+| The only cost is the default disclosure triangle, which cannot be styled and
+| has to be removed on both engines before we can draw our own chevron.
+|
+*/
+
+@layer components {
+    .faq-item > summary {
+        list-style: none;
+        cursor: pointer;
+    }
+
+    /* Safari and older Chrome. */
+    .faq-item > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    /* Firefox renders the marker through the list-item display type. */
+    .faq-item > summary::marker {
+        content: '';
+    }
+
+    .faq-item[open] .faq-chevron {
+        transform: rotate(180deg);
+    }
+}
+
+/*
+|------------------------------------------------------------------------------
+| Scroll reveal
+|------------------------------------------------------------------------------
+|
+| Cards fade and rise slightly as they enter the viewport — CSS only, via a
+| scroll-driven animation. No IntersectionObserver, no JS at all.
+|
+| The critical property of this implementation is that it is PURELY ADDITIVE.
+| The element's resting state is fully visible; the animation is layered on top
+| inside an @supports block. A browser without animation-timeline (Firefox and
+| Safari at the time of writing) simply shows the content, immediately, with no
+| flash and nothing hidden. The usual JS version of this effect sets opacity: 0
+| in CSS and clears it from script — which means a script error, a blocked
+| bundle or an unsupported API leaves the entire page invisible. That trade is
+| not worth a fade.
+|
+| Wrapped in prefers-reduced-motion: no-preference so a visitor who has asked
+| their system for less motion never sees it. On a health site that is not a
+| nicety — vestibular disorders make this genuinely unpleasant, and some
+| visitors are here because of one.
+|
+| translateY rather than translateX: vertical motion needs no RTL mirror.
+|
+*/
+
+@media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+        .reveal {
+            animation: reveal-rise linear both;
+            animation-timeline: view();
+            animation-range: entry 0% cover 22%;
+        }
+    }
+}
+
+@keyframes reveal-rise {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

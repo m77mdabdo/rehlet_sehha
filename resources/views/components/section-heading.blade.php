@@ -14,7 +14,7 @@
 
 <div {{ $attributes->merge(['class' => "flex flex-col {$alignment} gap-3"]) }}>
     @if ($eyebrow)
-        <p class="text-sm font-medium tracking-wide text-accent uppercase">
+        <p class="text-sm font-medium tracking-wide text-accent-dark uppercase">
             {{ $eyebrow }}
         </p>
     @endif
