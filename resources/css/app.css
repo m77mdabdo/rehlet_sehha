@@ -139,8 +139,15 @@
     --color-ink: #0e2e4d;
     --color-ink-soft: #1c4a73;
 
-    /* Blue — buttons and links */
-    --color-accent: #1e82c4;
+    /*
+     * Blue — buttons and links.
+     *
+     * #1A6DA6 rather than the original #1E82C4. The lighter blue measured
+     * 4.16:1 against white, which fails WCAG AA for normal text; this clears
+     * 5.55:1. See ContrastTest for why that threshold is treated as a hard
+     * requirement here rather than a nice-to-have.
+     */
+    --color-accent: #1a6da6;
     --color-accent-dark: #166a9f;
 
     --color-teal: #48bbd4;
@@ -152,7 +159,12 @@
     --color-paper: #eef3f8;
     --color-sage: #dce7f1;
 
-    --color-muted: #62809b;
+    /*
+     * Secondary text. #4A6684 rather than #62809B: the old value measured
+     * 3.70:1 on the paper background, and it is used for body copy — leads,
+     * card descriptions, the FAQ answers. 5.34:1 now.
+     */
+    --color-muted: #4a6684;
     --color-line: rgba(14, 46, 77, 0.14);
 
     /* Radii */
