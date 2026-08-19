@@ -51,13 +51,21 @@
     <link rel="alternate" hreflang="x-default" href="{{ Locales::alternateUrl(Locales::DEFAULT) }}">
     <link rel="canonical" href="{{ url()->current() }}">
 
-    {{-- Brand assets live in public/brand/. --}}
-    <link rel="icon" href="/brand/favicon.ico" sizes="any">
-    <link rel="icon" href="/brand/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
-    <link rel="manifest" href="/brand/site.webmanifest">
-    {{-- The one place a literal hex is unavoidable: browser chrome reads this
-         before any stylesheet is parsed, so a CSS variable would not resolve. --}}
+    {{--
+        Brand assets. The SVG favicon is the real one — it stays sharp at any
+        density and follows the tab bar's own scaling; the 32px PNG is the
+        fallback for browsers that will not take an SVG icon.
+
+        The manifest is a route, not a file, so its colours come from the same
+        config mirror as the meta tag below rather than being a third copy.
+    --}}
+    <link rel="icon" href="{{ asset('brand/favicon.svg') }}" type="image/svg+xml">
+    <link rel="icon" href="{{ asset('brand/favicon-32.png') }}" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="{{ asset('brand/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ route('manifest') }}">
+    {{-- The one place a literal hex is unavoidable in markup: browser chrome
+         reads this before any stylesheet is parsed, so a CSS variable would
+         not resolve. Same config entry the manifest route reads. --}}
     <meta name="theme-color" content="{{ config('clinic.brand.ink') }}">
 
     {{-- Self-hosted, fingerprinted by Vite. No request ever leaves for Google. --}}

@@ -1,0 +1,61 @@
+# حزمة اللوجو — رحلة صحة
+
+## الأيقونات (جاهزة، حجم مضبوط)
+| الملف | الاستخدام |
+|---|---|
+| `favicon.svg` | أيقونة التاب — الأفضل، بيتحجّم لأي مقاس |
+| `favicon-16/32/48.png` | احتياطي للمتصفحات القديمة |
+| `apple-touch-icon.png` | أيقونة الآيفون لما حد يضيف الموقع للشاشة (١٨٠×١٨٠، من غير حواف دايرية — iOS بيعملها لوحده) |
+| `icon-192.png` · `icon-512.png` | أيقونة أندرويد و PWA |
+| `icon-maskable-512.png` | نسخة أندرويد اللي بيقصّها في أشكال مختلفة |
+| `avatar-navy-1000.png` | صورة البروفايل — انستجرام، فيسبوك، واتساب بيزنس |
+| `avatar-light-1000.png` | نفسها على خلفية فاتحة |
+| `watermark-white-800.png` | علامة مائية للصور والفيديوهات |
+
+## العلامة لوحدها (SVG — استخدمها في الموقع)
+`mark-navy.svg` · `mark-white.svg` · `mark-icon-navy.svg` · `mark-icon-white.svg`
+`mark-mono-navy.svg` · `mark-mono-black.svg` · `mark-mono-white.svg` (للفاكس والختم والطباعة بلون واحد)
+
+**قاعدة:** استخدم `mark-icon-*` تحت ٤٨ بكسل (النبضة مشيلة فيها عن قصد)، و`mark-navy/white` فوق كده.
+
+## التركيبات مع الاسم
+`lockup-h-ar-light.svg` · `lockup-h-ar-dark.svg` · `lockup-h-en-*.svg` · `lockup-v-ar-*.svg`
+
+⚠️ **مهم:** الملفات دي فيها كلام كنص حي، فمحتاجة خطوط Tajawal و Readex Pro تكون محمّلة. لو هتبعتها لمطبعة أو مصمم، افتحها في Illustrator أو Inkscape واعمل **Convert text to outlines** الأول، وإلا الاسم هيطلع بخط تاني.
+
+في الموقع نفسه مش محتاج الملفات دي — الاسم مكتوب HTML عادي جنب العلامة، وده الصح لأنه بيفضل نص يقراه جوجل.
+
+## صورة المشاركة (واتساب وفيسبوك)
+`og-image.html` — افتحها في كروم واعمل export للمستطيل كـ PNG بمقاس ١٢٠٠×٦٣٠، وسمّيها `og-image.png`.
+معملتهاش PNG جاهزة لأن الخطوط العربية مش متاحة في بيئة التوليد، والكلام كان هيطلع حروفه مفكوكة.
+
+## الكود اللي تحطه في `<head>`
+```html
+<link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="manifest" href="/brand/site.webmanifest">
+<meta name="theme-color" content="#0E2E4D">
+
+<meta property="og:title" content="رحلة صحة — عيادة علاج السمنة والتغذية العلاجية">
+<meta property="og:description" content="خطة تقدر تكمّل عليها. احجزي أونلاين في أقل من دقيقة.">
+<meta property="og:image" content="https://rehlet-sehha.com/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ar_EG">
+<meta name="twitter:card" content="summary_large_image">
+```
+
+## الألوان
+| | HEX | استخدام |
+|---|---|---|
+| كحلي | `#0E2E4D` | النصوص والأقسام الغامقة |
+| أزرق | `#1E82C4` | الأزرار واللينكات |
+| دهبي | `#E8A94A` | النبضة والنقطة واللمسات |
+| خلفية | `#EFF4F9` | خلفية الصفحة |
+
+## قواعد سريعة
+- المقاس الأدنى: ٢٤ بكسل.
+- مساحة فاضية حوالين اللوجو = ربع عرضه على الأقل.
+- متغيّرش الألوان، متمططوش، متحطش ظل، متشيلش النقطة الدهبي.
