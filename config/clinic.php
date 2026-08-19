@@ -65,4 +65,27 @@ return [
 
     'activity_log_retention_days' => (int) env('CLINIC_ACTIVITY_LOG_RETENTION_DAYS', 365),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Brand Colours (mirror — not the source of truth)
+    |--------------------------------------------------------------------------
+    |
+    | resources/css/app.css owns the palette. These entries exist only for the
+    | handful of places that need a literal hex in HTML because no CSS custom
+    | property is allowed there:
+    |
+    |   <meta name="theme-color">   — read by the browser chrome before any
+    |                                 stylesheet is parsed
+    |   site.webmanifest            — a JSON file, with no access to CSS at all
+    |
+    | Keep these in step with the @theme block in app.css. There is deliberately
+    | no third copy: if a component needs a colour, it uses a Tailwind token.
+    |
+    */
+
+    'brand' => [
+        'ink' => '#0E2E4D',
+        'paper' => '#EEF3F8',
+    ],
+
 ];

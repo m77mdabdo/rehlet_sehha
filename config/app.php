@@ -75,6 +75,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Supported Locales
+    |--------------------------------------------------------------------------
+    |
+    | The allow-list behind the {locale} route prefix. Anything not in this
+    | array is rejected with a 404 before it can reach App::setLocale() — the
+    | locale segment is user input, and user input never becomes a locale.
+    |
+    | Arabic is first because it is the primary language, not a translation.
+    |
+    */
+
+    'supported_locales' => ['ar', 'en'],
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |
