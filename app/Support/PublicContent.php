@@ -21,12 +21,13 @@ use Illuminate\Support\Facades\Cache;
  * the homepage from five queries into zero on a warm cache.
  *
  * EXPLICIT KEYS, NOT TAGS. Tagged cache entries need a store that can index
- * them, which means Redis or Memcached; this application's cache store is the
- * database (see config/cache.php), where Cache::tags() throws. Explicit keys
- * work in every store, and the cost of that choice is that invalidation has to
- * name what it clears — which is what flush() below does, and what the
- * FlushesPublicContentCache trait calls from each model's save and delete
- * events. If the cache store ever becomes Redis, none of this needs to change.
+ * them, which means Redis or Memcached; this application runs on the `file`
+ * store (see the note in .env.example for the measurements behind that), where
+ * Cache::tags() throws. Explicit keys work in every store, and the cost of that
+ * choice is that invalidation has to name what it clears — which is what
+ * flush() below does, and what the FlushesPublicContentCache trait calls from
+ * each model's save and delete events. If the store ever becomes Redis, none of
+ * this needs to change; tags would then be available as a simplification.
  *
  * Nothing here is locale-dependent: the models store both languages in one JSON
  * column and pick a locale at render time, so one cache entry serves both the

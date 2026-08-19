@@ -9,6 +9,7 @@ use Database\Factories\SpecialtyFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 use Spatie\Translatable\HasTranslations;
 
@@ -63,6 +64,25 @@ class Specialty extends Model
             'is_active' => 'boolean',
             'sort_order' => 'integer',
         ];
+    }
+
+    /**
+     * The packages that suit this area, in the order they should be offered
+     * for it — sort_order lives on the pivot because "start here" is a
+     * different answer for PCOS than for a corporate enquiry.
+     *
+     * Filtered to active services: an area must never advertise a package
+     * that has been withdrawn.
+     *
+     * @return BelongsToMany<Service, $this>
+     */
+    public function services(): BelongsToMany
+    {
+        return $this->belongsToMany(Service::class)
+            ->where('services.is_active', true)
+            ->withPivot('sort_order')
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
     }
 
     /**

@@ -29,7 +29,18 @@
                     <li class="reveal flex">
                         <x-card as="figure" class="flex w-full flex-col">
                             @if ($testimonial->rating)
-                                <p class="flex items-center gap-1" role="img" aria-label="{{ __('home.stories.rating_label', ['count' => $testimonial->rating]) }}">
+                                {{--
+                                    The gold measures 2.06:1 against the card —
+                                    well under the 3:1 WCAG asks of a graphic
+                                    that carries information. Rather than
+                                    repaint the brand colour, the rating is
+                                    written out beside the stars: the stars
+                                    become decoration, and the fact they encode
+                                    is available to a low-vision reader as text
+                                    at 5.96:1. See ContrastTest for the record.
+                                --}}
+                                <p class="flex items-center gap-2">
+                                    <span class="flex items-center gap-1" aria-hidden="true">
                                     @for ($star = 1; $star <= 5; $star++)
                                         <svg
                                             @class([
@@ -44,6 +55,11 @@
                                             <path d="M10 1.6l2.4 5 5.5.8-4 3.9.9 5.5-4.8-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z" />
                                         </svg>
                                     @endfor
+                                    </span>
+
+                                    <span class="text-sm text-muted">
+                                        {{ __('home.stories.rating_label', ['count' => $testimonial->rating]) }}
+                                    </span>
                                 </p>
                             @endif
 

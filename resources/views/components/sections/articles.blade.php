@@ -3,11 +3,9 @@
 {{--
     The three newest published articles.
 
-    The category is deliberately NOT rendered. posts.category is a plain string
-    column holding Arabic text, so printing it would put Arabic category chips
-    on the English page. Reading time is shown instead — it is an integer with
-    a translated unit, so it works in both languages. Making category
-    translatable is a schema change, noted rather than smuggled in here.
+    Category and reading time. posts.category used to be a plain string holding
+    Arabic, which is why this card once showed reading time alone; it is a
+    translatable JSON column now, so the chip works in both languages.
 --}}
 
 <section id="articles" class="py-20 sm:py-24" aria-labelledby="articles-heading">
@@ -26,11 +24,19 @@
                 @foreach ($posts as $post)
                     <li class="reveal flex">
                         <x-card as="article" class="flex w-full flex-col">
-                            @if ($post->reading_minutes)
-                                <p class="text-xs font-medium tracking-wide text-accent-dark uppercase">
-                                    {{ __('home.articles.reading_time', ['count' => $post->reading_minutes]) }}
-                                </p>
-                            @endif
+                            <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium tracking-wide text-accent-dark uppercase">
+                                @if ($post->category)
+                                    <span>{{ $post->category }}</span>
+                                @endif
+
+                                @if ($post->category && $post->reading_minutes)
+                                    <span class="text-line" aria-hidden="true">•</span>
+                                @endif
+
+                                @if ($post->reading_minutes)
+                                    <span>{{ __('home.articles.reading_time', ['count' => $post->reading_minutes]) }}</span>
+                                @endif
+                            </p>
 
                             <h3 class="mt-2 font-display text-lg font-semibold text-balance text-ink">
                                 {{-- The whole card is not a link: a block-level
