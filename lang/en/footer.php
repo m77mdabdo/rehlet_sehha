@@ -12,6 +12,7 @@ return [
     'whatsapp' => 'WhatsApp',
     'phone' => 'Phone',
     'email' => 'Email',
+    'address' => 'Address',
     'disclaimer_heading' => 'Medical disclaimer',
     'disclaimer' => 'The content here is for general awareness and does not replace consulting your treating physician',
 ];
