@@ -133,6 +133,22 @@ return [
          * keeps displaying correctly while no new one can be created.
          */
         'modes' => ['online'],
+
+        /*
+         * The shortest time in which a human could plausibly complete step 3.
+         *
+         * Step 3 asks for a name, a phone number, a goal, any medications and
+         * conditions, and requires reading a consent notice. Six seconds is
+         * generous for a person and impossible for a script that fills the
+         * form and posts it in one pass.
+         *
+         * Paired with a honeypot field rather than used alone: timing catches
+         * the fast automated case, the honeypot catches the patient one, and
+         * neither asks a real patient to solve a puzzle. There is deliberately
+         * no CAPTCHA — it would be a third-party script on a medical form, and
+         * it fails hardest for exactly the visitors this clinic serves.
+         */
+        'minimum_fill_seconds' => (int) env('CLINIC_MINIMUM_FILL_SECONDS', 6),
     ],
 
     /*
