@@ -143,10 +143,15 @@ class IntakeForm extends Model
      * because erasing those would destroy the clinic's records rather than
      * the patient's narrative.
      *
-     * consent_at and consent_ip also survive. They are the evidence that
-     * consent was properly taken, and destroying that on request would leave
-     * the clinic unable to show it ever had permission for data it has since
-     * deleted.
+     * consent_at survives; consent_ip does NOT.
+     *
+     * The date is the evidence that consent was taken, and destroying it would
+     * leave the clinic unable to show it ever had permission for data it has
+     * since deleted. The IP address is different in kind: the patient never
+     * volunteered it, we captured it, and keeping it after an explicit
+     * erasure request contradicts the request. It adds marginal certainty to
+     * the same fact the timestamp already records, at the cost of retaining
+     * personal data somebody asked us to destroy.
      */
     public function eraseClinicalContent(): bool
     {
@@ -154,6 +159,7 @@ class IntakeForm extends Model
             $this->setAttribute($attribute, null);
         }
 
+        $this->consent_ip = null;
         $this->erased_at = Carbon::now();
 
         return $this->save();

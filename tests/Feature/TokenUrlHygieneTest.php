@@ -76,7 +76,7 @@ function tokenAppointment(): Appointment
  */
 function tokenBearingRouteNames(): array
 {
-    return ['appointment.manage'];
+    return ['appointment.export', 'appointment.manage'];
 }
 
 it('guards every token-bearing route the application actually registers', function () {
@@ -159,13 +159,32 @@ it('never advertises a token url to a crawler as a translation', function (strin
      */
     preg_match_all('/<a\b[^>]*'.preg_quote($appointment->cancel_token, '/').'[^>]*>/i', $content, $anchors);
 
-    expect($anchors[0])->not->toBeEmpty('Expected the language switcher to be on this page.');
-
+    // Zero is a valid answer — the exported file has no navigation at all.
+    // What matters is that none of the anchors that DO exist advertise.
     foreach ($anchors[0] as $anchor) {
         expect($anchor)->not->toContain('rel="alternate"');
         expect($anchor)->not->toContain('hreflang');
     }
 })->with(tokenBearingRouteNames());
+
+it('has a language switcher on the manage page that is clean rather than absent', function () {
+    // Guards the guard above: if the switcher ever stopped rendering, that
+    // test would pass by iterating nothing.
+    $appointment = tokenAppointment();
+
+    $content = $this->get(route('appointment.manage', [
+        'locale' => 'ar',
+        'token' => $appointment->cancel_token,
+    ]))->assertOk()->getContent();
+
+    preg_match_all('/<a\b[^>]*'.preg_quote($appointment->cancel_token, '/').'[^>]*>/i', $content, $anchors);
+
+    expect($anchors[0])->not->toBeEmpty('The language switcher is missing from the manage page.');
+
+    foreach ($anchors[0] as $anchor) {
+        expect($anchor)->not->toContain('hreflang');
+    }
+});
 
 it('never sends a token to somewhere that is not us', function (string $routeName) {
     $appointment = tokenAppointment();

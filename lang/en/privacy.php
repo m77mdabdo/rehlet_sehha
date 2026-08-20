@@ -34,7 +34,7 @@ return [
             'correct' => 'Correct any of it while the appointment is still ahead. Editing closes once the session has taken place, so the record the doctor read during your consultation stays as it was; that protects you, not us. If something is wrong after that, call us.',
             'erase' => 'Delete all of your medical information at any time, including after the session. The appointment itself remains — the clinic needs it for its records and its accounts — but everything you wrote about your health is removed.',
         ],
-        'keeps' => 'After erasure we keep: the appointment and its time, your name and mobile number, and the date you gave consent. Those are what the clinic needs to operate and to show that consent was properly taken.',
+        'keeps' => 'After erasure we keep: the appointment and its time, your name and mobile number, and the date you gave consent. The IP address the consent came from is erased too — you never gave us that, we recorded it, and it is not ours to keep once you have asked us to delete. The date alone is evidence enough.',
         'lost_link' => 'Lost the link? Call us and we will resend it to the number you booked with.',
     ],
 
