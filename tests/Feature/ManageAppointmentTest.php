@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 use App\Enums\AppointmentStatus;
 use App\Livewire\AppointmentManager;
+use App\Models\ActivityLog;
 use App\Models\Appointment;
 use App\Models\IntakeForm;
 use App\Models\Service;
 use App\Services\Availability\AvailabilityEngine;
 use App\Services\Availability\Slot;
 use App\Support\Contact;
+use App\Support\PhoneNumber;
 use Carbon\CarbonImmutable;
 use Database\Seeders\DoctorUserSeeder;
 use Database\Seeders\RoleSeeder;
@@ -367,6 +369,7 @@ it('erases the clinical content and keeps the booking', function () {
         // that does not say what it deletes is not informed consent to delete.
         ->assertSee(__('booking.rights.erase_removes_heading'))
         ->assertSee(__('booking.rights.erase_keeps_heading'))
+        ->set('erasureConfirmation', __('booking.rights.erase_keyword'))
         ->call('eraseIntake')
         ->assertSet('flash', 'rights.erased');
 
@@ -379,10 +382,17 @@ it('erases the clinical content and keeps the booking', function () {
     expect($intake->erased_at)->not->toBeNull();
     expect($intake->isErased())->toBeTrue();
 
-    // Consent evidence survives: destroying it would leave the clinic unable
-    // to show it ever had permission for data it has since deleted.
+    /*
+     * The consent DATE survives: destroying it would leave the clinic unable
+     * to show it ever had permission for data it has since deleted.
+     *
+     * The consent IP does not. The patient never volunteered it — we captured
+     * it — and keeping it after an explicit erasure request contradicts the
+     * request. It adds marginal certainty to the same fact the timestamp
+     * already records.
+     */
     expect($intake->consent_at)->not->toBeNull();
-    expect($intake->consent_ip)->toBe('203.0.113.4');
+    expect($intake->consent_ip)->toBeNull();
 
     // THE BOOKING SURVIVES. Erasure is of clinical content, not of the
     // clinic's record that the hour was used.
@@ -398,6 +408,7 @@ it('erases the encrypted columns at rest, not just in the model', function () {
 
     Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
         ->call('startErasure')
+        ->set('erasureConfirmation', __('booking.rights.erase_keyword'))
         ->call('eraseIntake');
 
     // Read straight from the table: an erasure that only clears the accessor
@@ -427,6 +438,7 @@ it('still allows erasure after the appointment has passed', function () {
 
     Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
         ->call('startErasure')
+        ->set('erasureConfirmation', __('booking.rights.erase_keyword'))
         ->call('eraseIntake');
 
     expect($appointment->intakeForm->fresh()->isErased())->toBeTrue();
@@ -455,4 +467,199 @@ it('will not erase twice', function () {
         ->assertSet('confirmingErasure', false);
 
     expect($appointment->intakeForm->fresh()->erased_at->timestamp)->toBe($first->timestamp);
+});
+
+/*
+|------------------------------------------------------------------------------
+| Export — the access right as a file
+|------------------------------------------------------------------------------
+|
+| Showing someone their data on a page they can only reach while we keep the
+| site online is not access. A patient changing clinics, querying a bill, or
+| simply wanting a copy of what she told a doctor needs something she can take
+| with her.
+|
+*/
+
+it('exports the record with everything the patient gave us', function () {
+    $appointment = appointmentWithIntake();
+
+    $response = $this->get(route('appointment.export', [
+        'locale' => 'ar',
+        'token' => $appointment->cancel_token,
+    ]))->assertOk();
+
+    $body = $response->getContent();
+
+    // Appointment.
+    expect($body)->toContain($appointment->reference);
+    expect($body)->toContain($appointment->service->getTranslation('name', 'ar'));
+
+    // Patient.
+    expect($body)->toContain($appointment->patient->name);
+    expect($body)->toContain(PhoneNumber::forDisplay($appointment->patient->phone));
+
+    // Every clinical answer, decrypted.
+    expect($body)->toContain('ميتفورمين 500');
+    expect($body)->toContain('تكيس مبايض');
+    expect($body)->toContain('مكسرات');
+    expect($body)->toContain('بشتغل شيفتات');
+    expect($body)->toContain(__('booking.goals.weight_management'));
+
+    // Consent date.
+    expect($body)->toContain(__('export.consent_given_on'));
+});
+
+it('serves the export as a self-contained downloadable file', function () {
+    $appointment = appointmentWithIntake();
+
+    $response = $this->get(route('appointment.export', [
+        'locale' => 'ar',
+        'token' => $appointment->cancel_token,
+    ]))->assertOk();
+
+    expect($response->headers->get('Content-Disposition'))
+        ->toContain('attachment')
+        ->toContain($appointment->reference);
+
+    /*
+     * Self-contained: the file has to keep working with no network, years
+     * from now, opened from a USB stick. A linked stylesheet would make it
+     * depend on a site that may not exist by then.
+     */
+    $body = $response->getContent();
+
+    expect($body)->toContain('<style>');
+    expect($body)->not->toMatch('/<link[^>]+rel="stylesheet"/');
+    expect($body)->not->toContain('<script');
+
+    // Arabic-first and RTL.
+    expect($body)->toContain('<html lang="ar" dir="rtl">');
+});
+
+it('protects the exported file exactly like the page it came from', function () {
+    $appointment = appointmentWithIntake();
+
+    $response = $this->get(route('appointment.export', [
+        'locale' => 'ar',
+        'token' => $appointment->cancel_token,
+    ]))->assertOk();
+
+    // The body IS the medical record, so nothing may hold a copy.
+    expect($response->headers->get('Cache-Control'))->toContain('no-store');
+    expect($response->headers->get('X-Robots-Tag'))->toBe('noindex, nofollow, noarchive');
+    expect($response->headers->get('Referrer-Policy'))->toBe('no-referrer');
+    expect($response->headers->get('X-Content-Type-Options'))->toBe('nosniff');
+});
+
+it('is unreachable without the token', function () {
+    $appointment = appointmentWithIntake();
+
+    // A wrong token is indistinguishable from a URL that never existed.
+    $this->get('/ar/appointment/'.str_repeat('z', 64).'/export')->assertNotFound();
+
+    // And one appointment's token does not export another's record.
+    $other = appointmentWithIntake();
+
+    $body = $this->get(route('appointment.export', [
+        'locale' => 'ar',
+        'token' => $appointment->cancel_token,
+    ]))->assertOk()->getContent();
+
+    expect($body)->not->toContain($other->reference);
+});
+
+it('exports an erased record as erased rather than blank', function () {
+    $appointment = appointmentWithIntake();
+
+    Livewire::test(AppointmentManager::class, ['token' => $appointment->cancel_token])
+        ->call('startErasure')
+        ->set('erasureConfirmation', __('booking.rights.erase_keyword'))
+        ->call('eraseIntake');
+
+    $body = $this->get(route('appointment.export', [
+        'locale' => 'ar',
+        'token' => $appointment->cancel_token,
+    ]))->assertOk()->getContent();
+
+    /*
+     * A blank section reads like the clinic lost the data. This says the
+     * patient asked for it to go, and when that was honoured — which is the
+     * difference between a record and an absence.
+     */
+    expect($body)->toContain(__('export.erased_on'));
+    expect($body)->not->toContain('ميتفورمين 500');
+    expect($body)->not->toContain('تكيس مبايض');
+
+    // The appointment is still fully described: erasure removed the clinical
+    // content, not the booking.
+    expect($body)->toContain($appointment->reference);
+    expect($body)->toContain($appointment->patient->name);
+});
+
+it('never forces a latin direction onto a date that contains arabic', function () {
+    $appointment = appointmentWithIntake();
+
+    $body = $this->get(route('appointment.export', [
+        'locale' => 'ar',
+        'token' => $appointment->cancel_token,
+    ]))->assertOk()->getContent();
+
+    /*
+     * Forced LTR is correct for the reference, the phone number and the price,
+     * and WRONG for a date like "21 أغسطس 2026 — 00:57".
+     *
+     * The digits that follow an Arabic word are reclassified from European to
+     * Arabic numerals (UAX #9, rule W2), which reverses the rest of the string
+     * around the leading day number and strands the day at the far end, away
+     * from its own month. The date renders as gibberish to the person whose
+     * record it is. Dates use <bdi dir="auto"> so the direction comes from the
+     * content instead of being asserted.
+     *
+     * This is the invariant, not the markup: nothing forced to LTR may contain
+     * Arabic.
+     */
+    preg_match_all('/<span class="ltr">(.*?)<\/span>/su', $body, $forced);
+
+    foreach ($forced[1] as $value) {
+        expect($value)->not->toMatch('/\p{Arabic}/u');
+    }
+
+    /*
+     * And the dates really are isolated rather than simply unwrapped, so they
+     * cannot be reordered by whatever sits beside them in the cell.
+     *
+     * Checked against the document rather than the whole file: the stylesheet
+     * explains this rule in a comment, and matching that comment would pass
+     * this assertion while every date on the page was still forced LTR.
+     */
+    $document = preg_replace('/<style>.*?<\/style>/su', '', $body);
+
+    expect(substr_count((string) $document, '<bdi dir="auto">'))->toBeGreaterThanOrEqual(3);
+});
+
+it('records that an export happened, never what it contained', function () {
+    $appointment = appointmentWithIntake();
+
+    $this->get(route('appointment.export', [
+        'locale' => 'ar',
+        'token' => $appointment->cancel_token,
+    ]))->assertOk();
+
+    $entry = ActivityLog::query()
+        ->where('subject_type', Appointment::class)
+        ->where('subject_id', $appointment->id)
+        ->where('event', 'exported')
+        ->latest('id')
+        ->first();
+
+    expect($entry)->not->toBeNull();
+
+    // Same rule as everything else touching this record: the fact is
+    // auditable, the content is not.
+    $serialised = json_encode([$entry->properties, $entry->attribute_changes], JSON_UNESCAPED_UNICODE);
+
+    foreach (['ميتفورمين', 'تكيس مبايض', 'مكسرات', 'شيفتات'] as $clinical) {
+        expect($serialised)->not->toContain($clinical);
+    }
 });

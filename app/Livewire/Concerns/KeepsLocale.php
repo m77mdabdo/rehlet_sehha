@@ -41,6 +41,19 @@ trait KeepsLocale
     public function mountKeepsLocale(): void
     {
         $this->locale = App::getLocale();
+
+        /*
+         * Applied here as well as on boot.
+         *
+         * boot() runs BEFORE mount() on the very first render, when $this->locale
+         * is still empty — so on that first pass nothing had set URL::defaults
+         * except the middleware. That is fine in a real request and false
+         * everywhere else: a component rendered without the middleware (a test,
+         * a console render, a future queued job) would throw on the first
+         * route() call it reached. The trait is supposed to make the component
+         * self-sufficient, so it has to do this itself rather than assume.
+         */
+        $this->applyLocale();
     }
 
     /**
@@ -49,6 +62,11 @@ trait KeepsLocale
      * on this is the only thing setting it.
      */
     public function bootKeepsLocale(): void
+    {
+        $this->applyLocale();
+    }
+
+    private function applyLocale(): void
     {
         if ($this->locale === '' || ! Locales::isSupported($this->locale)) {
             return;

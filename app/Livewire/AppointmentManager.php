@@ -68,6 +68,21 @@ class AppointmentManager extends Component
 
     public bool $confirmingErasure = false;
 
+    /**
+     * What the patient types to confirm an erasure.
+     *
+     * A typed word rather than a second button. Erasure here is permanent and
+     * immediate — there is no grace period, because "deleted" that is not
+     * deleted for a week is the kind of thing that destroys trust when
+     * somebody discovers it. That makes a mis-tap unrecoverable, so the
+     * confirmation has to cost more than a tap.
+     *
+     * Typing is the right cost: it is a deliberate act, it cannot happen in a
+     * pocket, and unlike a delay it does not pretend the deletion is
+     * reversible.
+     */
+    public string $erasureConfirmation = '';
+
     public string $goal = '';
 
     public string $medications = '';
@@ -274,6 +289,7 @@ class AppointmentManager extends Component
         }
 
         $this->confirmingErasure = true;
+        $this->erasureConfirmation = '';
         $this->editingIntake = false;
         $this->showIntake = true;
         $this->flash = null;
@@ -282,6 +298,31 @@ class AppointmentManager extends Component
     public function cancelErasure(): void
     {
         $this->confirmingErasure = false;
+        $this->erasureConfirmation = '';
+    }
+
+    /**
+     * The word the patient must type, in their own language.
+     *
+     * Translated deliberately: asking an Arabic-speaking patient to type
+     * DELETE to erase her medical record makes the most consequential action
+     * on the site the one place the site stops speaking to her.
+     */
+    public function erasureKeyword(): string
+    {
+        return __('booking.rights.erase_keyword');
+    }
+
+    /**
+     * Whether the typed word matches.
+     *
+     * Compared case-insensitively and trimmed, because the point is intent,
+     * not dictation. A patient who types "delete " with a trailing space has
+     * demonstrated everything the check exists to establish.
+     */
+    public function erasureConfirmed(): bool
+    {
+        return mb_strtolower(trim($this->erasureConfirmation)) === mb_strtolower($this->erasureKeyword());
     }
 
     /**
@@ -303,8 +344,20 @@ class AppointmentManager extends Component
             return;
         }
 
+        // Re-checked on the server. The button is disabled in the browser, but
+        // a disabled button is a suggestion, and this one deletes a medical
+        // record permanently.
+        if (! $this->erasureConfirmed()) {
+            $this->addError('erasureConfirmation', __('booking.rights.erase_keyword_mismatch', [
+                'word' => $this->erasureKeyword(),
+            ]));
+
+            return;
+        }
+
         $intake->eraseClinicalContent();
 
+        $this->erasureConfirmation = '';
         $this->confirmingErasure = false;
         $this->editingIntake = false;
         $this->flash = 'rights.erased';
