@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ExportAppointmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManageAppointmentController;
 use App\Http\Controllers\ManifestController;
@@ -51,6 +52,16 @@ Route::prefix('{locale}')
         Route::get('appointment/{token}', ManageAppointmentController::class)
             ->middleware('token-url')
             ->name('appointment.manage')
+            ->where('token', '[A-Za-z0-9]{32,80}');
+
+        /*
+         * The access right under law 151/2020, as a file the patient keeps.
+         * Same token, same protections — the body of this response IS the
+         * medical record, so nothing may cache it.
+         */
+        Route::get('appointment/{token}/export', ExportAppointmentController::class)
+            ->middleware('token-url')
+            ->name('appointment.export')
             ->where('token', '[A-Za-z0-9]{32,80}');
 
         // Stub. The consent notice links here, so it must resolve today.

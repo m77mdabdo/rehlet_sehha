@@ -169,11 +169,25 @@
                 </h2>
                 <p class="mt-2 text-sm leading-relaxed text-muted">{{ __('booking.rights.lead') }}</p>
 
-                <div class="mt-5">
+                <div class="mt-5 flex flex-wrap gap-3">
                     <x-button variant="ghost" wire:click="toggleIntake" aria-expanded="{{ $showIntake ? 'true' : 'false' }}">
                         {{ $showIntake ? __('booking.rights.hide') : __('booking.rights.view') }}
                     </x-button>
+
+                    {{-- Access without a copy is not access. A plain link, not
+                         a wire:click: the file must arrive as a download, and
+                         routing it through Livewire would only get in the
+                         way. --}}
+                    <x-button
+                        variant="ghost"
+                        :href="route('appointment.export', ['token' => $token])"
+                        download
+                    >
+                        {{ __('export.download') }}
+                    </x-button>
                 </div>
+
+                <p class="mt-2 text-xs text-muted">{{ __('export.download_hint') }}</p>
 
                 @if ($showIntake)
                     <x-card class="mt-5">
@@ -286,8 +300,45 @@
                             </p>
                         @endif
 
+                        {{--
+                            Typed confirmation, not a second button.
+
+                            Erasure is permanent and immediate — no grace
+                            period, because "deleted" that is not deleted for a
+                            week destroys trust when somebody finds out. That
+                            makes a mis-tap unrecoverable, so confirming has to
+                            cost more than a tap. Typing is a deliberate act
+                            that cannot happen in a pocket, and unlike a delay
+                            it does not pretend the deletion can be undone.
+                        --}}
+                        <div class="mt-6 border-t border-line pt-5">
+                            <label for="erasureConfirmation" class="block text-sm font-medium text-ink">
+                                {{ __('booking.rights.erase_keyword_label', ['word' => $this->erasureKeyword()]) }}
+                            </label>
+                            <p class="mt-1 text-xs leading-relaxed text-muted">
+                                {{ __('booking.rights.erase_keyword_hint') }}
+                            </p>
+                            <input
+                                id="erasureConfirmation"
+                                type="text"
+                                wire:model.live="erasureConfirmation"
+                                value="{{ $erasureConfirmation }}"
+                                autocomplete="off"
+                                autocorrect="off"
+                                spellcheck="false"
+                                class="mt-3 w-full max-w-xs rounded-md border-0 bg-white px-4 py-3 text-ink ring-1 ring-line"
+                            >
+                            @error('erasureConfirmation')
+                                <p class="mt-2 text-sm text-gold" role="alert">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <div class="mt-6 flex flex-wrap gap-3">
-                            <x-button wire:click="eraseIntake" wire:loading.attr="disabled">
+                            <x-button
+                                wire:click="eraseIntake"
+                                wire:loading.attr="disabled"
+                                :disabled="! $this->erasureConfirmed()"
+                            >
                                 <span wire:loading.remove wire:target="eraseIntake">{{ __('booking.rights.erase_confirm') }}</span>
                                 <span wire:loading wire:target="eraseIntake">{{ __('common.loading') }}</span>
                             </x-button>
