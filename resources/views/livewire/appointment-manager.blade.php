@@ -82,6 +82,28 @@
                     <span wire:loading.remove wire:target="cancel">{{ __('booking.manage.cancel') }}</span>
                     <span wire:loading wire:target="cancel">{{ __('common.loading') }}</span>
                 </x-button>
+
+                {{--
+                    A wa.me link, not a message we send. It opens the patient's
+                    own WhatsApp with the reference already typed; she sends it
+                    or she does not. Nothing on this site can originate a
+                    WhatsApp message and no copy claims it can.
+
+                    The prefilled text names the reference and nothing about
+                    her health — it becomes a URL, and URLs end up in history
+                    and in screenshots.
+                --}}
+                @php
+                    $whatsapp = \App\Support\Contact::whatsappMessageHref(
+                        __('booking.whatsapp.prefill_manage', ['reference' => $appointment->reference])
+                    );
+                @endphp
+
+                @if ($whatsapp)
+                    <x-button variant="ghost" :href="$whatsapp" target="_blank" rel="noopener noreferrer">
+                        {{ __('booking.whatsapp.message_clinic') }}
+                    </x-button>
+                @endif
             </div>
         @endif
 

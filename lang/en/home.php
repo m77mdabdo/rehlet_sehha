@@ -69,7 +69,7 @@ return [
         'steps' => [
             'one' => [
                 'title' => 'Book your appointment',
-                'body' => 'Pick the package and a time that suits you, online or at the clinic, and your confirmation arrives on WhatsApp.',
+                'body' => 'Pick the package and a time that suits you, online or at the clinic, and your confirmation appears straight away.',
             ],
             'two' => [
                 'title' => 'We understand your case',
@@ -114,7 +114,7 @@ return [
         'title' => 'Ready to start?',
         'lead' => 'Book your consultation now, and choose whether to come to the clinic or meet online.',
         'cta' => 'Book an appointment',
-        'note' => 'Confirmation arrives on WhatsApp within working hours.',
+        'note' => 'The clinic confirms the time within working hours.',
     ],
 
     'contact' => [

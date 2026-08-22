@@ -59,3 +59,58 @@ Schedule::command('clinic:verify-key')
 Schedule::command('model:prune', ['--model' => [NotificationLog::class, ActivityLog::class]])
     ->dailyAt('03:30')
     ->timezone(config('clinic.timezone'));
+
+/*
+|--------------------------------------------------------------------------
+| Notifications
+|--------------------------------------------------------------------------
+*/
+
+/*
+ * Drain the queue.
+ *
+ * --stop-when-empty, NOT a daemon. A persistent `queue:work` process on
+ * Hostinger shared hosting is a long-running background process, which their
+ * terms forbid and their process reaper kills — repeatedly starting one is a
+ * good way to have the account suspended. So the worker is started by cron,
+ * works until the queue is empty, and exits.
+ *
+ * --max-time=50 bounds it well inside the minute so two workers never overlap:
+ * the next cron tick fires at 60 seconds, and a worker still running then would
+ * mean two processes competing for the same jobs. Ten seconds of headroom
+ * covers a slow SMTP handshake on the last job.
+ *
+ * withoutOverlapping() is belt and braces on top of that, in case a job hangs
+ * past --max-time.
+ *
+ * Every notification is queued (see App\Notifications\AppointmentNotification),
+ * so if this entry is missing NOTHING is delivered — and the delivery log will
+ * show every row stuck at `queued`, which is exactly the symptom to look for.
+ */
+Schedule::command('queue:work --stop-when-empty --max-time=50 --tries=3')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->runInBackground();
+
+/*
+ * Appointment reminders, 24 hours and 1 hour ahead.
+ *
+ * Every minute, because a reminder window is a moment rather than a slot: an
+ * hourly sweep would send the "in an hour" reminder anywhere from 60 to 0
+ * minutes ahead. Sending is idempotent by database claim rather than by
+ * timing, so running this often is cheap and safe — see the command.
+ */
+Schedule::command('clinic:send-reminders')
+    ->everyMinute()
+    ->withoutOverlapping();
+
+/*
+ * The day's appointments, to the clinic, at 07:00 Cairo.
+ *
+ * The timezone is explicit. Without it this would fire at 07:00 UTC — 09:00 or
+ * 10:00 in Cairo depending on daylight saving — which is after the first
+ * appointment of the day has already started.
+ */
+Schedule::command('clinic:send-daily-schedule')
+    ->dailyAt('07:00')
+    ->timezone(config('clinic.timezone'));

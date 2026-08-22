@@ -13,6 +13,7 @@ use App\Services\Availability\AvailabilityEngine;
 use App\Services\Availability\Slot;
 use App\Services\Booking\BookingService;
 use App\Services\Booking\SlotTakenException;
+use App\Services\Notifications\AppointmentNotifier;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
@@ -184,6 +185,21 @@ class AppointmentManager extends Component
         // cancel() nulls slot_key through the model hook, which is what
         // actually hands the hour back to the calendar.
         $appointment->cancel(__('booking.manage.cancelled_by_patient'));
+
+        /*
+         * Both sides are told, and both matter.
+         *
+         * The patient gets written confirmation that the cancellation worked —
+         * without it she is left wondering whether to turn up anyway. The
+         * clinic gets told the hour is free again, which is the only way an
+         * hour released at 21:00 gets offered to anybody before the morning.
+         *
+         * Queued, so a slow mail host cannot make the cancel button hang or
+         * fail. The cancellation itself is already committed above.
+         */
+        $notifier = app(AppointmentNotifier::class);
+        $notifier->bookingCancelled($appointment);
+        $notifier->bookingCancelledAlert($appointment);
 
         $this->showReschedule = false;
         $this->flash = 'manage.cancelled';
@@ -408,6 +424,14 @@ class AppointmentManager extends Component
             return;
         }
 
+        /*
+         * Captured BEFORE the move, because the message states both times and
+         * after reschedule() the old one is gone from the model. Converted to
+         * clinic time here rather than in the template so the notification
+         * carries an instant that has already been resolved.
+         */
+        $previousStartsAt = $appointment->startsAtClinic();
+
         try {
             // Same transaction discipline as booking: the row is locked, the
             // slot re-checked inside, and the unique index arbitrates.
@@ -417,6 +441,16 @@ class AppointmentManager extends Component
             $this->slotKey = null;
 
             return;
+        }
+
+        /*
+         * Refetched: reschedule() works on its own locked instance, so the
+         * copy held here still carries the old time.
+         */
+        $moved = $appointment->fresh();
+
+        if ($moved !== null) {
+            app(AppointmentNotifier::class)->bookingRescheduled($moved, $previousStartsAt);
         }
 
         $this->showReschedule = false;

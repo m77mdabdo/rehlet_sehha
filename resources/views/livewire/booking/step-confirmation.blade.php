@@ -76,6 +76,30 @@
                 </x-button>
                 <p class="mt-3 text-xs leading-relaxed text-muted">{{ __('booking.confirmation.manage_note') }}</p>
             </div>
+
+            {{--
+                WhatsApp, the only way this site does it: a wa.me link that
+                opens the patient's own WhatsApp with a message already typed.
+                Nothing is sent by us, and no copy anywhere promises otherwise.
+
+                The prefilled text carries the reference and nothing clinical.
+                It goes into a URL, and a URL ends up in browser history and in
+                screenshots — see App\Support\Contact::whatsappMessageHref().
+            --}}
+            @php
+                $whatsapp = \App\Support\Contact::whatsappMessageHref(
+                    __('booking.whatsapp.prefill_booking', ['reference' => $appointment->reference])
+                );
+            @endphp
+
+            @if ($whatsapp)
+                <div class="mt-4 rounded-lg bg-white p-5 ring-1 ring-line">
+                    <x-button variant="ghost" :href="$whatsapp" target="_blank" rel="noopener noreferrer" class="w-full">
+                        {{ __('booking.whatsapp.send_details') }}
+                    </x-button>
+                    <p class="mt-3 text-xs leading-relaxed text-muted">{{ __('booking.whatsapp.send_details_hint') }}</p>
+                </div>
+            @endif
         @endif
     @endif
 </div>

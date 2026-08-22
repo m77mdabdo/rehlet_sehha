@@ -14,6 +14,7 @@ use App\Services\Availability\AvailabilityEngine;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use LogicException;
 
@@ -107,6 +108,14 @@ class BookingService
                     'price' => $service->price,
                     'currency' => $service->currency,
                     'source' => BookingSource::Website,
+                    /*
+                     * The language this booking is being made in, captured
+                     * here because this request is the only place that knows
+                     * it. Every notification for this appointment is rendered
+                     * in it — including reminders sent months later by a cron
+                     * run that has no locale of its own.
+                     */
+                    'locale' => App::getLocale(),
                 ]);
 
                 // 4. The intake form, in the same transaction.
