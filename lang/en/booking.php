@@ -224,5 +224,58 @@ return [
         'message_clinic' => 'Message the clinic on WhatsApp',
         'prefill_booking' => 'Hello, I booked through the website. My reference is :reference.',
         'prefill_manage' => 'Hello, I have a booking with reference :reference and would like to ask about it.',
+        // Reference, date, time and mode — the whole appointment and nothing
+        // about her health. This text becomes a URL.
+        'prefill_record' => 'My booking at Rehlet Sehha:\nReference: :reference\nAppointment: :when (:zone)\nConsultation type: :mode',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Booking without an email address
+    |--------------------------------------------------------------------------
+    |
+    | Email is optional and stays optional: a real share of patients here do
+    | not use email, and requiring one costs the clinic those bookings.
+    |
+    | What is NOT optional is telling her what she gives up. Everything the
+    | site sends — the confirmation, both reminders, and the only link that
+    | lets her cancel without telephoning — travels by email and nothing else.
+    | "Optional" reads as "we do not need it", not as "we cannot reach you".
+    |
+    */
+    'no_email' => [
+        'title' => 'Without an email address we cannot send you anything',
+        'lead' => 'You have left the email field empty. That means you will not receive:',
+        'losses' => [
+            'confirmation' => 'Your booking confirmation',
+            'reminders' => 'A reminder the day before, and another an hour before',
+            'manage' => 'The link that lets you cancel or change the time without calling us',
+        ],
+        'fallback' => 'The clinic will telephone you on your mobile number instead.',
+        'add' => 'Add my email',
+        'continue' => 'Continue without email',
+    ],
+
+    'contact_preference' => [
+        'email' => 'Email',
+        'phone_only' => 'Phone only',
+    ],
+
+    'keepsake' => [
+        'title' => 'This is the only record of this booking you will have',
+        'lead' => 'You did not give us an email address, so no confirmation, reminder or link will be sent. Save these details now.',
+        'reference_label' => 'Booking reference',
+        'link_label' => 'Booking management link',
+        'link_note' => 'Save this link. It will not be sent to you or anywhere else, and without it you cannot cancel or change the time except by calling.',
+        'copy' => 'Copy',
+        'copied' => 'Copied',
+        'copy_reference' => 'Copy the reference',
+        'copy_link' => 'Copy the link',
+        'whatsapp' => 'Send the details to yourself on WhatsApp',
+        'whatsapp_hint' => 'Opens WhatsApp with your booking details ready. Send it to the clinic or to yourself so you keep a copy.',
+        'add_email_title' => 'Would you like the confirmation and reminders?',
+        'add_email_hint' => 'Enter your email now and we will send the confirmation straight away, with reminders before the appointment.',
+        'add_email_action' => 'Send me the confirmation',
+        'add_email_saved' => 'Done. We have sent the confirmation to that address, and reminders will arrive before your appointment.',
     ],
 ];

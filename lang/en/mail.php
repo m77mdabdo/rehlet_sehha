@@ -148,6 +148,18 @@ return [
         'patient' => 'Patient',
         'service' => 'Service',
         'status' => 'Status',
+
+        /*
+         * The call list. Patients booked for TOMORROW who gave no email
+         * address, so nothing has reached them and nothing will: no
+         * confirmation, no reminder the day before, none an hour before.
+         * Someone has to ring them.
+         */
+        'call_heading' => 'Calls to make',
+        'call_lead' => 'These are tomorrow\'s appointments (:date) for patients who gave no email address. They received no confirmation and will get no reminder — someone needs to call them.',
+        'call_empty' => 'Every appointment tomorrow has an email address. No calls needed.',
+        'call_count' => 'Calls: :count',
+        'phone' => 'Mobile',
     ],
 
     /*

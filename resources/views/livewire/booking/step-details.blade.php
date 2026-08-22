@@ -184,6 +184,71 @@
             @error('consent') <p class="mt-3 text-sm text-gold" role="alert">{{ $message }}</p> @enderror
         </fieldset>
 
+        {{--
+            The no-email notice.
+
+            A NOTICE, not a validation error, and the distinction is the whole
+            point of this block. Booking without an email is allowed — a real
+            share of patients here do not use email, and requiring one would
+            cost the clinic those bookings outright.
+
+            What is not allowed is her discovering afterwards that nothing was
+            ever going to arrive. The field is labelled "optional", which reads
+            as "we do not need it" rather than "we cannot reach you", and this
+            is the last moment the difference can be explained.
+
+            So it states exactly what does not arrive, says what happens
+            instead, and offers both doors. Neither is the quiet default:
+            continuing is a button she presses, not a timeout she waits out.
+        --}}
+        @if ($showNoEmailNotice)
+            <div
+                class="rounded-lg bg-gold/15 p-5 ring-1 ring-gold"
+                role="alert"
+                aria-live="assertive"
+                tabindex="-1"
+                data-no-email-notice
+            >
+                <h3 class="font-display text-base font-semibold text-ink">
+                    {{ __('booking.no_email.title') }}
+                </h3>
+
+                <p class="mt-2 text-sm leading-relaxed text-ink">{{ __('booking.no_email.lead') }}</p>
+
+                <ul class="mt-3 space-y-1.5">
+                    @foreach (__('booking.no_email.losses') as $loss)
+                        <li class="flex items-start gap-2 text-sm leading-relaxed text-ink">
+                            <span aria-hidden="true">—</span><span>{{ $loss }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+
+                <p class="mt-3 text-sm leading-relaxed text-ink">{{ __('booking.no_email.fallback') }}</p>
+
+                <div class="mt-5 flex flex-wrap gap-3">
+                    {{-- Adding the address is listed first and styled as the
+                         primary action, because it is the outcome that leaves
+                         the patient better off. It is not the only one. --}}
+                    <x-button type="button" wire:click="addEmailInstead" wire:loading.attr="disabled">
+                        {{ __('booking.no_email.add') }}
+                    </x-button>
+
+                    <x-button
+                        type="button"
+                        variant="ghost"
+                        wire:click="continueWithoutEmail"
+                        wire:loading.attr="disabled"
+                        wire:target="continueWithoutEmail"
+                    >
+                        <span wire:loading.remove wire:target="continueWithoutEmail">
+                            {{ __('booking.no_email.continue') }}
+                        </span>
+                        <span wire:loading wire:target="continueWithoutEmail">{{ __('common.loading') }}</span>
+                    </x-button>
+                </div>
+            </div>
+        @endif
+
         <div class="flex items-center justify-between gap-3">
             <x-button type="button" variant="ghost" wire:click="back" wire:loading.attr="disabled">
                 {{ __('booking.actions.back') }}
