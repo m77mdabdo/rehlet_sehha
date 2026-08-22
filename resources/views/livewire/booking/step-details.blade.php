@@ -24,7 +24,7 @@
                 <div>
                     <dt class="text-xs text-muted">{{ __('booking.summary.when') }}</dt>
                     <dd class="mt-1 text-sm font-medium text-ink">
-                        <bdi dir="ltr">{{ $slot->startsAtCairo->translatedFormat('D j M — H:i') }}</bdi>
+                        <bdi dir="auto">{{ $slot->startsAtCairo->translatedFormat('D j M — H:i') }}</bdi>
                     </dd>
                 </div>
                 <div>

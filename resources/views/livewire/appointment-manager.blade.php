@@ -26,7 +26,7 @@
                 <div class="flex items-baseline justify-between gap-4">
                     <dt class="text-sm text-muted">{{ __('booking.confirmation.when') }}</dt>
                     <dd class="text-end text-sm font-medium text-ink">
-                        <bdi dir="ltr">{{ $cairo->translatedFormat('l j F Y — H:i') }}</bdi>
+                        <bdi dir="auto">{{ $cairo->translatedFormat('l j F Y — H:i') }}</bdi>
                         <span class="mt-1 block text-xs font-normal text-muted">
                             {{ __('booking.confirmation.timezone', ['zone' => config('clinic.timezone')]) }}
                         </span>
