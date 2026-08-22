@@ -32,7 +32,7 @@
                 <div class="flex items-baseline justify-between gap-4">
                     <dt class="text-sm text-muted">{{ __('booking.confirmation.when') }}</dt>
                     <dd class="text-end text-sm font-medium text-ink">
-                        <bdi dir="ltr">
+                        <bdi dir="auto">
                             {{ $appointment->starts_at->clone()->setTimezone(config('clinic.timezone'))->translatedFormat('l j F Y — H:i') }}
                         </bdi>
                         {{-- The timezone is stated explicitly. A patient
