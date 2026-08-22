@@ -36,11 +36,13 @@ class DailySchedule extends Notification implements LogsDelivery, ShouldQueue
     public ?int $deliveryLogId = null;
 
     /**
-     * @param  Collection<int, Appointment>  $appointments
+     * @param  Collection<int, Appointment>  $appointments  today's schedule
+     * @param  Collection<int, Appointment>  $callList  tomorrow's patients with no email
      */
     public function __construct(
         public readonly Carbon $date,
         public readonly Collection $appointments,
+        public readonly Collection $callList = new Collection,
     ) {}
 
     /**
@@ -72,6 +74,13 @@ class DailySchedule extends Notification implements LogsDelivery, ShouldQueue
             payload: [
                 'date' => $this->date,
                 'appointments' => $this->appointments,
+                /*
+                 * Tomorrow's patients who cannot be reached electronically.
+                 * They receive no reminder at all, so a person has to ring
+                 * them — and this list is the only place that need surfaces.
+                 */
+                'callList' => $this->callList,
+                'callDate' => $this->date->clone()->addDay(),
                 'timezone' => config('clinic.timezone'),
             ],
             // The clinic is the recipient; a Reply-To back to the clinic is noise.

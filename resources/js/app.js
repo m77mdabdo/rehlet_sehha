@@ -6,3 +6,5 @@
  * it was 18 KB gzipped of a 19 KB bundle serving no one.
  */
 import './menu';
+import './copy';
+import './focus';

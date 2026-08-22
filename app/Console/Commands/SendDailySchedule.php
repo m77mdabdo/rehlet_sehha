@@ -45,12 +45,44 @@ class SendDailySchedule extends Command
             ->orderBy('starts_at')
             ->get();
 
-        $notifier->dailySchedule($startOfDay, $appointments);
+        /*
+         * TOMORROW's unreachable patients — the call list.
+         *
+         * A patient who booked without an email address receives nothing: no
+         * confirmation, no reminder the day before, no reminder an hour
+         * before. That is a real gap and it is not one software can close, so
+         * it is handed to the people who can: whoever is on reception gets a
+         * list, the morning before, of exactly who needs a telephone call.
+         *
+         * Tomorrow rather than today on purpose. A call at 07:00 about an
+         * appointment at 09:00 the same morning is too late to be a reminder
+         * and too early to be useful — the patient has either set out or she
+         * has not. A day's notice is what makes the call worth making.
+         */
+        $tomorrow = $startOfDay->clone()->addDay();
+
+        $callList = Appointment::query()
+            ->with(['patient', 'service'])
+            ->countsTowardWorkload()
+            ->whereBetween('starts_at', [
+                $tomorrow->clone()->utc(),
+                $tomorrow->clone()->endOfDay()->utc(),
+            ])
+            ->orderBy('starts_at')
+            ->get()
+            // Filtered in PHP rather than SQL: reachability is derived from the
+            // patient record (see App\Enums\ContactPreference for why it is
+            // not a column), and a day's appointments is a handful of rows.
+            ->filter(fn (Appointment $appointment): bool => ! $appointment->isReachableByEmail())
+            ->values();
+
+        $notifier->dailySchedule($startOfDay, $appointments, $callList);
 
         $this->info(sprintf(
-            'Queued the daily schedule for %s with %d appointment(s).',
+            'Queued the daily schedule for %s with %d appointment(s) and %d patient(s) to call.',
             $startOfDay->toDateString(),
             $appointments->count(),
+            $callList->count(),
         ));
 
         return self::SUCCESS;
