@@ -35,6 +35,27 @@ class NotificationLog extends Model
 
     use Prunable;
 
+    /*
+     * The four states a delivery can be in.
+     *
+     * QUEUED is written when the notification is dispatched, not when the
+     * queue picks it up. That is the point of the table: if a row could only
+     * appear on success, a queue that never ran would leave no trace, and
+     * silence would look exactly like delivery.
+     *
+     * SKIPPED is not a failure. It records a message that was deliberately not
+     * sent — a reminder for an appointment cancelled between dispatch and
+     * delivery — and it exists so that such a row is not left sitting at
+     * QUEUED, where it would be indistinguishable from a dead worker.
+     */
+    public const STATUS_QUEUED = 'queued';
+
+    public const STATUS_SENT = 'sent';
+
+    public const STATUS_FAILED = 'failed';
+
+    public const STATUS_SKIPPED = 'skipped';
+
     /** @var list<string> */
     protected $fillable = [
         'appointment_id',
