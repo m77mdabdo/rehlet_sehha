@@ -31,17 +31,27 @@ use Throwable;
  * language the patient booked in, the log row that makes a silent failure
  * visible, and the check that there is somewhere to send to at all.
  *
- * THE MISSING EMAIL ADDRESS. The booking form does not require an email — it
- * asks for a name and a mobile number, and email is optional. That was the
- * right call for the form and it means a real fraction of patients cannot be
- * emailed anything. This class does not paper over that: it records a SKIPPED
- * row saying so, and the clinic's own new-booking alert prints "no email —
- * call her" in place of the address. The clinic can then reach her the way she
- * actually gave us, which is her phone.
+ * THE MISSING EMAIL ADDRESS. The booking form does not require an email, and
+ * it never will: a real share of patients here do not use email, and demanding
+ * one would cost the clinic those bookings outright. So a real fraction of
+ * appointments cannot be emailed anything, and this class is where that fact
+ * lands.
  *
- * That is a workaround, not a solution, and it is flagged as such: a patient
- * who books without an email gets no confirmation, no reminder and no manage
- * link, and nothing on the booking form tells her that.
+ * It is not papered over at any layer:
+ *
+ *   - The patient is told before she books, in step 3, exactly what will not
+ *     arrive, and chooses to continue anyway (BookingWizard::$showNoEmailNotice).
+ *   - Her confirmation screen becomes the record instead of a receipt, with
+ *     the reference and manage link copyable and a WhatsApp action to send
+ *     them to herself.
+ *   - A SKIPPED row is written here, so the delivery log shows the message
+ *     was never sent rather than showing nothing at all.
+ *   - The clinic's new-booking alert prints "no email — call her" in place of
+ *     the address, and the daily schedule carries tomorrow's unreachable
+ *     patients as a call list.
+ *
+ * What remains is a workflow the clinic performs by telephone, which is the
+ * honest answer: software cannot deliver to an address that does not exist.
  */
 class AppointmentNotifier
 {
@@ -93,11 +103,12 @@ class AppointmentNotifier
     }
 
     /**
-     * @param  Collection<int, Appointment>  $appointments
+     * @param  Collection<int, Appointment>  $appointments  today's schedule
+     * @param  Collection<int, Appointment>  $callList  tomorrow's patients with no email
      */
-    public function dailySchedule(Carbon $date, Collection $appointments): void
+    public function dailySchedule(Carbon $date, Collection $appointments, ?Collection $callList = null): void
     {
-        $this->toClinic(null, new DailySchedule($date, $appointments));
+        $this->toClinic(null, new DailySchedule($date, $appointments, $callList ?? new Collection));
     }
 
     public function alertClinicOfFailedDelivery(

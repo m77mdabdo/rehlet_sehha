@@ -114,6 +114,43 @@ class BookingWizard extends Component
      */
     public bool $slotWasTaken = false;
 
+    /**
+     * Whether the "you will not receive anything" notice is on screen.
+     *
+     * Shown when a patient tries to submit with the email field empty. It is a
+     * NOTICE, not an error: booking without an email is allowed and always
+     * will be, because a real share of Egyptian patients simply do not use
+     * email and requiring one costs the clinic those bookings outright.
+     *
+     * What is not allowed is her finding out afterwards. Without an address
+     * she gets no confirmation, no reminders and no cancel link — and the
+     * form, up to this point, gives her no reason to expect that, because
+     * "optional" reads as "we do not need it" rather than "we cannot reach
+     * you".
+     */
+    public bool $showNoEmailNotice = false;
+
+    /**
+     * She has read the notice and chosen to go on without an email.
+     *
+     * Kept as a separate flag from the notice itself so the choice survives a
+     * re-render: without it, any later validation failure would put the notice
+     * back on screen and make her decide again.
+     */
+    public bool $noEmailAcknowledged = false;
+
+    /**
+     * The address she can add from the confirmation screen, after the fact.
+     *
+     * A second chance rather than a nag. Some patients type an address only
+     * once they can see what they would otherwise be giving up, and by then
+     * the booking already exists — so this writes to the patient record and
+     * dispatches the confirmation she missed.
+     */
+    public string $lateEmail = '';
+
+    public bool $lateEmailSaved = false;
+
     public function mount(?string $service = null): void
     {
         // Deep link from the packages section: preselect and open on step 2.
@@ -321,6 +358,74 @@ class BookingWizard extends Component
     |--------------------------------------------------------------------------
     */
 
+    public function hasNoEmail(): bool
+    {
+        return trim($this->email) === '';
+    }
+
+    /**
+     * "Add my email" — put the notice away and send her back to the field.
+     *
+     * The focus is dispatched to the browser rather than left to the patient
+     * to find: the notice sits below the fold from the email input on a phone,
+     * and a button that dismisses a warning without taking you to the thing it
+     * warned about is a button that gets pressed twice.
+     */
+    public function addEmailInstead(): void
+    {
+        $this->showNoEmailNotice = false;
+
+        $this->dispatch('focus-field', field: 'email');
+    }
+
+    /**
+     * "Continue without email" — an explicit, recorded choice.
+     *
+     * The acknowledgement is set BEFORE submit() runs, so the gate above lets
+     * it through this time. Everything else about the booking is unchanged;
+     * what changes is that she knew.
+     */
+    public function continueWithoutEmail(BookingService $booking): void
+    {
+        $this->noEmailAcknowledged = true;
+        $this->showNoEmailNotice = false;
+
+        $this->submit($booking);
+    }
+
+    /**
+     * An address added from the confirmation screen, after booking.
+     *
+     * Writes to the patient record and sends the confirmation she never got.
+     * Reminders need nothing further — they read the address off the patient
+     * at send time, so adding one here arms the 24-hour and 1-hour reminders
+     * for an appointment that had none.
+     */
+    public function saveLateEmail(): void
+    {
+        $appointment = $this->bookedAppointment();
+
+        if ($appointment === null) {
+            return;
+        }
+
+        $this->validate(
+            ['lateEmail' => ['required', 'email', 'max:190']],
+            [],
+            ['lateEmail' => __('booking.fields.email')],
+        );
+
+        $patient = $appointment->patient;
+        $patient->email = trim($this->lateEmail);
+        $patient->save();
+
+        // Refetched so the notification reads the address that was just saved
+        // rather than the null it was constructed with.
+        app(AppointmentNotifier::class)->bookingConfirmed($appointment->fresh());
+
+        $this->lateEmailSaved = true;
+    }
+
     public function submit(BookingService $booking): void
     {
         // Every earlier gate again. Reaching submit is not evidence that steps
@@ -340,6 +445,22 @@ class BookingWizard extends Component
 
         $this->step = 3;
         $this->validateDetailsStep();
+
+        /*
+         * The one gate that is not an error.
+         *
+         * Placed after validation so a patient with a missing name is told
+         * about the name first, and before the bot and rate-limit guards so
+         * that pausing to read this does not consume an attempt.
+         *
+         * She may proceed. She may not proceed unaware — see the notice in
+         * step-details.blade.php for what she is actually giving up.
+         */
+        if ($this->hasNoEmail() && ! $this->noEmailAcknowledged) {
+            $this->showNoEmailNotice = true;
+
+            return;
+        }
 
         $this->guardAgainstBots();
         $this->guardRateLimits();
@@ -643,7 +764,9 @@ class BookingWizard extends Component
         }
 
         return Appointment::query()
-            ->with(['service', 'staff'])
+            // patient included: the confirmation screen now asks whether we
+            // have any way of reaching her, which reads off the patient row.
+            ->with(['service', 'staff', 'patient'])
             ->where('reference', $this->reference)
             ->first();
     }

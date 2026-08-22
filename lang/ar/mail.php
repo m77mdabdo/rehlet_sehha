@@ -148,6 +148,17 @@ return [
         'patient' => 'المريضة',
         'service' => 'الباقة',
         'status' => 'الحالة',
+
+        /*
+         * The call list. Patients booked for TOMORROW who gave no email
+         * address, so nothing has reached them and nothing will: no تأكيد, no
+         * تنبيه قبل يوم، ولا قبل ساعة. Someone has to ring them.
+         */
+        'call_heading' => 'مكالمات لازم تتعمل',
+        'call_lead' => 'دول مواعيد بكرة (:date) لمرضى مادوش إيميل. مش وصلهم تأكيد ولا هيوصلهم تنبيه — لازم حد يكلمهم.',
+        'call_empty' => 'كل مواعيد بكرة ليها إيميل. مفيش مكالمات مطلوبة.',
+        'call_count' => 'عدد المكالمات: :count',
+        'phone' => 'الموبايل',
     ],
 
     /*

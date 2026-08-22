@@ -224,5 +224,58 @@ return [
         'message_clinic' => 'كلمي العيادة على واتساب',
         'prefill_booking' => 'أهلًا، حجزت من الموقع ورقم الحجز :reference.',
         'prefill_manage' => 'أهلًا، عندي حجز رقم :reference وحابة أسأل عنه.',
+        // Reference, date, time and mode — the whole appointment and nothing
+        // about her health. This text becomes a URL.
+        'prefill_record' => 'تفاصيل حجزي في رحلة صحة:\nرقم الحجز: :reference\nالميعاد: :when (:zone)\nنوع الاستشارة: :mode',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Booking without an email address
+    |--------------------------------------------------------------------------
+    |
+    | Email is optional and stays optional: a real share of patients here do
+    | not use email, and requiring one costs the clinic those bookings.
+    |
+    | What is NOT optional is telling her what she gives up. Everything the
+    | site sends — the confirmation, both reminders, and the only link that
+    | lets her cancel without telephoning — travels by email and nothing else.
+    | "Optional" reads as "we do not need it", not as "we cannot reach you".
+    |
+    */
+    'no_email' => [
+        'title' => 'من غير إيميل مش هنقدر نبعتلك حاجة',
+        'lead' => 'سيبتي خانة الإيميل فاضية. يعني مش هيوصلك:',
+        'losses' => [
+            'confirmation' => 'رسالة تأكيد الحجز',
+            'reminders' => 'تنبيه قبل الميعاد بيوم، وتنبيه تاني قبله بساعة',
+            'manage' => 'لينك إلغاء الميعاد أو تغييره من غير ما تكلمينا',
+        ],
+        'fallback' => 'العيادة هتكلمك على رقم موبايلك بدل كده.',
+        'add' => 'أضيفي إيميلك',
+        'continue' => 'كمّلي من غير إيميل',
+    ],
+
+    'contact_preference' => [
+        'email' => 'إيميل',
+        'phone_only' => 'موبايل بس',
+    ],
+
+    'keepsake' => [
+        'title' => 'ده كل اللي هيفضل معاكِ من الحجز ده',
+        'lead' => 'ماديتيناش إيميل، فمش هيوصلك تأكيد ولا تنبيه ولا لينك. احفظي المعلومات دي دلوقتي.',
+        'reference_label' => 'رقم الحجز',
+        'link_label' => 'لينك إدارة الحجز',
+        'link_note' => 'احفظي اللينك ده. مش هيتبعت لحد ولا لأي مكان تاني، ومن غيره مش هتقدري تلغي أو تغيري الميعاد إلا بمكالمة.',
+        'copy' => 'انسخي',
+        'copied' => 'اتنسخ',
+        'copy_reference' => 'انسخي رقم الحجز',
+        'copy_link' => 'انسخي اللينك',
+        'whatsapp' => 'ابعتي التفاصيل لنفسك على واتساب',
+        'whatsapp_hint' => 'هيفتح واتساب برسالة فيها تفاصيل حجزك. ابعتيها للعيادة أو لنفسك عشان تفضل معاكِ.',
+        'add_email_title' => 'حابة تستلمي التأكيد والتنبيهات؟',
+        'add_email_hint' => 'اكتبي إيميلك دلوقتي وهنبعتلك التأكيد فورًا، والتنبيهات هتوصلك قبل الميعاد.',
+        'add_email_action' => 'ابعتوا لي التأكيد',
+        'add_email_saved' => 'تمام. بعتنا التأكيد على الإيميل ده، والتنبيهات هتوصلك قبل الميعاد.',
     ],
 ];

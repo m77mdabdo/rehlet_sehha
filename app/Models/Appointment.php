@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\AppointmentMode;
 use App\Enums\AppointmentStatus;
 use App\Enums\BookingSource;
+use App\Enums\ContactPreference;
 use Database\Factories\AppointmentFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -363,6 +364,35 @@ class Appointment extends Model
             AppointmentStatus::Pending,
             AppointmentStatus::Confirmed,
         ], true);
+    }
+
+    /**
+     * How the clinic can reach this patient — computed, never stored.
+     *
+     * See App\Enums\ContactPreference for why there is no column. In short:
+     * the answer follows the patient's email address, she can add one minutes
+     * after booking, and a stale copy would send a receptionist to ring
+     * somebody who has been getting reminders all along.
+     */
+    public function contactPreference(): ContactPreference
+    {
+        $email = $this->patient->email;
+
+        return $email === null || trim($email) === ''
+            ? ContactPreference::PhoneOnly
+            : ContactPreference::Email;
+    }
+
+    /**
+     * Will anything we send actually arrive?
+     *
+     * False means this patient gets no confirmation, no reminder and no manage
+     * link, and the only way she learns anything is if a person telephones
+     * her.
+     */
+    public function isReachableByEmail(): bool
+    {
+        return $this->contactPreference()->reachesElectronically();
     }
 
     /**
