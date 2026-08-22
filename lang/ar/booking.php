@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 return [
     'title' => 'احجزي موعدك',
-    'lead' => 'اختاري الخدمة والميعاد اللي يناسبك، وهنبعتلك تأكيد على واتساب.',
-    'coming_soon' => 'فورم الحجز بيتجهز دلوقتي. لحد ما يخلص، كلمينا أو ابعتيلنا على واتساب ونحجزلك.',
+    'lead' => 'اختاري الخدمة والميعاد اللي يناسبك، وهنأكدلك الحجز على طول.',
+    'coming_soon' => 'لو واجهتك مشكلة في الحجز، كلمينا أو ابعتيلنا على واتساب ونحجزلك.',
 
     'mode' => [
         'online' => 'استشارة عن بُعد',
@@ -116,16 +116,16 @@ return [
 
     'confirmation' => [
         'title' => 'تم الحجز',
-        'lead' => 'حجزك اتسجّل، وهنبعتلك تأكيد على واتساب.',
+        'lead' => 'حجزك اتسجّل. احفظي رقم الحجز واللينك اللي تحت.',
         'reference' => 'رقم الحجز',
         'when' => 'ميعادك',
         'timezone' => 'بتوقيت القاهرة (:zone)',
         'status_note' => 'الحجز دلوقتي بانتظار التأكيد من العيادة.',
         'next_title' => 'اللي جاي',
         'next' => [
-            'confirm' => 'هنأكدلك الميعاد على واتساب خلال ساعات العمل.',
+            'confirm' => 'العيادة هتأكد الميعاد خلال ساعات العمل.',
             'prepare' => 'لو معاكِ تحاليل حديثة، جهزيها قبل الجلسة.',
-            'manage' => 'تقدري تلغي أو تغيري الميعاد من اللينك اللي في رسالة التأكيد.',
+            'manage' => 'تقدري تلغي أو تغيري الميعاد من لينك «إدارة الحجز» اللي تحت.',
         ],
         'manage_link' => 'إدارة الحجز',
         'manage_note' => 'احفظي اللينك ده. هو الطريقة الوحيدة لإدارة الحجز من غير ما تكلمينا.',
@@ -202,5 +202,27 @@ return [
         'too_many_for_phone' => 'الرقم ده وصل للحد الأقصى من الحجوزات. جربي بعد :minutes دقيقة أو كلمينا.',
         'too_fast' => 'الفورم اتبعت بسرعة شوية. راجعي بياناتك وابعتي تاني.',
         'rejected' => 'مقدرناش نكمل الطلب ده. لو ده غلط، كلمينا.',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | WhatsApp
+    |--------------------------------------------------------------------------
+    |
+    | wa.me links only. The site cannot send a WhatsApp message and never
+    | claims it will — these open the patient's own WhatsApp with text already
+    | typed, and she decides whether to send it.
+    |
+    | THE PREFILLED TEXT CARRIES THE REFERENCE AND NOTHING CLINICAL. It becomes
+    | part of a URL, and a URL survives in browser history, in a screenshot,
+    | and in the address bar during a screen share.
+    |
+    */
+    'whatsapp' => [
+        'send_details' => 'ابعتي تفاصيل حجزك للعيادة',
+        'send_details_hint' => 'هيفتح واتساب برسالة جاهزة فيها رقم الحجز. إنتِ اللي تبعتيها.',
+        'message_clinic' => 'كلمي العيادة على واتساب',
+        'prefill_booking' => 'أهلًا، حجزت من الموقع ورقم الحجز :reference.',
+        'prefill_manage' => 'أهلًا، عندي حجز رقم :reference وحابة أسأل عنه.',
     ],
 ];

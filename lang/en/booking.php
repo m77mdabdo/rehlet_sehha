@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 return [
     'title' => 'Book an appointment',
-    'lead' => 'Pick the service and a time that suits you, and we will send your confirmation on WhatsApp.',
-    'coming_soon' => 'The booking form is being built. Until it is ready, call or message us on WhatsApp and we will book it for you.',
+    'lead' => 'Pick the service and a time that suits you, and we will confirm your booking straight away.',
+    'coming_soon' => 'If you have trouble booking, call or message us on WhatsApp and we will book it for you.',
 
     'mode' => [
         'online' => 'Remote consultation',
@@ -116,16 +116,16 @@ return [
 
     'confirmation' => [
         'title' => 'Booked',
-        'lead' => 'Your booking is recorded, and your confirmation will arrive on WhatsApp.',
+        'lead' => 'Your booking is recorded. Keep your reference and the link below.',
         'reference' => 'Booking reference',
         'when' => 'Your appointment',
         'timezone' => 'Cairo time (:zone)',
         'status_note' => 'The booking is awaiting confirmation from the clinic.',
         'next_title' => 'What happens next',
         'next' => [
-            'confirm' => 'We will confirm the time on WhatsApp during working hours.',
+            'confirm' => 'The clinic will confirm the time during working hours.',
             'prepare' => 'If you have recent lab results, have them ready for the session.',
-            'manage' => 'You can cancel or move the appointment from the link in your confirmation message.',
+            'manage' => 'You can cancel or move the appointment from the “Manage this booking” link below.',
         ],
         'manage_link' => 'Manage this booking',
         'manage_note' => 'Keep this link. It is the only way to manage the booking without calling us.',
@@ -202,5 +202,27 @@ return [
         'too_many_for_phone' => 'This number has reached the booking limit. Try again in :minutes minute(s), or call us.',
         'too_fast' => 'That was submitted very quickly. Please check your details and send again.',
         'rejected' => 'We could not process this request. If this is a mistake, please call us.',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | WhatsApp
+    |--------------------------------------------------------------------------
+    |
+    | wa.me links only. The site cannot send a WhatsApp message and never
+    | claims it will — these open the patient's own WhatsApp with text already
+    | typed, and she decides whether to send it.
+    |
+    | THE PREFILLED TEXT CARRIES THE REFERENCE AND NOTHING CLINICAL. It becomes
+    | part of a URL, and a URL survives in browser history, in a screenshot,
+    | and in the address bar during a screen share.
+    |
+    */
+    'whatsapp' => [
+        'send_details' => 'Send your booking details to the clinic',
+        'send_details_hint' => 'Opens WhatsApp with a message ready, carrying your reference. You choose whether to send it.',
+        'message_clinic' => 'Message the clinic on WhatsApp',
+        'prefill_booking' => 'Hello, I booked through the website. My reference is :reference.',
+        'prefill_manage' => 'Hello, I have a booking with reference :reference and would like to ask about it.',
     ],
 ];

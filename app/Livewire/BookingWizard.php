@@ -13,6 +13,7 @@ use App\Services\Availability\AvailabilityEngine;
 use App\Services\Availability\Slot;
 use App\Services\Booking\BookingService;
 use App\Services\Booking\SlotTakenException;
+use App\Services\Notifications\AppointmentNotifier;
 use App\Support\PhoneNumber;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
@@ -395,6 +396,23 @@ class BookingWizard extends Component
 
         RateLimiter::hit($this->ipRateLimitKey(), 3600);
         RateLimiter::hit($this->phoneRateLimitKey(), 3600);
+
+        /*
+         * Notify AFTER the write is committed, and queue both messages.
+         *
+         * Order matters if either throws: the booking exists either way, and
+         * the patient is shown the confirmation screen either way. Nothing
+         * here is allowed to turn a successful booking into an error page —
+         * which is why it is queued rather than sent, and why the failure
+         * path is a doctor alert rather than an exception.
+         *
+         * The clinic alert is sent even when the patient one cannot be. A
+         * booking with no email address is exactly the case where somebody
+         * needs to pick up the phone, and the alert says so.
+         */
+        $notifier = app(AppointmentNotifier::class);
+        $notifier->bookingConfirmed($appointment);
+        $notifier->newBookingAlert($appointment);
 
         $this->reference = $appointment->reference;
         $this->cancelToken = $appointment->cancel_token;

@@ -77,6 +77,39 @@ final class Contact
     }
 
     /**
+     * href for a WhatsApp conversation that opens with a message already typed.
+     *
+     * This is the whole of the clinic's WhatsApp integration, and deliberately
+     * so: no Business API, no third-party gateway, no per-message cost, and
+     * nothing that requires handing a patient list to a vendor. A wa.me link
+     * is an ordinary hyperlink that opens the patient's own WhatsApp with text
+     * prefilled. She sends it, or she does not.
+     *
+     * IT SENDS NOTHING BY ITSELF. Nothing in this application can originate a
+     * WhatsApp message, and no interface copy or email may imply otherwise —
+     * see the audit note in docs/deployment/notifications.md.
+     *
+     * THE PREFILLED TEXT MUST NOT CONTAIN CLINICAL INFORMATION. It ends up in
+     * a URL, and a URL lands in browser history, in the address bar during a
+     * screen share, in a screenshot sent to a family member, and in the
+     * referrer of anything the page opens next. A booking reference is safe
+     * there — it identifies an appointment to the clinic and means nothing to
+     * anyone else. A goal or a condition is not.
+     */
+    public static function whatsappMessageHref(string $message): ?string
+    {
+        $number = self::string('whatsapp');
+
+        if ($number === null) {
+            return null;
+        }
+
+        // rawurlencode, not urlencode: the latter encodes a space as "+",
+        // which WhatsApp renders literally as a plus sign in the message box.
+        return 'https://wa.me/'.$number.'?text='.rawurlencode($message);
+    }
+
+    /**
      * The clinic's address in the given locale, falling back to the default.
      */
     public static function address(?string $locale = null): ?string

@@ -90,6 +90,54 @@ function forcedLatinDirectionElements(string $source): array
     ], $matches);
 }
 
+/**
+ * Every Blade file in the project, mail templates included.
+ *
+ * resource_path('views') already contains emails/ and vendor/mail/, so this is
+ * one directory — but it is named and asserted on, because "the scanner covers
+ * the mail views" is a claim worth failing loudly rather than assuming. The
+ * email case is the one where a direction bug is least likely to be noticed:
+ * nobody browses their own transactional mail, and a patient who receives a
+ * mangled date is not going to file a bug about it.
+ *
+ * @return list<string>
+ */
+function scannedBladeFiles(): array
+{
+    $files = [];
+
+    foreach (Finder::create()->files()->in(resource_path('views'))->name('*.blade.php') as $file) {
+        $files[] = (string) $file->getRealPath();
+    }
+
+    return $files;
+}
+
+it('scans the mail templates as well as the page templates', function () {
+    /*
+     * Guards the scope. The rule was extended to cover email in the same
+     * commit that added email; if a later refactor moved the mail views
+     * somewhere the Finder does not look, the scan below would keep passing
+     * while checking nothing in them.
+     */
+    $scanned = scannedBladeFiles();
+
+    $mailViews = array_filter(
+        $scanned,
+        fn (string $path): bool => str_contains($path, '/views/emails/')
+            || str_contains($path, '/views/vendor/mail/'),
+    );
+
+    expect($mailViews)->not->toBeEmpty('The scanner is no longer reaching the mail templates.');
+
+    // The two that actually render dates, and would show a patient a mangled
+    // appointment time if they regressed.
+    foreach (['emails/partials/facts.blade.php', 'emails/booking-rescheduled.blade.php'] as $required) {
+        expect(collect($scanned)->contains(fn (string $p): bool => str_ends_with($p, $required)))
+            ->toBeTrue("Expected {$required} to be scanned.");
+    }
+});
+
 it('never forces a latin direction onto arabic-rendering content in blade templates', function () {
     $forbidden = arabicRenderingContent();
     $violations = [];
@@ -148,6 +196,11 @@ it('detects forced-latin arabic content when it is introduced', function () {
         '<bdi class="tabular-nums ltr">{{ trans(\'common.minutes\') }}</bdi>',
         // Attribute carrying a Blade arrow, which naive [^>]* would truncate.
         '<bdi dir="ltr" title="{{ $x->y }}">{{ $d->translatedFormat(\'j F Y\') }}</bdi>',
+
+        // Email shapes: a table cell carrying inline styles, which is how
+        // every mail template writes its rows.
+        '<td dir="ltr" style="padding: 11px 0; color: #0E2E4D;"><bdi>{{ $startsAt->translatedFormat(\'l j F Y\') }}</bdi></td>',
+        '<td style="width: 38%" dir="ltr">{{ __(\'mail.facts.when\') }}</td>',
     ];
 
     $shouldNotFlag = [

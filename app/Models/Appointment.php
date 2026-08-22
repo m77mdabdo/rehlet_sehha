@@ -40,6 +40,9 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property Carbon|null $confirmed_at
  * @property Carbon|null $cancelled_at
  * @property string|null $cancellation_reason
+ * @property string $locale
+ * @property Carbon|null $reminder_24h_sent_at
+ * @property Carbon|null $reminder_1h_sent_at
  * @property string|null $slot_key
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -90,12 +93,22 @@ class Appointment extends Model
         'confirmed_at',
         'cancelled_at',
         'cancellation_reason',
+        // The language the booking was made in; every notification is sent in
+        // it. See the migration that added the column for why it cannot be
+        // worked out later.
+        'locale',
     ];
 
     /**
      * slot_key is deliberately absent from $fillable. It is derived state,
      * owned entirely by syncSlotKey() below — letting a request body set it
      * would hand an attacker the ability to free an occupied slot.
+     *
+     * The two reminder stamps are absent for the same reason. They are a
+     * concurrency claim rather than data: the reminder command sets one with a
+     * conditional UPDATE so that two overlapping cron runs cannot both send.
+     * Mass assignment would let a payload clear a stamp and re-arm a reminder
+     * that has already gone out.
      *
      * @return array<string, string>
      */
@@ -106,6 +119,8 @@ class Appointment extends Model
             'ends_at' => 'datetime',
             'confirmed_at' => 'datetime',
             'cancelled_at' => 'datetime',
+            'reminder_24h_sent_at' => 'datetime',
+            'reminder_1h_sent_at' => 'datetime',
             'mode' => AppointmentMode::class,
             'status' => AppointmentStatus::class,
             'source' => BookingSource::class,
@@ -320,6 +335,49 @@ class Appointment extends Model
     public function notificationLogs(): HasMany
     {
         return $this->hasMany(NotificationLog::class);
+    }
+
+    /**
+     * The start time as a human in Cairo reads it.
+     *
+     * Every notification states the time in the clinic's timezone and names
+     * that timezone, because a patient consulting from Riyadh or London
+     * otherwise has no way to know which clock "17:00" belongs to.
+     */
+    public function startsAtClinic(): Carbon
+    {
+        return $this->starts_at->clone()->setTimezone(config('clinic.timezone'));
+    }
+
+    /**
+     * Is this appointment still going to happen?
+     *
+     * The question a reminder must ask before it sends. Cancelled and
+     * no-show appointments are in the past tense; reminding someone about an
+     * appointment they cancelled is the kind of message that makes a patient
+     * distrust everything else the clinic sends them.
+     */
+    public function isLive(): bool
+    {
+        return in_array($this->status, [
+            AppointmentStatus::Pending,
+            AppointmentStatus::Confirmed,
+        ], true);
+    }
+
+    /**
+     * The patient's own management URL, in the language they booked in.
+     *
+     * Built with an explicit locale rather than the ambient one: a reminder is
+     * rendered by a cron run, which has no locale of its own, and route()
+     * would otherwise fall back to whatever URL::defaults happened to hold.
+     */
+    public function manageUrl(): string
+    {
+        return route('appointment.manage', [
+            'locale' => $this->locale,
+            'token' => $this->cancel_token,
+        ]);
     }
 
     public function getActivitylogOptions(): LogOptions
