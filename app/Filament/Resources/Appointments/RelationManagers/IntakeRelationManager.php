@@ -146,22 +146,35 @@ class IntakeRelationManager extends RelationManager
      *
      * So the class that holds the clinical data enforces the policy itself.
      *
-     * The read log sits after the authorisation, so a refused mount produces
-     * no entry — nothing was read.
+     * A refusal is logged too, as a `denied` event — see ClinicalAccessLog
+     * for why a blocked attempt on a medical record is worth more than a
+     * permitted one.
      */
     public function mount(): void
     {
-        abort_unless(
-            auth()->user()?->can('viewAny', IntakeForm::class) ?? false,
-            403,
-        );
-
-        parent::mount();
-
         /** @var Appointment $appointment */
         $appointment = $this->getOwnerRecord();
 
         $intake = $appointment->intakeForm;
+
+        if (! (auth()->user()?->can('viewAny', IntakeForm::class) ?? false)) {
+            /*
+             * The refusal is recorded before it is enforced.
+             *
+             * Somebody asked this component for a patient's medical history
+             * and was told no. That is a more interesting row than any
+             * permitted read: reaching here means the request was for the
+             * clinical component specifically, not an ordinary page load that
+             * happened to ask whether a tab should exist.
+             */
+            if ($intake !== null) {
+                ClinicalAccessLog::denied($intake, 'appointment.intake');
+            }
+
+            abort(403);
+        }
+
+        parent::mount();
 
         if ($intake !== null) {
             ClinicalAccessLog::read($intake, 'appointment.intake');
