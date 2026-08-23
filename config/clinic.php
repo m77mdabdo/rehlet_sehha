@@ -153,6 +153,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Admin Panel Session
+    |--------------------------------------------------------------------------
+    |
+    | How many minutes of inactivity before a staff session is dropped.
+    |
+    | Deliberately shorter than the public SESSION_LIFETIME. The panel is used
+    | on a shared clinic computer that sits unattended between patients, and
+    | every screen on it shows somebody's medical history. A patient's own
+    | session on the public site protects one appointment; this one protects
+    | all of them.
+    |
+    | Enforced per request by App\Http\Middleware\ExpireAdminSession, because
+    | Laravel's session lifetime is global and cannot differ per route group.
+    |
+    */
+
+    'admin_session_timeout_minutes' => (int) env('CLINIC_ADMIN_SESSION_TIMEOUT_MINUTES', 30),
+
+    /*
+    |--------------------------------------------------------------------------
     | Contact Details
     |--------------------------------------------------------------------------
     |

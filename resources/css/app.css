@@ -1,7 +1,33 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
 
+/*
+| Sources are declared EXPLICITLY. Automatic detection is off.
+|
+| Tailwind v4 otherwise scans the whole project for class-like strings, minus
+| whatever .gitignore excludes. `public/` is not ignored, so once Filament
+| published its assets there — 3.4 MB of minified JS and its own stylesheet —
+| the scanner started mining them and generating utilities for the panel into
+| the PUBLIC stylesheet. It measured 4.65 KB of admin CSS shipped to every
+| patient, and it moved depending on which assets happened to be on disk at
+| build time, which is worse than the size: the public bundle stopped being a
+| function of the public source.
+|
+| source(none) makes the input set exactly the four lines below. The admin
+| panel does not use this stylesheet at all — Filament serves its own compiled
+| CSS from public/css/filament — so nothing here needs to know it exists.
+|
+| The app directory is scanned because Livewire components and Blade component
+| classes build class strings in PHP, where no Blade scan would see them. It
+| replaces a previous entry pointing at storage/framework/views, which worked
+| by scanning COMPILED views — and therefore produced a different stylesheet
+| depending on which pages had been rendered before the build ran.
+|
+| Note for whoever edits this comment: do not write a glob ending in a star
+| followed by a slash inside it. That sequence closes a CSS comment, and the
+| rest of the paragraph becomes a parse error pointing at the line after it.
+*/
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
+@source '../../app/**/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
 

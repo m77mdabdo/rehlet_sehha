@@ -22,3 +22,17 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Filament's published assets — 4.2 MB of JS, CSS and fonts copied out of
+# vendor/. Not committed, because they are a BUILD ARTEFACT of the installed
+# package version, not source: keeping them in git means every Filament upgrade
+# shows as thousands of lines of minified diff, and a stale copy silently
+# disagreeing with the vendor code it came from.
+#
+# composer.json already runs `php artisan filament:upgrade` on
+# post-autoload-dump, which republishes them, so `composer install` on the
+# server regenerates all three directories. If the panel ever loads unstyled
+# after a deploy, that command is what did not run.
+/public/css/filament
+/public/js/filament
+/public/fonts/filament
