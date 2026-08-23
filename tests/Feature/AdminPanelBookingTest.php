@@ -270,7 +270,7 @@ it('logs who read a patient clinical record', function () {
     expect($serialised)->not->toContain('ميتفورمين');
 });
 
-it('writes no read log when the reader is refused', function () {
+it('writes no clinical access row for an ordinary page view', function () {
     $service = Service::active()->firstOrFail();
     $slot = firstFreeSlot($service);
 
@@ -292,8 +292,14 @@ it('writes no read log when the reader is refused', function () {
         ->get("/admin/appointments/{$appointment->id}/edit")
         ->assertOk();
 
-    // There was no read, so there is no read entry. A log row here would be a
-    // lie about what happened.
+    /*
+     * Nothing was read and nothing was refused — the clinical component was
+     * never asked for. Opening an appointment is her job, and logging each one
+     * would bury the rows that matter.
+     *
+     * A deliberate ATTEMPT is a different event and IS logged; see
+     * tests/Feature/ClinicalReadAuditTest.php.
+     */
     expect(ActivityLog::query()->where('log_name', 'clinical_access')->count())->toBe(0);
 });
 
