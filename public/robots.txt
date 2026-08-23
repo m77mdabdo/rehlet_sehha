@@ -1,2 +1,17 @@
 User-agent: *
-Disallow:
+
+# The clinic's own screens and the patient's token URLs.
+#
+# Disallow is a request not to FETCH these, and that is all it is: a URL linked
+# from anywhere else can still be indexed without ever being crawled, which for
+# /admin would produce a search result for the clinic's login page. The control
+# that actually works is the X-Robots-Tag header both route groups send — see
+# App\Http\Middleware\NoIndexAdminPanel and the token-url middleware. This file
+# is the polite half of the same instruction.
+#
+# Listing /appointment here is deliberate even though the URLs are unguessable:
+# it costs nothing and it means a crawler that somehow obtains one does not
+# fetch it.
+Disallow: /admin
+Disallow: /ar/appointment/
+Disallow: /en/appointment/

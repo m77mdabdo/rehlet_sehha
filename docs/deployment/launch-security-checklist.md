@@ -135,6 +135,25 @@ What rotation means here:
 
 ---
 
+## 6. The admin panel
+
+- [ ] `/admin` returns a login page and nothing else to an anonymous visitor.
+- [ ] It carries `X-Robots-Tag: noindex` — on the login page AND on the
+      redirect an unauthenticated request receives.
+
+```
+curl -sI https://rehletsehha.com/admin | grep -i x-robots-tag
+```
+
+- [ ] Every administrator has two-factor set up. The panel forces enrolment at
+      login, and the users list shows a tick per account.
+- [ ] `php artisan filament:assets` has run on the server. The published CSS
+      and JS are gitignored build artefacts (see .gitignore); `composer install`
+      regenerates them via `filament:upgrade`. A panel that loads unstyled means
+      it did not.
+
+---
+
 ## After launch
 
 - [ ] `php artisan schedule:list` shows the queue worker, reminders and daily

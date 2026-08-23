@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Listeners\RecordNotificationDelivery;
+use App\Support\ClinicSettings;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades\Event;
@@ -38,5 +39,15 @@ class AppServiceProvider extends ServiceProvider
          */
         Event::listen(NotificationSent::class, [RecordNotificationDelivery::class, 'sent']);
         Event::listen(NotificationFailed::class, [RecordNotificationDelivery::class, 'failed']);
+
+        /*
+         * Staff-editable settings, written over the config defaults.
+         *
+         * Applied here rather than read at each call site so that every
+         * existing config('clinic.…') caller — the availability engine, the
+         * Contact helper, the mail templates — picks up a change made in the
+         * panel without being rewritten. See App\Support\ClinicSettings.
+         */
+        ClinicSettings::apply();
     }
 }
