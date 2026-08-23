@@ -45,6 +45,14 @@ class PatientMailFailedAlert extends Notification implements LogsDelivery, Shoul
      */
     public int $tries = 1;
 
+    /**
+     * Discard the job if the models it carries are gone. See
+     * AppointmentNotification::$deleteWhenMissingModels for the reasoning; the
+     * failure mode is identical and the alternative is a permanently
+     * unactionable row in failed_jobs.
+     */
+    public bool $deleteWhenMissingModels = true;
+
     public ?int $deliveryLogId = null;
 
     public function __construct(

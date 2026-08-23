@@ -142,6 +142,26 @@ class Appointment extends Model
         // deleted record would hold its hour hostage forever, because nothing
         // else ever clears the key.
         static::deleted(function (self $appointment): void {
+            /*
+             * SOFT deletes only. On a force delete the row is already gone, and
+             * Laravel has set exists = false — so saveQuietly() below is not an
+             * UPDATE, it is an INSERT, and it silently RESURRECTS the
+             * appointment that was just destroyed.
+             *
+             * The bug hid because it only fires when the appointment still
+             * holds its slot: cancel first (which nulls the key) and the guard
+             * below skips the save, so a force delete of a cancelled booking
+             * behaves correctly. Force-delete a live one and it comes back,
+             * with its id, its reference and its slot — and no error anywhere.
+             *
+             * Found while testing the queue guard: a hard-deleted appointment
+             * kept restoring successfully in the job, because it had never
+             * actually been deleted.
+             */
+            if ($appointment->isForceDeleting()) {
+                return;
+            }
+
             if ($appointment->slot_key !== null) {
                 $appointment->slot_key = null;
                 $appointment->saveQuietly();
@@ -153,6 +173,32 @@ class Appointment extends Model
         static::restored(function (self $appointment): void {
             $appointment->syncSlotKey();
             $appointment->saveQuietly();
+        });
+
+        /*
+         * A hard delete strands any notification still queued for this row.
+         *
+         * The job carries the appointment by id and re-queries it when the
+         * worker picks it up; against a deleted row that throws before the
+         * notification's own code runs. The notifications handle it —
+         * $deleteWhenMissingModels discards the job instead of failing it —
+         * but by then nothing knows WHY the row vanished, so the reason is
+         * recorded here, at the only point where it is known.
+         *
+         * Written to the application log rather than notification_logs
+         * because that table's appointment_id cascades on delete: its rows for
+         * this appointment are being removed by the same statement, so there
+         * is nothing left there to annotate.
+         *
+         * Deliberately forceDeleted and not deleted: a soft delete leaves the
+         * row in place, queued jobs still restore it (Laravel uses
+         * newQueryWithoutScopes), and those notifications should still go out.
+         */
+        static::forceDeleted(function (self $appointment): void {
+            logger()->info('Appointment hard-deleted; any queued notifications for it will be discarded.', [
+                'appointment_id' => $appointment->getKey(),
+                'reference' => $appointment->reference,
+            ]);
         });
     }
 

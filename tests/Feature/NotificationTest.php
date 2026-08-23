@@ -26,6 +26,7 @@ use Database\Seeders\DoctorUserSeeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\ServiceSeeder;
 use Database\Seeders\WorkingHoursSeeder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
@@ -574,4 +575,70 @@ it('queues a reschedule notice carrying the time it moved from', function () {
             return $notification->previousStartsAt->equalTo($originalStart);
         }
     );
+});
+
+/*
+|------------------------------------------------------------------------------
+| A deleted appointment must not poison the queue
+|------------------------------------------------------------------------------
+*/
+
+it('discards a queued notification whose appointment was hard-deleted', function () {
+    /*
+     * The real failure this guards, observed in production-shaped use: two
+     * NewBookingAlert jobs sat in the queue while their appointments were
+     * purged during a cleanup. On the next drain both threw
+     * ModelNotFoundException during deserialisation — before any of the
+     * notification's own code could run — retried, and settled permanently in
+     * failed_jobs as rows nobody could ever act on.
+     *
+     * A receptionist deleting a test booking produces exactly this.
+     */
+    $appointment = notifiableAppointment();
+
+    $notification = new BookingConfirmed($appointment);
+
+    expect($notification->deleteWhenMissingModels)->toBeTrue();
+
+    // Serialise as the queue does, hard-delete the row, then restore.
+    $serialised = serialize($notification);
+
+    $appointment->intakeForm?->forceDelete();
+    $appointment->notificationLogs()->delete();
+    $appointment->forceDelete();
+
+    // The row really is gone. Asserted because it once was not: the model's
+    // deleted() hook used to re-INSERT a force-deleted appointment, which made
+    // this whole scenario silently untestable.
+    expect(Appointment::withTrashed()->find($appointment->id))->toBeNull();
+
+    /*
+     * The throw happens during unserialize() itself — SerializesModels
+     * restores the model in __unserialize, before the notification object
+     * even exists. That is precisely why the notification cannot catch it,
+     * and why the flag is the only available remedy: CallQueuedHandler reads
+     * $deleteWhenMissingModels and DELETES the job rather than failing it, so
+     * nothing reaches failed_jobs.
+     */
+    expect(fn () => unserialize($serialised))
+        ->toThrow(ModelNotFoundException::class);
+});
+
+it('still delivers a notification whose appointment was only soft-deleted', function () {
+    Notification::fake();
+
+    $appointment = notifiableAppointment();
+
+    $notification = new BookingConfirmed($appointment);
+    $serialised = serialize($notification);
+
+    // Soft delete: the row survives, and so should the message. The patient
+    // may still be expecting it, and the appointment is recoverable.
+    $appointment->delete();
+
+    /** @var BookingConfirmed $restored */
+    $restored = unserialize($serialised);
+
+    expect($restored->appointment->is($appointment))->toBeTrue();
+    expect($restored->appointment->trashed())->toBeTrue();
 });
