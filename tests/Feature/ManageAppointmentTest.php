@@ -663,3 +663,48 @@ it('records that an export happened, never what it contained', function () {
         expect($serialised)->not->toContain($clinical);
     }
 });
+
+/*
+|------------------------------------------------------------------------------
+| Deletion
+|------------------------------------------------------------------------------
+*/
+
+it('really destroys a force-deleted appointment instead of resurrecting it', function () {
+    /*
+     * The model's deleted() hook nulls slot_key so a soft-deleted appointment
+     * stops holding its hour. On a FORCE delete the row is already gone and
+     * Laravel has set exists = false, so that same saveQuietly() is an INSERT
+     * rather than an UPDATE — and it silently put the appointment back, with
+     * its id, its reference and its slot.
+     *
+     * It hid because it only fires while the appointment still holds a slot: a
+     * cancelled booking has a null key, skips the save, and deletes correctly.
+     * Deleting a LIVE one brought it back, with no error anywhere.
+     */
+    $appointment = bookedAppointment();
+    $id = $appointment->id;
+
+    expect($appointment->slot_key)->not->toBeNull('This test needs an appointment still holding its slot.');
+
+    $appointment->intakeForm()->forceDelete();
+    $appointment->forceDelete();
+
+    expect(Appointment::withTrashed()->find($id))->toBeNull();
+    expect(DB::table('appointments')->where('id', $id)->exists())->toBeFalse();
+});
+
+it('still releases the slot when an appointment is soft-deleted', function () {
+    // The behaviour the hook exists for, which the fix above must not break.
+    $appointment = bookedAppointment();
+
+    expect($appointment->slot_key)->not->toBeNull();
+
+    $appointment->delete();
+
+    $row = DB::table('appointments')->where('id', $appointment->id)->first();
+
+    expect($row)->not->toBeNull('A soft delete must leave the row in place.');
+    expect($row->deleted_at)->not->toBeNull();
+    expect($row->slot_key)->toBeNull('A soft-deleted appointment must stop holding its hour.');
+});

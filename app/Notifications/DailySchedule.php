@@ -33,6 +33,14 @@ class DailySchedule extends Notification implements LogsDelivery, ShouldQueue
 
     public int $tries = 3;
 
+    /**
+     * Discard the job if the models it carries are gone. See
+     * AppointmentNotification::$deleteWhenMissingModels for the reasoning; the
+     * failure mode is identical and the alternative is a permanently
+     * unactionable row in failed_jobs.
+     */
+    public bool $deleteWhenMissingModels = true;
+
     public ?int $deliveryLogId = null;
 
     /**

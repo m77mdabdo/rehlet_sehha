@@ -43,6 +43,37 @@ abstract class AppointmentNotification extends Notification implements LogsDeliv
     public int $tries = 3;
 
     /**
+     * Discard the job if its appointment no longer exists.
+     *
+     * A queued notification carries the appointment by id and re-queries it
+     * when the worker deserialises the job. If the row has been hard-deleted
+     * in the meantime, that query throws ModelNotFoundException before any of
+     * this class's code runs — the job cannot catch it, retries three times,
+     * and lands in failed_jobs as a row nobody can ever act on.
+     *
+     * That is not hypothetical: it happened here, to two NewBookingAlerts
+     * whose appointments were purged during a cleanup while their jobs were
+     * still queued. In production the same thing follows a receptionist
+     * deleting a test booking, a patient record being removed on request, or
+     * any DELETE run by hand against the database.
+     *
+     * Deleting the job is the right answer rather than retrying it, because
+     * the appointment is gone: there is nothing left to tell anyone about, and
+     * no number of retries will bring it back.
+     *
+     * SOFT deletes are unaffected. Laravel restores queued models with
+     * newQueryWithoutScopes(), so a soft-deleted appointment still resolves
+     * and its notifications still send — which is correct, since a
+     * soft-deleted appointment is recoverable and its patient may still be
+     * expecting the message.
+     *
+     * The reason is logged where it is actually known — at the point of
+     * deletion, in Appointment::booted() — because by the time the worker sees
+     * the missing row it has no idea why it is missing.
+     */
+    public bool $deleteWhenMissingModels = true;
+
+    /**
      * Set by the notifier before dispatch and carried through the queue.
      */
     public ?int $deliveryLogId = null;
