@@ -48,6 +48,23 @@ return [
             'adjust' => 'Plan adjustments',
             'suits' => 'Who it suits',
         ],
+        /*
+         * PRESENTATION ONLY — none of this changes what the table says.
+         *
+         * absent_markers: the words a matrix value starts with when the answer
+         * is "no". Two rows have a real yes/no in them — support between
+         * sessions, and whether the plan gets adjusted — and in those a symbol
+         * reads faster than a sentence. The sentence still renders in full; the
+         * marker only decides whether it gets a tick or a dash beside it.
+         *
+         * Kept as a list here rather than matched against a hardcoded string in
+         * a Blade file, so rewording the copy is a one-line change in the same
+         * file as the copy. PackagesPageTest fails if a matrix value reads as a
+         * negation but starts with something not listed, so drift is loud
+         * rather than silent.
+         */
+        'recommended' => 'Most chosen',
+        'absent_markers' => ['None', 'No follow-up'],
         'cta' => 'Book this one',
     ],
 

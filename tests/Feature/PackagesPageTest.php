@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Faq;
 use App\Models\Service;
+use App\Support\FeaturedPackage;
 use Database\Seeders\FaqSeeder;
 use Database\Seeders\ServiceSeeder;
 use Database\Seeders\WorkingHoursSeeder;
@@ -346,6 +347,10 @@ it('reads its prices from the services table rather than from copy', function ()
 });
 
 it('contains the wide table so it cannot widen the page', function () {
+    // Renamed from .table-scroller: it no longer scrolls. overflow-x is `clip`
+    // rather than `auto` because `auto` makes the element a scroll container,
+    // which is what position:sticky resolves against — the column headers were
+    // pinning to a box that scrolled away.
     /*
      * A REGRESSION GUARD FOR A BUG THAT DID NOT LOOK LIKE ONE.
      *
@@ -369,22 +374,135 @@ it('contains the wide table so it cannot widen the page', function () {
      */
     $html = $this->get('/ar/packages')->assertOk()->getContent();
 
-    expect($html)->toContain('table-scroller');
+    expect($html)->toContain('table-frame');
 
     $css = file_get_contents(resource_path('css/app.css'));
-    $position = strpos($css, '.table-scroller {');
+    $position = strpos($css, '.table-frame {');
 
-    expect($position)->not->toBeFalse('The .table-scroller rule is gone.');
+    expect($position)->not->toBeFalse('The .table-frame rule is gone.');
 
     $block = substr($css, $position, (int) strpos($css, '}', $position) - $position);
 
-    expect($block)->toContain('overflow-x: auto');
+    expect($block)->toContain('overflow-x: clip');
     expect($block)->toContain(
         'contain: paint',
         // Left as the sole assertion it would read as a performance tweak, so
         // say what it is: without it the Arabic page pushes itself off screen.
     );
 });
+
+it('renders one presentation per breakpoint, never both at once', function () {
+    /*
+     * The same facts twice in the markup, with exactly one of them in the
+     * document at a time. display:none rather than a visual-only hide, so a
+     * screen reader is never offered the table AND the cards — hearing the
+     * whole comparison twice is worse than not having it.
+     */
+    $html = $this->get('/ar/packages')->assertOk()->getContent();
+
+    // The table exists only from lg up.
+    expect($html)->toContain('table-frame');
+    expect($html)->toMatch('/class="table-frame[^"]*\bhidden\b[^"]*\blg:block\b/');
+
+    // The cards exist only below it.
+    expect($html)->toMatch('/<ul class="[^"]*\blg:hidden\b/');
+
+    /*
+     * And the table must not be a horizontal scroller any more. Scrolling a
+     * comparison sideways defeats what a comparison is for, and it is what
+     * widened the mobile layout viewport. Verified in a browser at 390, 768
+     * and 1440 in both locales: layout viewport equals the device width,
+     * scrollX is 0, and there is no element in main with a horizontal
+     * scrollbar at all.
+     */
+    expect(str_contains($html, 'overflow-x-auto'))->toBeFalse(
+        'The comparison is a horizontal scroller again.'
+    );
+});
+
+it('recommends the same package the homepage features', function () {
+    /*
+     * One source of truth. A patient who sees the monthly package featured on
+     * the homepage and a different one recommended here has been told the
+     * clinic does not know its own mind — and because both used to derive it
+     * inline, nothing would have caught the drift.
+     */
+    $services = Service::query()->where('is_active', true)->orderBy('sort_order')->get();
+    $slug = FeaturedPackage::slugIn($services);
+
+    expect($slug)->not->toBeNull();
+
+    $home = $this->get('/ar')->assertOk()->getContent();
+    $page = $this->get('/ar/packages')->assertOk()->getContent();
+
+    $name = $services->firstWhere('slug', $slug)->getTranslation('name', 'ar');
+
+    // The homepage badge and the page's ribbon both sit beside that name.
+    expect($home)->toContain(__('home.packages.featured', [], 'ar'));
+    expect($page)->toContain(__('packages.comparison.recommended', [], 'ar'));
+    expect($page)->toContain($name);
+
+    // The recommendation is the cheaper of the two middle options — a default
+    // answer that cost more would be a sales tactic rather than guidance.
+    $prices = $services->pluck('price')->map(fn ($p): float => (float) $p)->sort()->values();
+    $recommended = (float) $services->firstWhere('slug', $slug)->price;
+
+    expect($recommended)->toBeLessThan(
+        $prices->last(),
+        'The recommended package is the most expensive one. That is a sales tactic, not guidance.'
+    );
+});
+
+it('knows every way the matrix says no', function (string $locale) {
+    /*
+     * Two comparison rows carry a real yes/no and get a tick or a dash beside
+     * the sentence. Which one is decided by matching the start of the value
+     * against a list in the translation file — so if the copy is reworded to a
+     * negation the list does not know about, the cell would quietly show a
+     * tick next to the word "none".
+     *
+     * This makes that loud. Any value in a stateful row that reads as a
+     * negation must start with a listed marker.
+     */
+    $matrix = __('packages.matrix', [], $locale);
+    $markers = __('packages.comparison.absent_markers', [], $locale);
+
+    expect($markers)->toBeArray()->not->toBeEmpty();
+
+    $negativeWords = $locale === 'ar' ? ['مفيش', 'مافيش', 'لا يوجد'] : ['none', 'no follow-up', 'not included'];
+
+    foreach ($matrix as $slug => $cells) {
+        foreach (['between', 'adjust'] as $row) {
+            $value = $cells[$row] ?? '';
+            $lower = mb_strtolower($value);
+
+            $readsNegative = false;
+
+            foreach ($negativeWords as $word) {
+                if (str_contains($lower, mb_strtolower($word))) {
+                    $readsNegative = true;
+                }
+            }
+
+            if (! $readsNegative) {
+                continue;
+            }
+
+            $matched = false;
+
+            foreach ($markers as $marker) {
+                if (str_starts_with($value, $marker)) {
+                    $matched = true;
+                }
+            }
+
+            expect($matched)->toBeTrue(
+                "«{$slug}.{$row}» in {$locale} reads as a negation but starts with none of the "
+                ."absent_markers, so it would render with a tick:\n\n  {$value}"
+            );
+        }
+    }
+})->with(['ar', 'en']);
 
 it('issues a bounded number of queries cold', function () {
     /*
