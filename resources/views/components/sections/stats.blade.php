@@ -29,9 +29,20 @@
                     <dd>
                         {{-- dir=ltr: numerals and the + sign reorder inside an
                              Arabic paragraph without it. --}}
-                        <bdi dir="ltr" class="font-display text-4xl font-semibold text-white sm:text-5xl">
-                            {{ $stat['value'] }}
-                        </bdi>
+                        {{--
+                            stat-figure is what motion.js counts up, and it is
+                            also what stops the strip reflowing while it does:
+                            the class carries tabular-nums and inline-block so
+                            the script can pin a width measured from the final
+                            string. Those two properties apply whether the
+                            animation runs or not — see app.css.
+
+                            The figure itself is server-rendered and final. The
+                            script counts TOWARDS what is already here and then
+                            restores this exact string, so the animation can
+                            never publish a number the clinic did not.
+                        --}}
+                        <bdi dir="ltr" class="stat-figure font-display text-4xl font-semibold text-white sm:text-5xl">{{ $stat['value'] }}</bdi>
 
                         @isset($stat['suffix'])
                             <span class="ms-1 text-sm text-white/60">{{ $stat['suffix'] }}</span>

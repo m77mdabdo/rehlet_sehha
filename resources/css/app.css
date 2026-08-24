@@ -331,48 +331,125 @@
 
 /*
 |------------------------------------------------------------------------------
-| Scroll reveal
+| Motion
 |------------------------------------------------------------------------------
 |
-| Cards fade and rise slightly as they enter the viewport — CSS only, via a
-| scroll-driven animation. No IntersectionObserver, no JS at all.
+| Three effects: the hero arriving, sections rising as they come into view, and
+| the stats counting up. All of them are OPTIONAL DECORATION, and the structure
+| below exists to keep them optional in every failure mode.
 |
-| The critical property of this implementation is that it is PURELY ADDITIVE.
-| The element's resting state is fully visible; the animation is layered on top
-| inside an @supports block. A browser without animation-timeline (Firefox and
-| Safari at the time of writing) simply shows the content, immediately, with no
-| flash and nothing hidden. The usual JS version of this effect sets opacity: 0
-| in CSS and clears it from script — which means a script error, a blocked
-| bundle or an unsupported API leaves the entire page invisible. That trade is
-| not worth a fade.
+| THE RESTING STATE IS THE FINISHED STATE. Nothing here hides anything by
+| default. Every rule that sets opacity: 0 is nested under `.js-motion`, a class
+| that only ever gets added by script — so no JavaScript, a blocked bundle, an
+| old browser or a script error all leave a fully visible page. The usual way
+| round (opacity: 0 in the stylesheet, cleared from script) turns any script
+| failure into a blank page, and a fade is not worth that.
 |
-| Wrapped in prefers-reduced-motion: no-preference so a visitor who has asked
-| their system for less motion never sees it. On a health site that is not a
-| nicety — vestibular disorders make this genuinely unpleasant, and some
-| visitors are here because of one.
+| The class is added by a small inline script in the document head rather than
+| by the bundle, because a class added after first paint means the content
+| paints, disappears, then animates back — worse than no animation. That script
+| also arms a timer which removes the class again if the bundle never checks in,
+| so even "the head script ran but app.js 404ed" ends visible.
 |
-| translateY rather than translateX: vertical motion needs no RTL mirror.
+| ALL OF IT IS BEHIND prefers-reduced-motion: no-preference. Not shortened —
+| absent. Vestibular disorders make scroll-linked movement genuinely unpleasant,
+| and on a clinic site some visitors are here because of one.
+|
+| TRANSFORM AND OPACITY ONLY. Never width, height, top, left or margin: those
+| relayout, and this page is at CLS 0.0000 and an LCP of 1.4s. Both matter more
+| than any of this does.
+|
+| (This replaced a CSS-only version built on animation-timeline: view(). That
+| one could not fail — but it only ran in Chrome, it re-ran backwards when you
+| scrolled up, and it had no way to stagger. The trade is deliberate.)
 |
 */
 
 @media (prefers-reduced-motion: no-preference) {
-    @supports (animation-timeline: view()) {
-        .reveal {
-            animation: reveal-rise linear both;
-            animation-timeline: view();
-            animation-range: entry 0% cover 22%;
-        }
+    /*
+     * Sections and cards rising into view.
+     *
+     * 20px and 400ms: enough to notice something arrived, not enough to watch.
+     * If this reads as a performance rather than as the page settling, it is
+     * too big or too slow.
+     */
+    .js-motion .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    .js-motion .reveal.is-revealed {
+        opacity: 1;
+        transform: none;
+        transition:
+            opacity 400ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--reveal-delay, 0ms),
+            transform 400ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--reveal-delay, 0ms);
+    }
+
+}
+
+/*
+| The hero arriving.
+|
+| PURE CSS, AND NOT GATED ON .js-motion — unlike the reveals below, and for a
+| measured reason.
+|
+| The gate exists so nothing sits hidden waiting for a bundle. But the hero is
+| the one thing that must never wait: it is the first screen, and on a throttled
+| slow 4G connection this site's bundle does not initialise until about 2.1s.
+| Gating the hero would have hidden the headline and the booking button for two
+| seconds on exactly the connections most of this clinic's patients are using —
+| to play a half-second animation.
+|
+| A load-triggered animation needs no script at all. It starts at first paint,
+| finishes on its own, and ends in the finished state whether or not any
+| JavaScript ever arrives. The only thing hidden is what the animation itself is
+| hiding, for as long as the animation runs.
+|
+| Each object slides in from the edge it sits against — the panel from the
+| right, the case card from the left — so each reads as arriving from its own
+| side rather than the pair sliding as one block. NOT mirrored per locale,
+| because since Task 8.6 the composition is not mirrored either: the panel is
+| pinned to the physical right in both languages so it never lands on the plate
+| in the footage. Mirroring only the motion would send the English panel away
+| from the edge it belongs to.
+|
+| 32px, which is enough to read as arrival. A long travel looks cheap and costs
+| frames for nothing.
+*/
+
+@media (prefers-reduced-motion: no-preference) {
+    [data-enter] {
+        animation: enter-slide 500ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--enter-delay, 0ms) both;
     }
 }
 
-@keyframes reveal-rise {
+@keyframes enter-slide {
     from {
         opacity: 0;
-        transform: translateY(14px);
+        transform: translateX(var(--enter-x, 0));
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: none;
     }
+}
+
+/*
+| The counting figures.
+|
+| NOT inside the reduced-motion query, and not conditional on .js-motion, on
+| purpose: these two properties are what stop the strip reflowing while the
+| digits change, and they have to apply whether the count runs or not. If they
+| only applied while animating, turning the animation on would change the
+| layout — which is the exact regression they exist to prevent.
+|
+| tabular-nums gives every digit the same advance width, so 111 and 999 are the
+| same size. inline-block is what lets the script pin a min-width measured from
+| the final string before the first frame.
+*/
+.stat-figure {
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
 }
