@@ -33,3 +33,10 @@ import './hero-video';
  * header is what the markup ships, so a failure here is never unreadable.
  */
 import './header';
+
+/*
+ * Entrance, scroll reveals and the counting figures. Purely additive: the page
+ * is complete without it, and a head script un-hides everything if this never
+ * arrives. See the Motion block in app.css.
+ */
+import './motion';
