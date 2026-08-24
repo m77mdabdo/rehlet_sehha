@@ -32,34 +32,6 @@ beforeEach(function () {
     $this->seed(FaqSeeder::class);
 });
 
-/**
- * The visible words on a page, with the machinery stripped out.
- */
-function pageVisibleText(string $html): string
-{
-    $html = (string) preg_replace('/<(script|style)\b.*?<\/\1>/su', ' ', $html);
-    $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-
-    return trim((string) preg_replace('/\s+/u', ' ', $text));
-}
-
-/**
- * Overlapping word runs, as a set.
- *
- * @return array<string, true>
- */
-function pageShingles(string $text, int $length): array
-{
-    $words = preg_split('/\s+/u', $text, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-    $out = [];
-
-    for ($i = 0; $i + $length <= count($words); $i++) {
-        $out[implode(' ', array_slice($words, $i, $length))] = true;
-    }
-
-    return $out;
-}
-
 it('answers in both locales', function (string $locale) {
     $this->get("/{$locale}/packages")->assertOk();
 })->with(['ar', 'en']);

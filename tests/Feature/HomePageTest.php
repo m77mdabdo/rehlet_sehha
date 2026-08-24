@@ -64,15 +64,14 @@ it('renders every section in both locales', function (string $locale) {
 
 it('resolves every nav link, whether it is an anchor or a route', function () {
     /*
-     * The nav is mixed while the standalone pages are being built: some items
-     * still point at a homepage section, and some now point at a real page.
-     * Both kinds have to resolve, and the failure modes are different — an
-     * anchor dies silently when a section id is renamed, a route dies loudly
-     * with a 404 nobody visits in development.
+     * Every nav item is now a real page, but this still checks both kinds,
+     * because the failure modes differ and both still exist elsewhere on the
+     * page: an anchor dies silently when a section id is renamed, a route dies
+     * loudly with a 404 nobody visits in development.
      *
      * This is the check that would have caught #about pointing at a section
-     * nobody had built, and it is the same check that now catches a nav item
-     * pointed at a page that does not exist yet.
+     * nobody had built, and it is what now catches a nav item pointed at a
+     * route that does not exist.
      */
     $content = $this->get('/ar')->assertOk()->getContent();
 
@@ -119,9 +118,16 @@ it('resolves every nav link, whether it is an anchor or a route', function () {
         );
     }
 
-    // Guards the guard: if the markup changes shape and nothing matches, the
-    // loop above passes by doing nothing at all.
-    expect($anchors)->toBeGreaterThan(0, 'No in-page nav anchors were found to check.');
+    /*
+     * Guards the guard: if the markup changes shape and nothing matches, the
+     * loop above passes by doing nothing at all.
+     *
+     * The TOTAL is what must be non-zero, not each kind. Anchors legitimately
+     * fell to zero when the last nav item became a real page — asserting on
+     * them separately made this fail for the right reason at the wrong moment,
+     * which is its own kind of false alarm.
+     */
+    expect($anchors + $routes)->toBeGreaterThan(0, 'No nav links were found to check at all.');
     expect($routes)->toBeGreaterThan(0, 'No nav routes were found to check.');
 });
 

@@ -111,6 +111,8 @@ class ProcessPhotos extends Command
             );
         }
 
+        $this->writeManifest($library, $outputDirectory);
+
         $this->newLine();
         $this->table(
             array_merge(['image', 'topic', 'crop'], array_keys((array) config('photos.variants')), ['all']),
@@ -281,6 +283,84 @@ class ProcessPhotos extends Command
         }
 
         return null;
+    }
+
+    /**
+     * Write the manifest the site renders from.
+     *
+     * EXACT PIXEL DIMENSIONS PER VARIANT, so every <img> can carry width and
+     * height and reserve its space before the bytes arrive. That is the whole
+     * reason this file exists: without it the component would have to stat and
+     * measure an image on every render to keep CLS at zero, which is a
+     * filesystem read per photo per request to learn something that cannot
+     * change without re-running this command.
+     *
+     * Generated, committed, and never edited by hand.
+     *
+     * @param  array<string, array<string, mixed>>  $library
+     */
+    private function writeManifest(array $library, string $outputDirectory): void
+    {
+        $manifest = [];
+
+        foreach ($library as $slug => $entry) {
+            $variants = [];
+
+            foreach (array_keys((array) config('photos.variants')) as $name) {
+                $path = $outputDirectory."/{$slug}-{$name}.webp";
+
+                if (! File::exists($path)) {
+                    continue;
+                }
+
+                [$width, $height] = (array) getimagesize($path);
+
+                $variants[$name] = [
+                    'width' => (int) $width,
+                    'height' => (int) $height,
+                    'bytes' => File::size($path),
+                ];
+            }
+
+            $manifest[$slug] = [
+                'topic' => $entry['topic'],
+                'describes' => $entry['describes'],
+                'variants' => $variants,
+            ];
+        }
+
+        /*
+         * Short-array syntax and one-line arrows, so the generated file passes
+         * the same Pint preset as everything else. A generated file that fails
+         * the linter trains people to ignore the linter.
+         */
+        $export = preg_replace(
+            ['/array \(/', '/^(\s*)\)/m', '/=>\s*\n\s*\[/'],
+            ['[', '$1]', '=> ['],
+            var_export($manifest, true),
+        );
+
+        File::put(resource_path('photos-manifest.php'), <<<PHP
+        <?php
+
+        declare(strict_types=1);
+
+        /*
+        |------------------------------------------------------------------------------
+        | GENERATED FILE — DO NOT EDIT
+        |------------------------------------------------------------------------------
+        |
+        | Written by `php artisan clinic:process-photos` from config/photos.php.
+        | Hand edits are lost the next time it runs.
+        |
+        | It exists so an <img> can carry exact width and height without the
+        | renderer measuring a file on disk. That is what keeps CLS at zero: the
+        | browser reserves the right box before a single byte of image arrives.
+        */
+
+        return {$export};
+
+        PHP);
     }
 
     /**
