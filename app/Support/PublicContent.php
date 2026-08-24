@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Support;
 
 use App\Models\Faq;
+use App\Models\PlateFood;
 use App\Models\Post;
 use App\Models\Service;
 use App\Models\Specialty;
 use App\Models\Testimonial;
+use App\Models\Video;
 use App\Models\WorkingHour;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -59,7 +61,38 @@ final class PublicContent
         'faqs',
         'latest-posts',
         'opening-hours',
+        'videos',
+        'plate-foods',
     ];
+
+    /**
+     * The video library, featured first.
+     *
+     * Ordered so the featured video is the one the gallery renders large,
+     * without the view having to sort or partition anything itself.
+     *
+     * @return Collection<int, Video>
+     */
+    public static function videos(): Collection
+    {
+        return self::remember('videos', fn (): Collection => Video::query()
+            ->where('is_active', true)
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->get());
+    }
+
+    /**
+     * The foods a patient can put on the plate.
+     *
+     * @return Collection<int, PlateFood>
+     */
+    public static function plateFoods(): Collection
+    {
+        return self::remember('plate-foods', fn (): Collection => PlateFood::query()
+            ->active()
+            ->get());
+    }
 
     /**
      * The bookable packages, cheapest-first by sort_order.

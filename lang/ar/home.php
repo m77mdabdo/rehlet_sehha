@@ -123,4 +123,26 @@ return [
         'title' => 'تحبي تسألي الأول؟',
         'lead' => 'كلمينا أو ابعتيلنا رسالة، ونجاوبك من غير ما تحجزي.',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Video library
+    |--------------------------------------------------------------------------
+    |
+    | The gallery loads thumbnails only. No YouTube iframe and no YouTube
+    | script until a patient actually presses play — see the section component
+    | for why that matters on a medical site.
+    |
+    */
+    'videos' => [
+        'eyebrow' => 'اتفرجي',
+        'title' => 'فيديوهات من العيادة',
+        'lead' => 'شرح بسيط لأسئلة بتتكرر كتير، من الدكتورة نفسها.',
+        'empty' => 'مفيش فيديوهات متاحة دلوقتي.',
+        'play' => 'شغّلي: :title',
+        'close' => 'إغلاق',
+        'privacy' => 'الفيديو مش بيتحمّل من يوتيوب غير لما تدوسي شغّل.',
+        'duration' => 'المدة',
+        'featured' => 'الأحدث',
+    ],
 ];

@@ -15,7 +15,7 @@ class HomeController extends Controller
      *
      * Every set comes from PublicContent, which caches it under an explicit
      * key and is busted by the models themselves on save. On a warm cache this
-     * action issues no database queries at all; cold, it issues exactly five —
+     * action issues no database queries at all; cold, it issues exactly eight —
      * one per set, none of them in a loop, none of them lazy. HomePageQueryTest
      * pins both numbers so a stray relationship access in a Blade file shows up
      * as a failing test rather than as a slow page nobody profiles.
@@ -41,6 +41,8 @@ class HomeController extends Controller
             'testimonials' => PublicContent::testimonials(3),
             'faqs' => PublicContent::faqs(),
             'posts' => PublicContent::latestPosts(3),
+            'videos' => PublicContent::videos(),
+            'plateFoods' => PublicContent::plateFoods(),
         ]);
     }
 }
