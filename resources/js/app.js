@@ -19,3 +19,10 @@ import './focus';
 import './video-gallery';
 import './matcher';
 import './plate';
+
+/*
+ * The hero background video. Decides whether the visitor gets one at all —
+ * reduced motion, Save-Data and slow connections never do — and only hands the
+ * URL over once the answer is yes.
+ */
+import './hero-video';
