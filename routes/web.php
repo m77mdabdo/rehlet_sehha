@@ -5,6 +5,7 @@ use App\Http\Controllers\ExportAppointmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManageAppointmentController;
 use App\Http\Controllers\ManifestController;
+use App\Http\Controllers\PackagesController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\SpecialtyController;
 use App\Support\Locales;
@@ -63,6 +64,21 @@ Route::prefix('{locale}')
             ->middleware('token-url')
             ->name('appointment.export')
             ->where('token', '[A-Za-z0-9]{32,80}');
+
+        /*
+         * The standalone pages behind the nav.
+         *
+         * Each one is the full treatment of a homepage section, not a copy of
+         * it — the section summarises, the page decides. A page that repeated
+         * its section verbatim would compete with it in search and both would
+         * rank lower, so PackagesPageTest measures the overlap and fails above
+         * a threshold.
+         *
+         * NOTE FOR WHOEVER BUILDS THE SITEMAP: THESE BELONG IN IT, alongside
+         * the specialty and article pages. Seven more land here as they are
+         * built — services, how-it-works, about, articles, faq, contact.
+         */
+        Route::get('packages', PackagesController::class)->name('packages');
 
         // Stub. The consent notice links here, so it must resolve today.
         Route::view('privacy', 'pages.privacy')->name('privacy');

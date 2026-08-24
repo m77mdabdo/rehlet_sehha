@@ -38,9 +38,23 @@ class Faq extends Model
     protected $fillable = [
         'question',
         'answer',
+        'category',
         'sort_order',
         'is_active',
     ];
+
+    /**
+     * The general questions, which is what the homepage shows.
+     *
+     * Buying questions live on the packages page and are deliberately not
+     * mixed in here: someone reading the homepage has not decided to buy
+     * anything yet, and a cancellation policy answered before she knows what
+     * the clinic does is an answer to a question she has not asked.
+     */
+    public const CATEGORY_GENERAL = 'general';
+
+    /** Questions about purchasing a package: switching, paying, cancelling. */
+    public const CATEGORY_BUYING = 'buying';
 
     /** @var array<int, string> */
     public array $translatable = ['question', 'answer'];
@@ -54,6 +68,15 @@ class Faq extends Model
             'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    public function scopeCategory(Builder $query, string $category): Builder
+    {
+        return $query->where('category', $category);
     }
 
     /**
