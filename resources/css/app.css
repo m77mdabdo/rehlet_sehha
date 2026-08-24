@@ -408,17 +408,23 @@
 | no message on it, slow stops reading as considered and starts reading as
 | broken.
 |
-| THE MOTION MIRRORS WITH THE LANGUAGE; THE LAYOUT DOES NOT. The panel enters
-| from the inline START — the right in Arabic, the left in English — and the
-| card from the inline END. Worth being clear about the consequence: the panel
-| itself is pinned to the physical right in BOTH locales (Task 8.6, so it never
-| lands on the plate in the footage), so in English it arrives from the side
-| opposite the edge it comes to rest against. That is a deliberate instruction,
-| not an oversight.
+| THE DIRECTION IS FIXED BY THE COMPOSITION, NOT BY READING ORDER, AND THAT IS
+| NOT AN RTL OVERSIGHT. Do not "fix" it to mirror.
 |
-| --dir is what does the mirroring, because there is no logical translate. It is
-| a plain multiplier on the offset, so one keyframe serves both directions and
-| the two can never drift apart.
+| Each object arrives from the edge it comes to rest against: the panel from the
+| right, the card from the left, in BOTH languages. That is deliberate, because
+| the layout it belongs to is deliberate — the panel is pinned to the physical
+| right in both locales (Task 8.6) so it never lands on the plate in the
+| footage, and the case card sits low and left of it.
+|
+| Mirroring the motion while the layout stays put would send the English panel
+| across the frame to reach a home edge it was already next to. Travelling
+| toward its own edge instead of arriving from it is precisely what this is
+| meant to avoid, so the offsets below carry no direction multiplier and there
+| is no [dir] override anywhere. MotionTest fails if one appears.
+|
+| Everything textual inside these objects is still fully logical: Arabic aligns
+| right, English aligns left, within the identical shape.
 |
 | The card is slower than the panel AND starts later. That asymmetry is the
 | point: they must not arrive together, because they are not equally important.
@@ -426,29 +432,23 @@
 | still be settling once the message is already readable.
 */
 
-html {
-    --dir: 1;
-}
-
-html[dir="rtl"] {
-    --dir: -1;
-}
-
 @media (prefers-reduced-motion: no-preference) {
     [data-enter] {
         animation: enter-slide var(--enter-duration, 800ms) cubic-bezier(0.22, 0.61, 0.36, 1)
             var(--enter-delay, 0ms) both;
     }
 
-    /* The message. Readable — fully opaque — 800ms after first paint. */
+    /* The message. Arrives from the right, where it comes to rest.
+       Readable — fully opaque — 800ms after first paint. */
     [data-enter="panel"] {
-        --enter-x: -60px;
+        --enter-x: 60px;
         --enter-duration: 800ms;
     }
 
-    /* Supporting detail. Arrives from the other side, later, and slower. */
+    /* Supporting detail. Arrives from the left, where it comes to rest —
+       the opposite edge to the panel, later and slower. */
     [data-enter="card"] {
-        --enter-x: 60px;
+        --enter-x: -60px;
         --enter-duration: 900ms;
         --enter-delay: 200ms;
     }
@@ -457,7 +457,7 @@ html[dir="rtl"] {
 @keyframes enter-slide {
     from {
         opacity: 0;
-        transform: translateX(calc(var(--enter-x, 0px) * var(--dir, 1)));
+        transform: translateX(var(--enter-x, 0px));
     }
 
     to {
