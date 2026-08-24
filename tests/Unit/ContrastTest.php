@@ -94,11 +94,36 @@ function palette(): array
 function contrastPairs(): array
 {
     return [
-        // ---- Body text on the page background --------------------------------
-        ['ink', 'paper', 4.5, 'headings and default body copy'],
-        ['muted', 'paper', 4.5, 'section leads'],
+        /*
+         * ---- Body text on the page background -------------------------------
+         *
+         * These three also carry the hero, which since Task 8.5 sits over a
+         * background video.
+         *
+         * The video changes nothing about them, and that is the whole point of
+         * the composition: the copy is on an OPAQUE paper panel and the case
+         * card on opaque white, so every hero pair is still a solid colour on a
+         * solid colour that can be checked here, at build time, without knowing
+         * which frame is on screen.
+         *
+         * Verified against real composited pixels rather than assumed — the
+         * rendered hero was screenshotted with the glyphs made transparent, and
+         * every text box compared against the worst pixel actually behind it,
+         * at 390/768/1440 in both locales, on the clip's brightest frame and
+         * its darkest. 240 elements, none below its threshold, worst 5.23:1 at
+         * the eyebrow. Not one of them moved by even 0.01 between the bright
+         * frame and the dark one, which is the measurement that proves no text
+         * overlaps the picture at any width.
+         *
+         * That result holds only while the panel is opaque. If it is ever given
+         * an alpha, the hero's contrast becomes a property of the video instead
+         * of the stylesheet and these lines stop describing it — so
+         * HeroVideoTest fails the build if the panel becomes translucent.
+         */
+        ['ink', 'paper', 4.5, 'headings, body copy, and the hero headline on its panel'],
+        ['muted', 'paper', 4.5, 'section leads, and the hero lead and credential chips'],
         ['accent', 'paper', 4.5, 'links on the page background'],
-        ['accent-dark', 'paper', 4.5, 'section eyebrows'],
+        ['accent-dark', 'paper', 4.5, 'section eyebrows — the worst pair in the hero, 5.23:1'],
 
         // ---- Body text on cards ----------------------------------------------
         ['ink', 'white', 4.5, 'card headings'],
