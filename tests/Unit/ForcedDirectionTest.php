@@ -138,6 +138,29 @@ it('scans the mail templates as well as the page templates', function () {
     }
 });
 
+it('scans the interactive feature views', function () {
+    /*
+     * Same guard, for the views Task 8 added. All three mix Arabic copy with
+     * Latin content — a video duration, a booking slug, a food emoji — which is
+     * exactly the mixture that goes wrong under a forced direction.
+     *
+     * Asserted by name rather than trusted to the glob, because "the scanner
+     * covers the new views" is a claim worth failing loudly if a later refactor
+     * moves them somewhere it does not look.
+     */
+    $scanned = scannedBladeFiles();
+
+    foreach ([
+        'components/sections/videos.blade.php',
+        'components/sections/matcher.blade.php',
+        'components/sections/plate.blade.php',
+        'components/video-facade.blade.php',
+    ] as $required) {
+        expect(collect($scanned)->contains(fn (string $path): bool => str_ends_with($path, $required)))
+            ->toBeTrue("Expected {$required} to be scanned for forced-direction mistakes.");
+    }
+});
+
 it('never forces a latin direction onto arabic-rendering content in blade templates', function () {
     $forbidden = arabicRenderingContent();
     $violations = [];

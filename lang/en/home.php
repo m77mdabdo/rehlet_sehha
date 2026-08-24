@@ -122,4 +122,26 @@ return [
         'title' => 'Want to ask first?',
         'lead' => 'Call us or send a message, and we will answer without you booking anything.',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Video library
+    |--------------------------------------------------------------------------
+    |
+    | The gallery loads thumbnails only. No YouTube iframe and no YouTube
+    | script until a patient actually presses play — see the section component
+    | for why that matters on a medical site.
+    |
+    */
+    'videos' => [
+        'eyebrow' => 'Watch',
+        'title' => 'Videos from the clinic',
+        'lead' => 'Plain answers to the questions we are asked most, from the practitioner herself.',
+        'empty' => 'There are no videos available at the moment.',
+        'play' => 'Play: :title',
+        'close' => 'Close',
+        'privacy' => 'Nothing loads from YouTube until you press play.',
+        'duration' => 'Length',
+        'featured' => 'Latest',
+    ],
 ];

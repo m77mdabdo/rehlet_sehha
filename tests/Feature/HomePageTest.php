@@ -101,12 +101,17 @@ it('issues a bounded number of queries cold', function () {
      *
      * If this number grows, something in a Blade file started touching the
      * database. Raise it only with a reason.
+     *
+     * Raised from six to EIGHT when Task 8 added the video gallery and the
+     * plate builder: one query each, both through PublicContent, neither in a
+     * loop. Two new sets on the page, two new queries — which is the shape
+     * that is allowed. Nine would mean something is lazy-loading.
      */
     [$response, $queries] = countQueries(fn () => $this->get('/ar'));
 
     $response->assertOk();
 
-    expect($queries)->toHaveCount(6, "Cold homepage queries:\n".implode("\n", $queries));
+    expect($queries)->toHaveCount(8, "Cold homepage queries:\n".implode("\n", $queries));
 });
 
 it('issues no content queries at all when the cache is warm', function () {
@@ -114,7 +119,7 @@ it('issues no content queries at all when the cache is warm', function () {
      * Zero, with the array store the test suite uses.
      *
      * Worth stating plainly: in production CACHE_STORE is `database`, so a
-     * warm request trades six content queries for six reads of the `cache`
+     * warm request trades eight content queries for eight reads of the `cache`
      * table. That is a smaller win than it looks — the caching pays for itself
      * properly only on a store that is not the database.
      */
