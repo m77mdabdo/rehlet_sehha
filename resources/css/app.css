@@ -510,31 +510,36 @@
 
 /*
 |------------------------------------------------------------------------------
-| Horizontally scrollable table
+| Comparison table frame
 |------------------------------------------------------------------------------
 |
-| A comparison table cannot fit four packages into 390px, so it scrolls
-| sideways inside this wrapper. overflow-x on its own is NOT enough, and the
-| bug it leaves is nasty:
+| Two things at once, and they are both load-bearing.
 |
-| Chrome sizes the mobile layout viewport from the document's intrinsic width,
-| and an overflow:auto box still contributes its CONTENT's max-content width to
-| that calculation. So the 789px table widened the whole page to 722px, the
-| body gained a horizontal scrollbar, and in Arabic — where the overflow runs
-| leftward — every section below the table was pushed off screen. `contain:
-| paint` is what stops that contribution escaping the wrapper.
+| contain: paint STOPS THE TABLE WIDENING THE PAGE. Chrome sizes the mobile
+| layout viewport from the document's intrinsic width, and an overflow box
+| still contributes its CONTENT's max-content width to that. A wide table
+| widened the whole page to 722px, the body gained a horizontal scrollbar, and
+| in Arabic — where that overflow runs leftward — every section below the table
+| was pushed off screen. It hid because a section awaiting scroll-reveal
+| carries a transform, and a transformed box does contain its overflow, so the
+| page measured clean at the top and broke once the reveal finished. It broke
+| immediately for reduced-motion and no-JavaScript visitors, who never have
+| that transform.
 |
-| It hid from every earlier check for an unpleasant reason. While a section was
-| still waiting to be revealed it carried a transform, and a transformed box
-| does contain its overflow — so the page measured clean at the top and broke
-| the moment the reveal finished. It also therefore broke immediately, with no
-| scrolling needed, for the reduced-motion and no-JavaScript paths, where the
-| transform never exists at all.
+| overflow-x: clip RATHER THAN auto, BECAUSE STICKY. Chrome resolves
+| position:sticky against the nearest SCROLL CONTAINER, and `auto` makes this
+| element one — so the sticky column headers pinned to the top of a box that
+| itself scrolls away, which looks exactly like sticky silently not working.
+| Measured: with `auto` the header sat at -369px mid-scroll; with `clip` it
+| pins at 72px, under the site header. `clip` does not create a scroll
+| container, and it still contains the overflow.
 |
-| Verified: with this applied the layout viewport stays at 390 and the table
-| still scrolls (scrollWidth > clientWidth).
+| Nothing is lost by refusing to scroll: the table has no min-width and is only
+| rendered from lg up, so it always fits. Below lg the same data renders as
+| stacked cards and this element is display:none, which is why the layout
+| viewport bug now has nothing at all to act on.
 */
-.table-scroller {
-    overflow-x: auto;
+.table-frame {
+    overflow-x: clip;
     contain: paint;
 }

@@ -1,5 +1,5 @@
 @php
-    use App\Support\Locales;
+    use App\Support\FeaturedPackage;
 
     $matrix = __('packages.matrix');
     $rows = __('packages.comparison.rows');
@@ -18,6 +18,37 @@
      * how this file first failed to compile.)
      */
     $copyRows = ['format', 'plan', 'between', 'labs', 'adjust', 'suits'];
+
+    /*
+     * The two rows that carry a real yes/no. In those a tick or a dash reads
+     * faster than a sentence — but the sentence still renders in full beside
+     * it, because shortening the answer would be changing what the table says.
+     *
+     * The other four are not yes/no questions. "Where it happens" is a place
+     * and "who it suits" is an audience; putting a tick on either would be
+     * decoration pretending to be information.
+     */
+    $stateRows = ['between', 'adjust'];
+
+    $absentMarkers = __('packages.comparison.absent_markers');
+
+    $isAbsent = function (string $value) use ($absentMarkers): bool {
+        foreach ($absentMarkers as $marker) {
+            if (str_starts_with($value, $marker)) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    /*
+     * The recommended column, from the one place that decides it. The homepage
+     * highlights the same package; a patient who saw one recommendation there
+     * and a different one here has been told the clinic does not know its own
+     * mind.
+     */
+    $featuredIndex = FeaturedPackage::indexIn($services);
 @endphp
 
 <x-page-shell
@@ -38,17 +69,30 @@
     {{--
         The comparison.
 
-        A real <table>, because this is tabular data and a screen reader user
-        comparing four packages needs the row and column headers announced. A
-        grid of divs would look identical and tell her nothing.
+        TWO PRESENTATIONS OF ONE SET OF FACTS. Below lg it is four stacked
+        package cards; from lg up it is a real table. Both read the same
+        services and the same matrix — nothing is written twice — and exactly
+        one of them is in the document at a time, via display:none rather than
+        a visual-only hide, so a screen reader is never offered both.
 
-        It scrolls sideways rather than reflowing into four stacked lists: at
-        390px a four-column comparison cannot fit, and stacking it would
-        destroy the one thing a comparison is for. The scrolling itself needs
-        `contain: paint` as well as overflow — see .table-scroller in app.css
-        for the mobile-viewport bug that costs. The wrapper is focusable
-        with a role and a label so a keyboard user can scroll it — a
-        scrollable region that only a mouse can reach is a trap.
+        THE TABLE IS A TABLE because this is tabular data: someone comparing
+        four packages on a row needs the row and column headers announced, and
+        a grid of divs would look identical and tell her nothing.
+
+        IT DOES NOT SCROLL SIDEWAYS AT ALL ANY MORE. Scrolling a comparison
+        horizontally defeats the one thing a comparison is for, and it was also
+        what widened the whole mobile layout viewport. The table has no
+        min-width and only exists from lg up, so it always fits; below lg it is
+        display:none and the bug has nothing to act on. See .table-frame in
+        app.css — the containment is kept as a backstop, and the switch from
+        overflow auto to clip is what lets the sticky header work.
+
+        THE COLUMNS ARE NOT EQUAL, AND THAT IS THE POINT. Four packages of
+        identical weight leave a patient comparing thirty-two cells and
+        choosing none. One column is raised as the default answer; the others
+        carry the same information at lower contrast. Nothing is hidden and no
+        price is disguised — the recommendation is the cheaper of the two
+        middle options, and it survives being noticed.
     --}}
     <section class="py-20 sm:py-28" aria-labelledby="comparison-heading">
         <x-container>
@@ -61,94 +105,267 @@
             @if ($services->isEmpty())
                 <p class="mt-10 text-muted">{{ __('home.packages.empty') }}</p>
             @else
-                <p class="mt-6 text-sm text-muted lg:hidden">{{ __('packages.comparison.scroll_hint') }}</p>
+                {{-- ---------------------------------------------------------
+                     Below lg: stacked cards, one per package.
+                     --------------------------------------------------------- --}}
+                <ul class="mt-10 space-y-6 lg:hidden">
+                    @foreach ($services as $index => $service)
+                        @php $isFeatured = $index === $featuredIndex; @endphp
 
-                <div
-                    class="table-scroller reveal mt-8 rounded-2xl ring-1 ring-line"
-                    tabindex="0"
-                    role="region"
-                    aria-label="{{ __('packages.comparison.aria') }}"
-                >
-                    <table class="w-full min-w-[46rem] border-collapse bg-white text-start text-sm">
+                        <li class="reveal">
+                            <div @class([
+                                'overflow-hidden rounded-2xl bg-white ring-1',
+                                'ring-line' => ! $isFeatured,
+                                'ring-2 ring-ink shadow-lg' => $isFeatured,
+                            ])>
+                                {{-- The header block. Navy for the recommended
+                                     one, paper for the rest. --}}
+                                <div @class([
+                                    'p-6',
+                                    'bg-ink text-white' => $isFeatured,
+                                    'bg-paper' => ! $isFeatured,
+                                ])>
+                                    @if ($isFeatured)
+                                        {{-- Gold on navy measures 6.73:1, which
+                                             is the only place in this design
+                                             where the brand gold clears AA as
+                                             text. On white it is 2.06:1. --}}
+                                        <p class="mb-3 inline-flex rounded-pill bg-gold px-3 py-1 text-xs font-semibold text-ink">
+                                            {{ __('packages.comparison.recommended') }}
+                                        </p>
+                                    @endif
+
+                                    <h3 @class([
+                                        'font-display text-xl font-semibold',
+                                        'text-white' => $isFeatured,
+                                        'text-ink' => ! $isFeatured,
+                                    ])>{{ $service->name }}</h3>
+
+                                    <p @class([
+                                        'mt-1 text-sm leading-relaxed',
+                                        'text-white/75' => $isFeatured,
+                                        'text-muted' => ! $isFeatured,
+                                    ])>{{ $service->subtitle }}</p>
+
+                                    {{-- Price at display scale, not as a row. --}}
+                                    <p class="mt-5 flex items-baseline gap-2">
+                                        <bdi dir="ltr" @class([
+                                            'font-display text-4xl font-semibold',
+                                            'text-gold' => $isFeatured,
+                                            'text-accent' => ! $isFeatured,
+                                        ])>{{ number_format((float) $service->price) }}</bdi>
+                                        <span @class([
+                                            'text-sm',
+                                            'text-white/75' => $isFeatured,
+                                            'text-muted' => ! $isFeatured,
+                                        ])>{{ __('common.currency') }}</span>
+                                    </p>
+
+                                    {{-- The CTA sits in the header so a patient
+                                         who has decided does not scroll past
+                                         five more rows to act. --}}
+                                    <div class="mt-5">
+                                        <x-button
+                                            :href="route('booking', ['service' => $service->slug])"
+                                            :variant="$isFeatured ? 'light' : 'primary'"
+                                            class="w-full"
+                                        >
+                                            {{ __('packages.comparison.cta') }}
+                                            <span class="sr-only">— {{ $service->name }}</span>
+                                        </x-button>
+                                    </div>
+                                </div>
+
+                                {{-- The attributes, as label/value pairs. --}}
+                                <dl class="divide-y divide-line">
+                                    <div class="flex items-baseline justify-between gap-6 px-6 py-4">
+                                        <dt class="text-sm text-muted">{{ $rows['sessions'] }}</dt>
+                                        <dd class="text-end text-sm font-medium text-ink"><bdi dir="ltr">{{ $service->sessions_count }}</bdi></dd>
+                                    </div>
+
+                                    <div class="flex items-baseline justify-between gap-6 px-6 py-4">
+                                        <dt class="text-sm text-muted">{{ $rows['duration'] }}</dt>
+                                        <dd class="text-end text-sm font-medium text-ink">
+                                            <bdi dir="ltr">{{ $service->duration_minutes }}</bdi> {{ __('common.minutes') }}
+                                        </dd>
+                                    </div>
+
+                                    @foreach ($copyRows as $key)
+                                        @php
+                                            $value = $matrix[$service->slug][$key] ?? '—';
+                                            $stateful = in_array($key, $stateRows, true);
+                                            $absent = $stateful && $isAbsent($value);
+                                        @endphp
+
+                                        <div class="px-6 py-4">
+                                            <dt class="text-sm text-muted">{{ $rows[$key] }}</dt>
+                                            <dd class="mt-1 flex items-start gap-2 text-sm leading-relaxed text-ink">
+                                                @if ($stateful)
+                                                    <x-comparison-state :absent="$absent" />
+                                                @endif
+                                                <span>{{ $value }}</span>
+                                            </dd>
+                                        </div>
+                                    @endforeach
+                                </dl>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+
+                {{-- ---------------------------------------------------------
+                     lg and up: the table.
+                     --------------------------------------------------------- --}}
+                {{-- No tabindex and no region role: this no longer scrolls, so
+                     making it a tab stop would be a focus trap that goes
+                     nowhere. The table's own caption names it for assistive
+                     technology. --}}
+                <div class="table-frame reveal mt-10 hidden rounded-2xl ring-1 ring-line lg:block">
+                    {{--
+                        border-separate, NOT border-collapse.
+                        Chrome does not honour position:sticky on a cell inside
+                        a collapsed-border table — the header simply scrolls
+                        away, silently, which is exactly what it did on the
+                        first build of this. Separate borders with zero spacing
+                        looks identical and lets the header and the spine stick.
+
+                        Row separators are drawn as a top border on the cells
+                        rather than a full box on each one, which is what turns
+                        a grid of boxes back into a table.
+                    --}}
+                    <table class="w-full border-separate border-spacing-0 bg-white text-start text-sm">
                         <caption class="sr-only">{{ __('packages.comparison.aria') }}</caption>
 
                         <thead>
-                            <tr class="border-b border-line">
-                                {{-- start-0 not left-0: the sticky column has to
-                                     pin to the reading edge in both languages. --}}
-                                <th scope="col" class="sticky start-0 z-10 bg-white p-4 text-start font-medium text-muted">
+                            <tr>
+                                {{--
+                                    The spine. Sticky on BOTH axes so it is the
+                                    intersection cell, and z-30 so it stays above
+                                    the header row and the label column, which
+                                    are each sticky on one axis.
+
+                                    start-0, never left-0: it pins to the reading
+                                    edge, which is the right in Arabic.
+                                --}}
+                                <th scope="col" class="sticky top-18 start-0 z-30 w-44 bg-sage p-5 text-start align-bottom font-medium text-ink">
                                     {{ __('packages.comparison.feature_column') }}
                                 </th>
 
-                                @foreach ($services as $service)
-                                    <th scope="col" class="min-w-[11rem] p-4 text-start align-bottom">
-                                        <span class="font-display text-base font-semibold text-ink">{{ $service->name }}</span>
-                                        <span class="mt-1 block text-xs leading-relaxed font-normal text-muted">{{ $service->subtitle }}</span>
+                                @foreach ($services as $index => $service)
+                                    @php $isFeatured = $index === $featuredIndex; @endphp
+
+                                    <th scope="col" @class([
+                                        'sticky top-18 z-20 p-5 text-start align-bottom',
+                                        'bg-ink text-white' => $isFeatured,
+                                        'bg-paper' => ! $isFeatured,
+                                    ])>
+                                        @if ($isFeatured)
+                                            <p class="mb-3 inline-flex rounded-pill bg-gold px-3 py-1 text-xs font-semibold text-ink">
+                                                {{ __('packages.comparison.recommended') }}
+                                            </p>
+                                        @endif
+
+                                        <span @class([
+                                            'block font-display text-lg font-semibold',
+                                            'text-white' => $isFeatured,
+                                            'text-ink' => ! $isFeatured,
+                                        ])>{{ $service->name }}</span>
+
+                                        <span @class([
+                                            'mt-1 block text-xs leading-relaxed font-normal',
+                                            'text-white/75' => $isFeatured,
+                                            'text-muted' => ! $isFeatured,
+                                        ])>{{ $service->subtitle }}</span>
+
+                                        {{-- Price, out of the row rhythm and at
+                                             display scale — the largest number
+                                             anywhere on this page. --}}
+                                        <span class="mt-4 flex items-baseline gap-1.5">
+                                            <bdi dir="ltr" @class([
+                                                'font-display text-3xl font-semibold',
+                                                'text-gold' => $isFeatured,
+                                                'text-accent' => ! $isFeatured,
+                                            ])>{{ number_format((float) $service->price) }}</bdi>
+                                            <span @class([
+                                                'text-xs font-normal',
+                                                'text-white/75' => $isFeatured,
+                                                'text-muted' => ! $isFeatured,
+                                            ])>{{ __('common.currency') }}</span>
+                                        </span>
+
+                                        <span class="mt-4 block font-normal">
+                                            <x-button
+                                                :href="route('booking', ['service' => $service->slug])"
+                                                :variant="$isFeatured ? 'light' : 'ghost'"
+                                                class="w-full"
+                                            >
+                                                {{ __('packages.comparison.cta') }}
+                                                <span class="sr-only">— {{ $service->name }}</span>
+                                            </x-button>
+                                        </span>
                                     </th>
                                 @endforeach
                             </tr>
                         </thead>
 
                         <tbody>
-                            {{-- Price, sessions and duration: read from the model. --}}
-                            <tr class="border-b border-line">
-                                <th scope="row" class="sticky start-0 z-10 bg-sage/40 p-4 text-start font-medium text-ink">
-                                    {{ $rows['price'] }}
-                                </th>
-                                @foreach ($services as $service)
-                                    <td class="p-4 align-top">
-                                        {{-- dir=ltr: the numeral and the currency
-                                             reorder inside Arabic without it. --}}
-                                        <bdi dir="ltr" class="font-display text-xl font-semibold text-accent">{{ number_format((float) $service->price) }}</bdi>
-                                        <span class="text-xs text-muted">{{ __('common.currency') }}</span>
-                                    </td>
-                                @endforeach
-                            </tr>
+                            @php $bodyRows = ['sessions', 'duration', ...$copyRows]; @endphp
 
-                            <tr class="border-b border-line">
-                                <th scope="row" class="sticky start-0 z-10 bg-white p-4 text-start font-medium text-ink">{{ $rows['sessions'] }}</th>
-                                @foreach ($services as $service)
-                                    <td class="p-4 align-top text-ink"><bdi dir="ltr">{{ $service->sessions_count }}</bdi></td>
-                                @endforeach
-                            </tr>
-
-                            <tr class="border-b border-line">
-                                <th scope="row" class="sticky start-0 z-10 bg-sage/40 p-4 text-start font-medium text-ink">{{ $rows['duration'] }}</th>
-                                @foreach ($services as $service)
-                                    <td class="p-4 align-top text-ink">
-                                        <bdi dir="ltr">{{ $service->duration_minutes }}</bdi> {{ __('common.minutes') }}
-                                    </td>
-                                @endforeach
-                            </tr>
-
-                            {{-- The rest: wording from the slug-keyed matrix. --}}
-                            @foreach ($copyRows as $index => $key)
-                                <tr class="border-b border-line">
+                            @foreach ($bodyRows as $rowIndex => $key)
+                                {{-- Zebra in sage at 40%, which measures 5.44:1
+                                     against the muted body text. Grey would be
+                                     a colour this palette does not have. --}}
+                                <tr @class(['bg-sage/40' => $rowIndex % 2 !== 0])>
                                     <th scope="row" @class([
-                                        'sticky start-0 z-10 p-4 text-start font-medium text-ink',
-                                        'bg-white' => $index % 2 === 0,
-                                        'bg-sage/40' => $index % 2 !== 0,
+                                        'sticky start-0 z-10 border-t border-line p-5 text-start align-top font-medium text-ink',
+                                        'bg-sage' => $rowIndex % 2 === 0,
+                                        'bg-[#D3E0EC]' => $rowIndex % 2 !== 0,
                                     ])>{{ $rows[$key] }}</th>
 
-                                    @foreach ($services as $service)
-                                        <td class="p-4 align-top leading-relaxed text-muted">
-                                            {{ $matrix[$service->slug][$key] ?? '—' }}
+                                    @foreach ($services as $index => $service)
+                                        @php
+                                            $isFeatured = $index === $featuredIndex;
+
+                                            $value = match ($key) {
+                                                'sessions' => (string) $service->sessions_count,
+                                                'duration' => null,
+                                                default => $matrix[$service->slug][$key] ?? '—',
+                                            };
+
+                                            $stateful = in_array($key, $stateRows, true);
+                                            $absent = $stateful && $value !== null && $isAbsent($value);
+                                        @endphp
+
+                                        {{-- The recommended column carries its own
+                                             side edges and a faint tint through
+                                             every row, so the navy header reads
+                                             as the top of one column rather than
+                                             a block floating above unrelated
+                                             cells. border-x, not border-s/e:
+                                             the column has two sides and both
+                                             get one in either direction. --}}
+                                        <td @class([
+                                            'border-t border-line p-5 align-top leading-relaxed',
+                                            'border-x-2 border-ink/15 bg-sage/25 font-medium text-ink' => $isFeatured,
+                                            'border-b-2 border-b-ink/15' => $isFeatured && $rowIndex === count($bodyRows) - 1,
+                                            'text-muted' => ! $isFeatured,
+                                        ])>
+                                            @if ($key === 'duration')
+                                                <bdi dir="ltr">{{ $service->duration_minutes }}</bdi> {{ __('common.minutes') }}
+                                            @elseif ($key === 'sessions')
+                                                <bdi dir="ltr">{{ $value }}</bdi>
+                                            @else
+                                                <span class="flex items-start gap-2">
+                                                    @if ($stateful)
+                                                        <x-comparison-state :absent="$absent" />
+                                                    @endif
+                                                    <span>{{ $value }}</span>
+                                                </span>
+                                            @endif
                                         </td>
                                     @endforeach
                                 </tr>
                             @endforeach
-
-                            <tr>
-                                <th scope="row" class="sticky start-0 z-10 bg-white p-4"><span class="sr-only">{{ __('packages.comparison.cta') }}</span></th>
-                                @foreach ($services as $service)
-                                    <td class="p-4 align-top">
-                                        <x-button :href="route('booking', ['service' => $service->slug])" variant="ghost" class="w-full">
-                                            {{ __('packages.comparison.cta') }}
-                                            <span class="sr-only">— {{ $service->name }}</span>
-                                        </x-button>
-                                    </td>
-                                @endforeach
-                            </tr>
                         </tbody>
                     </table>
                 </div>
