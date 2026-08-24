@@ -123,3 +123,45 @@ function renderNotification(object $notification, string $locale): array
         'subject' => (string) $mailable->subject,
     ];
 }
+
+/*
+|------------------------------------------------------------------------------
+| Duplicate-content measurement
+|------------------------------------------------------------------------------
+|
+| Shared by PackagesPageTest and StandalonePagesTest, and defined HERE rather
+| than in whichever file happened to need them first.
+|
+| Pest loads every test file, so a helper declared in one is reachable from
+| another during a full run — but only by accident of load order, and a test
+| that passes in the suite and dies when you run it on its own is a test people
+| stop running. That is exactly how this moved.
+*/
+
+/**
+ * The visible words on a page, with the machinery stripped out.
+ */
+function pageVisibleText(string $html): string
+{
+    $html = (string) preg_replace('/<(script|style)\b.*?<\/\1>/su', ' ', $html);
+    $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+    return trim((string) preg_replace('/\s+/u', ' ', $text));
+}
+
+/**
+ * Overlapping word runs, as a set.
+ *
+ * @return array<string, true>
+ */
+function pageShingles(string $text, int $length): array
+{
+    $words = preg_split('/\s+/u', $text, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    $out = [];
+
+    for ($i = 0; $i + $length <= count($words); $i++) {
+        $out[implode(' ', array_slice($words, $i, $length))] = true;
+    }
+
+    return $out;
+}
