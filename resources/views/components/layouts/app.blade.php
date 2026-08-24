@@ -147,9 +147,21 @@
         {{ __('nav.skip_to_content') }}
     </a>
 
+    {{--
+        The header is transparent over a hero that has one, and solid
+        everywhere else and after scroll. header.js adds data-solid; until it
+        runs, and forever on pages without a hero, the solid treatment is what
+        the markup already says — so a failed script leaves a readable header
+        rather than white-on-white.
+
+        The colours are driven by data-solid rather than by two class lists, so
+        the transparent state cannot drift out of step with the solid one.
+    --}}
     <header
-        class="sticky top-0 z-40 border-b border-line bg-paper/80 backdrop-blur-md"
+        class="group sticky top-0 z-40 border-b border-line bg-paper/80 text-ink backdrop-blur-md motion-safe:transition-[background-color,border-color,color] motion-safe:duration-300
+               data-transparent:border-transparent data-transparent:bg-transparent data-transparent:text-white data-transparent:backdrop-blur-none"
         data-menu-root
+        data-header
     >
         <x-container>
             <div class="flex h-18 items-center justify-between gap-4">
@@ -172,7 +184,8 @@
 
                     <button
                         type="button"
-                        class="inline-flex size-11 items-center justify-center rounded-pill ring-1 ring-line transition-colors hover:bg-sage"
+                        class="inline-flex size-11 items-center justify-center rounded-pill ring-1 ring-line transition-colors hover:bg-sage
+                               group-data-transparent:ring-white/60 group-data-transparent:hover:bg-white/15"
                         aria-controls="mobile-menu"
                         aria-expanded="false"
                         data-menu-toggle
@@ -188,7 +201,8 @@
             </div>
         </x-container>
 
-        <div id="mobile-menu" class="hidden border-t border-line bg-paper lg:hidden" data-menu-panel>
+        {{-- Always opaque: an open menu over the hero video would be unreadable. --}}
+        <div id="mobile-menu" class="hidden border-t border-line bg-paper text-ink lg:hidden" data-menu-panel>
             <x-container>
                 <nav class="flex flex-col py-2" aria-label="{{ __('nav.menu_label') }}">
                     @include('partials.nav-links', ['mobile' => true])

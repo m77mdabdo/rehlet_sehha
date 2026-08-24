@@ -42,6 +42,51 @@ function directionalReplacements(): array
     ];
 }
 
+/**
+ * Physical utilities that are physical ON PURPOSE, each with the reason.
+ *
+ * An exemption list rather than a quiet carve-out in the matcher: leaving a
+ * usage out of the scan would look identical to never having thought about it.
+ * Every entry has to name a file, the exact class token, and a written
+ * justification, and the test below fails if the usage has since disappeared —
+ * so a stale exemption cannot sit here pre-authorising a future mistake.
+ *
+ * The bar for adding one is high. "It looked wrong mirrored" is not a reason;
+ * the whole point of logical properties is that mirrored is correct. A real
+ * reason is a case where the thing being positioned does not belong to the
+ * text at all.
+ *
+ * @return list<array{0: string, 1: string, 2: string}>
+ */
+function exemptDirectionalUsages(): array
+{
+    return [
+        [
+            'components/sections/hero.blade.php', 'lg:ml-auto',
+            'The hero copy panel is pinned to the physical RIGHT in both '
+            .'locales, because it is positioned against the FOOTAGE rather than '
+            .'against the text. The strongest frame in the clip is a top-down '
+            .'plate sitting left of centre, and the panel has to be opposite it. '
+            .'Mirroring the panel with the reading direction would drop it '
+            .'straight on top of the plate in English, and both ways out are '
+            .'worse: mirroring the footage is forbidden, and shifting the frame '
+            .'far enough to clear the panel needs roughly a 40% upscale of a '
+            .'1280-wide source, which softens the sharpest image on the page. '
+            .'The text alignment inside the panel is still fully logical, so '
+            .'Arabic reads right and English reads left within the same shape.',
+        ],
+        [
+            'components/sections/hero.blade.php', 'lg:left-[24%]',
+            'The hero case card straddles the panel, so it has to use the same '
+            .'coordinate system the panel does — see the exemption above. If '
+            .'this were logical while the panel stayed physical, the two would '
+            .'mirror independently and the overlap that makes them read as one '
+            .'object would land on opposite corners in the two languages. It is '
+            .'physical for consistency with what it overlaps, not for taste.',
+        ],
+    ];
+}
+
 it('uses only logical direction utilities in blade templates', function () {
     $forbidden = directionalReplacements();
 
@@ -65,6 +110,8 @@ it('uses only logical direction utilities in blade templates', function () {
     $violations = [];
 
     foreach (Finder::create()->files()->in(resource_path('views'))->name('*.blade.php') as $file) {
+        $relative = str_replace(resource_path('views').'/', '', $file->getRealPath());
+
         foreach (preg_split('/\R/', $file->getContents()) ?: [] as $number => $line) {
             // Only look inside class attributes and @class([...]) arrays;
             // prose in a comment may legitimately say "left".
@@ -77,6 +124,10 @@ it('uses only logical direction utilities in blade templates', function () {
             }
 
             foreach ($matches as $match) {
+                if (isExemptDirectionalUsage($relative, trim($match[0]))) {
+                    continue;
+                }
+
                 $violations[] = sprintf(
                     '%s:%d  %s  → use %s',
                     str_replace(base_path().'/', '', $file->getRealPath()),
@@ -137,5 +188,39 @@ it('detects a physical utility when one is introduced', function () {
 
     foreach ($shouldNotMatch as $sample) {
         expect(preg_match($pattern, $sample))->toBe(0, "false positive on: {$sample}");
+    }
+});
+
+function isExemptDirectionalUsage(string $relativePath, string $token): bool
+{
+    foreach (exemptDirectionalUsages() as [$file, $class, $reason]) {
+        if ($file === $relativePath && $class === $token) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+it('gives a written reason for every physical utility it allows', function () {
+    foreach (exemptDirectionalUsages() as [$file, $class, $reason]) {
+        $path = resource_path('views/'.$file);
+
+        expect(file_exists($path))->toBeTrue("The exemption names {$file}, which no longer exists.");
+
+        /*
+         * An exemption for a usage that is gone is stale bookkeeping, and worse
+         * than useless: it silently pre-authorises the next person to
+         * reintroduce the same class for a completely different reason.
+         */
+        expect(str_contains(file_get_contents($path), $class))->toBeTrue(
+            "{$file} no longer uses «{$class}». Delete the exemption rather than leaving it to cover something else."
+        );
+
+        expect(strlen($reason))->toBeGreaterThan(
+            160,
+            "The exemption for «{$class}» in {$file} needs a real justification, not a note. "
+            .'Mirrored is the correct default; say why this one is not.'
+        );
     }
 });
