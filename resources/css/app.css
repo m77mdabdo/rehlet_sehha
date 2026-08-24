@@ -391,43 +391,73 @@
 /*
 | The hero arriving.
 |
-| PURE CSS, AND NOT GATED ON .js-motion — unlike the reveals below, and for a
-| measured reason.
+| PURE CSS, AND NOT SCRIPT-GATED — unlike the reveals above, and for a measured
+| reason.
 |
-| The gate exists so nothing sits hidden waiting for a bundle. But the hero is
-| the one thing that must never wait: it is the first screen, and on a throttled
+| The gate exists so nothing sits hidden waiting for a bundle. The hero is the
+| one thing that must never wait: it is the first screen, and on a throttled
 | slow 4G connection this site's bundle does not initialise until about 2.1s.
 | Gating the hero would have hidden the headline and the booking button for two
-| seconds on exactly the connections most of this clinic's patients are using —
-| to play a half-second animation.
+| seconds on exactly the connections most of this clinic's patients are using.
 |
 | A load-triggered animation needs no script at all. It starts at first paint,
 | finishes on its own, and ends in the finished state whether or not any
 | JavaScript ever arrives. The only thing hidden is what the animation itself is
-| hiding, for as long as the animation runs.
+| hiding, for as long as it runs — and the panel's 800ms is the budget for that,
+| set against a hard limit of one second. Past a second of watching footage with
+| no message on it, slow stops reading as considered and starts reading as
+| broken.
 |
-| Each object slides in from the edge it sits against — the panel from the
-| right, the case card from the left — so each reads as arriving from its own
-| side rather than the pair sliding as one block. NOT mirrored per locale,
-| because since Task 8.6 the composition is not mirrored either: the panel is
-| pinned to the physical right in both languages so it never lands on the plate
-| in the footage. Mirroring only the motion would send the English panel away
-| from the edge it belongs to.
+| THE MOTION MIRRORS WITH THE LANGUAGE; THE LAYOUT DOES NOT. The panel enters
+| from the inline START — the right in Arabic, the left in English — and the
+| card from the inline END. Worth being clear about the consequence: the panel
+| itself is pinned to the physical right in BOTH locales (Task 8.6, so it never
+| lands on the plate in the footage), so in English it arrives from the side
+| opposite the edge it comes to rest against. That is a deliberate instruction,
+| not an oversight.
 |
-| 32px, which is enough to read as arrival. A long travel looks cheap and costs
-| frames for nothing.
+| --dir is what does the mirroring, because there is no logical translate. It is
+| a plain multiplier on the offset, so one keyframe serves both directions and
+| the two can never drift apart.
+|
+| The card is slower than the panel AND starts later. That asymmetry is the
+| point: they must not arrive together, because they are not equally important.
+| The panel carries the message; the card is supporting detail and can afford to
+| still be settling once the message is already readable.
 */
+
+html {
+    --dir: 1;
+}
+
+html[dir="rtl"] {
+    --dir: -1;
+}
 
 @media (prefers-reduced-motion: no-preference) {
     [data-enter] {
-        animation: enter-slide 500ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--enter-delay, 0ms) both;
+        animation: enter-slide var(--enter-duration, 800ms) cubic-bezier(0.22, 0.61, 0.36, 1)
+            var(--enter-delay, 0ms) both;
+    }
+
+    /* The message. Readable — fully opaque — 800ms after first paint. */
+    [data-enter="panel"] {
+        --enter-x: -60px;
+        --enter-duration: 800ms;
+    }
+
+    /* Supporting detail. Arrives from the other side, later, and slower. */
+    [data-enter="card"] {
+        --enter-x: 60px;
+        --enter-duration: 900ms;
+        --enter-delay: 200ms;
     }
 }
 
 @keyframes enter-slide {
     from {
         opacity: 0;
-        transform: translateX(var(--enter-x, 0));
+        transform: translateX(calc(var(--enter-x, 0px) * var(--dir, 1)));
     }
 
     to {

@@ -194,6 +194,100 @@ it('keeps every movement behind a reduced-motion guard', function () {
     }
 });
 
+it('mirrors the hero entrance with the writing direction', function () {
+    /*
+     * The panel enters from the inline START — the right in Arabic, the left in
+     * English — and the card from the inline END.
+     *
+     * There is no logical equivalent of translateX, so the mirroring is done by
+     * multiplying the offset by --dir, which is 1 on an LTR document and -1 on
+     * an RTL one. Hardcode a signed translateX instead and English silently
+     * animates the wrong way while Arabic still looks right, which is the
+     * hardest kind of direction bug to notice.
+     *
+     * Note this is the one place where the hero's motion and its LAYOUT
+     * disagree on purpose: the panel is pinned to the physical right in both
+     * locales (Task 8.6), so in English it arrives from the side opposite the
+     * edge it rests against. That was a deliberate instruction.
+     */
+    $css = stylesheet();
+
+    expect($css)->toMatch('/html\s*\{[^}]*--dir:\s*1\s*;/s');
+    expect($css)->toMatch('/html\[dir="rtl"\]\s*\{[^}]*--dir:\s*-1\s*;/s');
+
+    // The keyframe must actually use it.
+    $position = strpos($css, '@keyframes enter-slide');
+
+    expect($position)->not->toBeFalse('The hero entrance keyframes are gone.');
+
+    $block = substr($css, $position, 400);
+
+    expect($block)->toContain('var(--dir');
+    expect(preg_match('/transform:\s*translateX\(\s*-?\d/', $block))->toBe(
+        0,
+        'The hero entrance uses a hardcoded translateX. It will not mirror, and '
+        .'English will animate from the wrong side while Arabic still looks correct.'
+    );
+
+    // The panel and the card must start from opposite sides.
+    preg_match('/\[data-enter="panel"\]\s*\{[^}]*--enter-x:\s*(-?\d+)px/s', $css, $panel);
+    preg_match('/\[data-enter="card"\]\s*\{[^}]*--enter-x:\s*(-?\d+)px/s', $css, $card);
+
+    expect($panel)->not->toBeEmpty('The hero panel has no entrance offset.');
+    expect($card)->not->toBeEmpty('The hero case card has no entrance offset.');
+
+    expect((int) $panel[1] * (int) $card[1])->toBeLessThan(
+        0,
+        'The panel and the card enter from the same side. They are meant to come '
+        .'from opposite edges — arriving together reads as one shove.'
+    );
+
+    // Modest travel. Far enough to read as arrival, not a flight across the page.
+    foreach ([$panel[1], $card[1]] as $offset) {
+        expect(abs((int) $offset))->toBeLessThanOrEqual(60);
+    }
+});
+
+it('keeps the hero panel readable well inside its one-second budget', function () {
+    /*
+     * The hard limit is a second from first paint. Past that, slow stops
+     * reading as considered and starts reading as broken — the visitor is
+     * watching a video with no message on it.
+     *
+     * The panel's animation starts AT first paint (it is a CSS animation on an
+     * element the render-blocking stylesheet has already styled), so its
+     * duration is the whole budget. Measured in Chrome over CDP at three
+     * throttling levels: fully opaque 750-758ms after FCP, 90% opaque at ~435ms,
+     * identical on slow 4G and on 3G because the clock is anchored to paint
+     * rather than to the network.
+     *
+     * The card is deliberately slower and later — it is supporting detail, and
+     * it is allowed to still be settling once the message is readable.
+     */
+    $css = stylesheet();
+
+    preg_match('/\[data-enter="panel"\]\s*\{[^}]*--enter-duration:\s*(\d+)ms/s', $css, $panel);
+
+    expect($panel)->not->toBeEmpty('The hero panel has no explicit entrance duration.');
+
+    expect((int) $panel[1])->toBeLessThanOrEqual(
+        900,
+        'The hero panel takes longer than its budget to become readable. '
+        .'The limit is one second from first paint, and the animation starts at '
+        .'first paint, so the duration IS the budget.'
+    );
+
+    preg_match('/\[data-enter="card"\]\s*\{[^}]*--enter-duration:\s*(\d+)ms/s', $css, $card);
+    preg_match('/\[data-enter="card"\]\s*\{[^}]*--enter-delay:\s*(\d+)ms/s', $css, $delay);
+
+    expect($card)->not->toBeEmpty();
+    expect($delay)->not->toBeEmpty();
+
+    // They must not arrive together: that asymmetry is the composition.
+    expect((int) $delay[1])->toBeGreaterThan(0);
+    expect((int) $card[1] + (int) $delay[1])->toBeGreaterThan((int) $panel[1]);
+});
+
 it('reserves the width of the counting figures whether or not they count', function () {
     /*
      * The single most likely way this task could have regressed CLS. "500+" is
