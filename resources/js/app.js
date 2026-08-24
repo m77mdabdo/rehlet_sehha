@@ -8,3 +8,14 @@
 import './menu';
 import './copy';
 import './focus';
+
+/*
+ * The three interactive features from Task 8, each dependency-free for the
+ * same reason menu.js is: Alpine would cost roughly fifteen kilobytes gzipped
+ * on every homepage visit — more than fifteen times this whole bundle — to
+ * replace a few hundred lines of DOM work. See the section components for the
+ * full argument.
+ */
+import './video-gallery';
+import './matcher';
+import './plate';

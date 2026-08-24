@@ -16,11 +16,20 @@
 
     <x-sections.packages :services="$services" />
 
+    {{-- The matcher sits directly after the packages, because it answers the
+         question the packages leave a visitor holding: which of these is
+         mine. Putting it further down would mean she has already left. --}}
+    <x-sections.matcher :services="$services" />
+
     <x-sections.how-it-works />
 
     <x-sections.about />
 
+    <x-sections.plate :foods="$plateFoods" />
+
     <x-sections.stories :testimonials="$testimonials" />
+
+    <x-sections.videos :videos="$videos" />
 
     <x-sections.articles :posts="$posts" />
 
