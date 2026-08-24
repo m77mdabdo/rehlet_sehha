@@ -123,6 +123,45 @@
         <link rel="preload" as="font" type="font/woff2" href="{{ Vite::asset($font) }}" crossorigin>
     @endforeach
 
+    {{--
+        Turns the SCROLL REVEALS on.
+
+        Only the reveals. The hero entrance is a CSS animation with no script
+        behind it, and the counting figures degrade to the final number they
+        already render — neither depends on this class. What it gates is the one
+        effect that genuinely needs a script: elements below the fold start
+        hidden so an IntersectionObserver can bring them in.
+
+        Inline and in the head on purpose. Adding the class from the bundle
+        would mean any reveal already on screen paints, vanishes, then animates
+        back in, which is worse than not animating.
+
+        THE TIMER IS THE POINT, NOT AN AFTERTHOUGHT. It covers the gap the head
+        script opens: things are hidden, but the bundle has not arrived to
+        un-hide them. 1200ms rather than something generous, because the cost of
+        firing too early is nothing — the content simply appears without
+        animating — while the cost of firing too late is a visitor looking at a
+        blank section. Measured: this bundle initialises at about 2.1s on
+        throttled slow 4G, so on those connections the reveals are deliberately
+        skipped. That is the right way round. The animation is decoration and
+        the people on the slowest connections should not be the ones waiting for
+        it.
+    --}}
+    <script>
+        (function () {
+            var root = document.documentElement;
+
+            if (!('IntersectionObserver' in window)) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            root.classList.add('js-motion');
+
+            window.setTimeout(function () {
+                if (!root.hasAttribute('data-motion-ready')) root.classList.remove('js-motion');
+            }, 1200);
+        })();
+    </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     {{--

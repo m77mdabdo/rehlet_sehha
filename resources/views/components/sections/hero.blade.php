@@ -271,7 +271,7 @@
                 right and English aligns left within the same shape.
             --}}
             <div class="lg:ml-auto lg:w-[52%]">
-                <div data-hero-panel class="rounded-[1.75rem] bg-paper/[0.93] p-6 shadow-md ring-1 ring-white/50 backdrop-blur-xl sm:rounded-[2rem] sm:p-9 lg:pb-44">
+                <div data-hero-panel data-enter style="--enter-x: 32px" class="rounded-[1.75rem] bg-paper/[0.93] p-6 shadow-md ring-1 ring-white/50 backdrop-blur-xl sm:rounded-[2rem] sm:p-9 lg:pb-44">
                     <x-section-heading
                         level="h1"
                         :eyebrow="__('home.hero.eyebrow')"
@@ -322,7 +322,7 @@
                 an overlap and pretending otherwise would just crush both.
             --}}
             <div class="mt-6 lg:absolute lg:left-[24%] lg:top-[calc(100%-15rem-7rem)] lg:mt-0 lg:w-[21rem]">
-                <x-card class="reveal rounded-xl shadow-2xl ring-black/5" :padding="false" data-hero-card>
+                <x-card class="rounded-xl shadow-2xl ring-black/5" :padding="false" data-hero-card data-enter style="--enter-x: -32px; --enter-delay: 120ms">
                     <div class="p-6">
                         <div class="flex items-start justify-between gap-4">
                             <div>
