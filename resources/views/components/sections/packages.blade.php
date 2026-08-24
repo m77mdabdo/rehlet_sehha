@@ -1,20 +1,15 @@
 @props(['services'])
 
 @php
+    use App\Support\FeaturedPackage;
+
     /*
-     * The middle package is featured.
-     *
-     * Computed from the collection rather than stored as a column: with four
-     * packages ordered by sort_order, "the middle one" is a presentation
-     * decision about this section, not a fact about the service. A
-     * services.is_featured column would be a second thing to keep in step with
-     * sort_order, and the two would disagree the first time someone reorders.
-     *
-     * intdiv on count - 1 picks the lower middle for an even count, which puts
-     * the highlight on the cheaper of the two central packages — the honest
-     * side to err on.
+     * Which package is highlighted, from the one place that decides it — the
+     * packages page raises the same column, and the two must never disagree
+     * about what the clinic recommends. See App\Support\FeaturedPackage for
+     * why it is computed rather than stored.
      */
-    $featuredIndex = $services->isEmpty() ? null : intdiv($services->count() - 1, 2);
+    $featuredIndex = FeaturedPackage::indexIn($services);
 @endphp
 
 <section id="packages" class="bg-sage/50 py-20 sm:py-24" aria-labelledby="packages-heading">

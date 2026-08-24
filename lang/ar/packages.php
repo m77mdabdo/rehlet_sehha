@@ -48,6 +48,25 @@ return [
             'adjust' => 'تعديل الخطة',
             'suits' => 'مناسبة لمين',
         ],
+        /*
+         * PRESENTATION ONLY — none of this changes what the table says.
+         *
+         * absent_markers: the words a matrix value starts with when the answer
+         * is "no". Two rows have a real yes/no in them — support between
+         * sessions, and whether the plan gets adjusted — and in those a symbol
+         * reads faster than a sentence. The sentence still renders in full; the
+         * marker only decides whether it gets a tick or a dash beside it.
+         *
+         * Kept as a list here rather than matched against a hardcoded Arabic
+         * string in a Blade file, so rewording the copy is a one-line change in
+         * the same file as the copy. PackagesPageTest fails if a matrix value
+         * reads as a negation but starts with something not listed, so drift is
+         * loud rather than silent.
+         */
+        'recommended' => 'الأكثر طلباً',
+        // Both spellings: the clinic writes either, and TranslationParityTest
+        // requires the two locales to have the same shape here anyway.
+        'absent_markers' => ['مفيش', 'مافيش'],
         'cta' => 'احجزي دي',
     ],
 
