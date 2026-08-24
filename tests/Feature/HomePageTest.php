@@ -62,26 +62,67 @@ it('renders every section in both locales', function (string $locale) {
     }
 })->with(['ar', 'en']);
 
-it('resolves every nav anchor to a section that exists', function () {
+it('resolves every nav link, whether it is an anchor or a route', function () {
+    /*
+     * The nav is mixed while the standalone pages are being built: some items
+     * still point at a homepage section, and some now point at a real page.
+     * Both kinds have to resolve, and the failure modes are different — an
+     * anchor dies silently when a section id is renamed, a route dies loudly
+     * with a 404 nobody visits in development.
+     *
+     * This is the check that would have caught #about pointing at a section
+     * nobody had built, and it is the same check that now catches a nav item
+     * pointed at a page that does not exist yet.
+     */
     $content = $this->get('/ar')->assertOk()->getContent();
 
-    // Pull the fragment out of every in-page nav link and prove the target id
-    // is actually rendered. This is the check that would have caught #about
-    // pointing at a section nobody built.
-    preg_match_all('/href="[^"]*#([a-z-]+)"/', $content, $matches);
+    preg_match_all('/<nav[^>]*>.*?<\/nav>/su', $content, $navs);
 
-    $fragments = array_unique($matches[1]);
+    expect($navs[0])->not->toBeEmpty('No nav rendered on the homepage.');
 
-    expect($fragments)->not->toBeEmpty();
+    $navMarkup = implode("\n", $navs[0]);
 
-    foreach ($fragments as $fragment) {
-        // str_contains rather than toContain(): Pest's toContain is VARIADIC,
-        // so a second string argument is another needle to find, not a failure
-        // message. Passing one silently asserts the message text is on the page.
-        expect(str_contains($content, 'id="'.$fragment.'"'))->toBeTrue(
-            "The nav links to #{$fragment} but no element on the page carries that id."
+    preg_match_all('/href="([^"]+)"/', $navMarkup, $matches);
+
+    $anchors = 0;
+    $routes = 0;
+
+    foreach (array_unique($matches[1]) as $href) {
+        // In-page: the target id must actually be rendered.
+        if (preg_match('/#([a-z-]+)$/', $href, $fragment) === 1) {
+            $anchors++;
+
+            // str_contains rather than toContain(): Pest's toContain is
+            // VARIADIC, so a second string argument is another needle to find,
+            // not a failure message. Passing one silently asserts the message
+            // text is on the page.
+            expect(str_contains($content, 'id="'.$fragment[1].'"'))->toBeTrue(
+                "The nav links to #{$fragment[1]} but no element on the page carries that id."
+            );
+
+            continue;
+        }
+
+        // A real page: it must answer. Relative to this app only — an
+        // external link is somebody else's uptime problem.
+        $path = parse_url($href, PHP_URL_PATH);
+
+        if ($path === null || ! str_starts_with((string) $path, '/')) {
+            continue;
+        }
+
+        $routes++;
+
+        expect($this->get($path)->status())->toBe(
+            200,
+            "The nav links to {$path}, which does not return 200."
         );
     }
+
+    // Guards the guard: if the markup changes shape and nothing matches, the
+    // loop above passes by doing nothing at all.
+    expect($anchors)->toBeGreaterThan(0, 'No in-page nav anchors were found to check.');
+    expect($routes)->toBeGreaterThan(0, 'No nav routes were found to check.');
 });
 
 it('issues a bounded number of queries cold', function () {
@@ -275,7 +316,14 @@ it('degrades to empty states rather than breaking when there is no content', fun
 it('uses a native details accordion rather than javascript', function () {
     $content = $this->get('/ar')->assertOk()->getContent();
 
-    expect(substr_count($content, '<details'))->toBe(Faq::active()->count());
+    /*
+     * GENERAL questions only. Since FAQs gained categories, the table also
+     * holds the buying questions that live on the packages page — and this
+     * assertion counting every active row is what caught the homepage
+     * quietly growing by six answers about refunds when those were seeded.
+     */
+    expect(substr_count($content, '<details'))
+        ->toBe(Faq::active()->category(Faq::CATEGORY_GENERAL)->count());
     expect($content)->toContain('<summary');
 });
 

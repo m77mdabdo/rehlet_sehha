@@ -18,7 +18,13 @@
 
     $links = [
         ['label' => __('nav.services'), 'href' => $home.'#specialties'],
-        ['label' => __('nav.packages'), 'href' => $home.'#packages'],
+        /*
+         * Real routes replace anchors as each page is built. The homepage
+         * sections keep their ids, so an in-page anchor still resolves for
+         * anything that already points at one — but the nav sends a visitor to
+         * the full page, which is where the answers are.
+         */
+        ['label' => __('nav.packages'), 'href' => route('packages')],
         ['label' => __('nav.how_it_works'), 'href' => $home.'#how-it-works'],
         ['label' => __('nav.about'), 'href' => $home.'#about'],
         ['label' => __('nav.articles'), 'href' => $home.'#articles'],
