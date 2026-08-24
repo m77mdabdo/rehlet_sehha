@@ -33,6 +33,16 @@ use Illuminate\Support\Facades\Schema;
  *
  * Checked in three places, because the string could arrive from any of them:
  * the translation files, the rendered page, and the schema itself.
+ *
+ * ---------------------------------------------------------------------------
+ *
+ * The same rule is enforced at the bottom of this file for the HERO CASE CARD,
+ * which is a different feature but the identical mistake. That card used to end
+ * on "86%" over a progress bar; a percentage attached to a patient's own
+ * behaviour is a grade she can fail at, and it sat three screens above a plate
+ * builder that refuses to show her a calorie. One rule, two enforcement sites,
+ * kept in one file so that neither can be relaxed without reading the argument
+ * for the other.
  */
 beforeEach(function () {
     $this->seed(PlateFoodSeeder::class);
@@ -229,3 +239,83 @@ it('offers real egyptian food across every group', function () {
             ->toBeTrue("Expected «{$expected}» on the plate.");
     }
 });
+
+/*
+|------------------------------------------------------------------------------
+| The hero case card
+|------------------------------------------------------------------------------
+|
+| Same rule, different feature. See the note in the file header.
+*/
+
+/**
+ * The hero section as rendered, so these assertions describe what a patient
+ * actually sees rather than what a translation file happens to contain.
+ */
+function heroSection(string $locale): string
+{
+    $html = test()->get("/{$locale}")->assertOk()->getContent();
+
+    preg_match('/<section[^>]*data-hero\b.*?<\/section>/su', $html, $match);
+
+    expect($match)->not->toBeEmpty('The hero section did not render.');
+
+    return $match[0];
+}
+
+it('shows no percentage anywhere in the hero', function (string $locale) {
+    /*
+     * Latin % and Arabic ٪ (U+066A) alike. A percentage is the specific shape
+     * this rule is about: not a quantity of food, but a proportion of herself.
+     */
+    $text = html_entity_decode(strip_tags(heroSection($locale)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+    foreach (['%', "\u{066A}"] as $sign) {
+        expect(str_contains($text, $sign))->toBeFalse(
+            "The hero shows a percentage in {$locale}:\n\n"
+            .trim(preg_replace('/\s+/u', ' ', $text))
+        );
+    }
+})->with(['ar', 'en']);
+
+it('has no meter or progress bar in the hero', function (string $locale) {
+    /*
+     * The bar mattered as much as the number did. A filled track next to a
+     * figure is the visual grammar of a score out of a target — it is what made
+     * the card read as an app dashboard rather than as a clinic — and removing
+     * the digits while leaving the bar would keep the meaning and lose only the
+     * evidence.
+     */
+    $hero = heroSection($locale);
+
+    foreach (['role="meter"', 'role="progressbar"', '<progress', 'aria-valuenow'] as $needle) {
+        expect(str_contains($hero, $needle))->toBeFalse(
+            "The hero case card has a {$needle} again. Progress here is described, not scored."
+        );
+    }
+})->with(['ar', 'en']);
+
+it('states plan adherence in words rather than as a figure', function (string $locale) {
+    /*
+     * The row that carried the 86%. It is now an ordinary row saying an
+     * ordinary thing, in the same register as the rows around it.
+     *
+     * WHY THIS ROW AND NOT EVERY ROW. "Week 8" and "6 nights out of 7" still
+     * contain digits and are deliberately left alone: a week number is a date,
+     * and nights slept is a count of things that happened. Neither is a mark
+     * out of a target. "86% adherence" was a grade — the difference is whether
+     * a patient can be short of it.
+     */
+    $value = __('home.hero.case_card.metrics.adherence.value', [], $locale);
+
+    expect($value)->toBeString();
+    expect($value)->not->toBeEmpty();
+
+    expect(containsDigit($value))->toBeFalse(
+        "Plan adherence is a figure again in {$locale}: «{$value}». "
+        .'It is the one row on this card a patient can read as a mark out of a target.'
+    );
+
+    // And it actually reaches the page.
+    expect(heroSection($locale))->toContain($value);
+})->with(['ar', 'en']);

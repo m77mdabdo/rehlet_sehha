@@ -23,7 +23,16 @@
     $markTier = $size >= 48 ? 'logo.mark-full' : 'logo.mark';
 @endphp
 
-<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-3 text-ink']) }}>
+{{--
+    NO COLOUR OF ITS OWN — it inherits.
+
+    It used to hardcode text-ink, which meant the footer had to pass text-white
+    and win a specificity race to invert it, and the header could not invert it
+    at all: over the hero video the wordmark stayed navy on navy and measured
+    1.20:1. Inheriting means the surface decides, once, and the mark and the
+    wordmark can never disagree with the text around them.
+--}}
+<span {{ $attributes->merge(['class' => 'inline-flex items-center gap-3']) }}>
     <x-dynamic-component :component="$markTier" :size="$size" />
 
     <span class="flex flex-col leading-none">

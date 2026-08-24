@@ -97,33 +97,27 @@ function contrastPairs(): array
         /*
          * ---- Body text on the page background -------------------------------
          *
-         * These three also carry the hero, which since Task 8.5 sits over a
-         * background video.
+         * These three also carry the hero, which sits over a background video.
          *
-         * The video changes nothing about them, and that is the whole point of
-         * the composition: the copy is on an OPAQUE paper panel and the case
-         * card on opaque white, so every hero pair is still a solid colour on a
-         * solid colour that can be checked here, at build time, without knowing
-         * which frame is on screen.
+         * SINCE TASK 8.6 THE HERO PANEL IS TRANSLUCENT, so these pairs no
+         * longer describe it exactly: the copy composites against paper at 93%
+         * over blurred footage, not against paper. They remain the right check
+         * for the rest of the site and the right STARTING point for the hero,
+         * and the gap between them and reality is small by construction — at
+         * that opacity roughly 7% of the backdrop reaches through, and
+         * backdrop-blur flattens it.
          *
-         * Verified against real composited pixels rather than assumed — the
-         * rendered hero was screenshotted with the glyphs made transparent, and
-         * every text box compared against the worst pixel actually behind it,
-         * at 390/768/1440 in both locales, on the clip's brightest frame and
-         * its darkest. 240 elements, none below its threshold, worst 5.23:1 at
-         * the eyebrow. Not one of them moved by even 0.01 between the bright
-         * frame and the dark one, which is the measurement that proves no text
-         * overlaps the picture at any width.
-         *
-         * That result holds only while the panel is opaque. If it is ever given
-         * an alpha, the hero's contrast becomes a property of the video instead
-         * of the stylesheet and these lines stop describing it — so
-         * HeroVideoTest fails the build if the panel becomes translucent.
+         * The hero's real numbers are not derived here, because they cannot be:
+         * they were measured off the rendered page against the worst pixel
+         * actually behind each glyph, at three widths, in both locales, over
+         * three frames. HeroContrastTest holds that record and pins the three
+         * values it depends on — the panel opacity, the overlay density and the
+         * header scrim. Read it before changing any of them.
          */
-        ['ink', 'paper', 4.5, 'headings, body copy, and the hero headline on its panel'],
-        ['muted', 'paper', 4.5, 'section leads, and the hero lead and credential chips'],
+        ['ink', 'paper', 4.5, 'headings and body copy; also the hero headline, see HeroContrastTest'],
+        ['muted', 'paper', 4.5, 'section leads; also the hero lead and chips, see HeroContrastTest'],
         ['accent', 'paper', 4.5, 'links on the page background'],
-        ['accent-dark', 'paper', 4.5, 'section eyebrows — the worst pair in the hero, 5.23:1'],
+        ['accent-dark', 'paper', 4.5, 'section eyebrows — also the hero eyebrow, its worst pair'],
 
         // ---- Body text on cards ----------------------------------------------
         ['ink', 'white', 4.5, 'card headings'],
