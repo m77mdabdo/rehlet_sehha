@@ -13,6 +13,16 @@
 /.zed
 /auth.json
 /node_modules
+# Photography ORIGINALS. Licensed stock, ~48 MB, and we are not the only
+# holder of them — they do not belong in this repository's history, and a
+# deploy must never depend on them being present.
+#
+# `php artisan clinic:process-photos` turns them into the small WebP set under
+# public/media, and THAT is committed: it is what the site serves, it is two
+# orders of magnitude smaller, and it is reproducible from the manifest in
+# config/photos.php. See docs/media/photography.md for where the originals are.
+/public/photos
+
 /public/build
 /public/hot
 /public/storage
