@@ -31,7 +31,11 @@
     <a
         href="{{ $link['href'] }}"
         @class([
-            'font-medium text-ink transition-colors hover:text-accent',
+            // No colour of its own: it inherits from the header, which is ink
+            // when solid and white when transparent over the hero. One source
+            // of truth beats two class lists kept in step by hand.
+            'font-medium transition-colors hover:text-accent',
+            'group-data-transparent:hover:text-white/70' => ! $mobile,
             'block border-b border-line py-3 text-lg' => $mobile,
             'text-sm' => ! $mobile,
         ])

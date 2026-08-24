@@ -26,36 +26,104 @@
     The card is also explicitly labelled as an illustration. Presenting a
     fabricated patient record as a real one would be a different problem again.
 
+    THERE IS NO ADHERENCE PERCENTAGE HERE ANY MORE, AND THERE MUST NOT BE ONE.
+
+    This card used to end on "86%" over a progress bar. It went for the same
+    reason the plate builder has no calorie count: a number attached to a
+    patient's own behaviour is something she can fail at, and a score with a bar
+    under it invites her to grade herself before she has spoken to anybody. It
+    also read as an app dashboard rather than as a clinic.
+
+    Adherence is now an ordinary row saying an ordinary thing, in the register
+    the rows around it already used — "better than at the start", "within
+    normal range". PlateFeedbackHasNoNumbersTest fails the build if a
+    percentage, a meter or a progress bar comes back.
+
+    ---------------------------------------------------------------------------
+    THE COMPOSITION
+    ---------------------------------------------------------------------------
+
+    ONE object, not two. A copy panel with the case card straddling its inner
+    edge, dropped low so the two read as a single thing with depth. They used to
+    be two rectangles of near-identical size, radius and elevation sitting side
+    by side, which is what flattened them into a pair of cards on a photo
+    instead of a hero.
+
+    They are now deliberately unlike each other: the panel is wide, softly
+    rounded, translucent and barely raised; the card is small, tightly rounded,
+    opaque and clearly lifted. Difference in radius and elevation is what makes
+    one read as behind and the other as in front.
+
+    THE PANEL SITS ON THE RIGHT IN BOTH LOCALES, WHICH IS DELIBERATE.
+
+    The strongest frame in the clip — the top-down plate that opens it — sits
+    left of centre, spanning roughly a tenth to seven tenths of the frame. Its
+    natural home is therefore the left of the composition, and the panel has to
+    be opposite it. Mirroring the panel with the text direction would put it
+    straight on top of the plate in English, and the only ways out are worse:
+    mirroring the footage is forbidden (a video that flips is a video that
+    lies about which hand somebody chops with), and shifting the frame far
+    enough to clear the panel needs about a 40% upscale of a 1280-wide source,
+    which softens the one genuinely sharp thing on the page.
+
+    So the image composition stays put and only the text alignment flips. For
+    an Arabic-first clinic whose canonical layout is the Arabic one, that is
+    the right thing to hold constant.
+
+    THE FOOTAGE IS FRAMED AROUND THE PLATE. object-position is set so the plate
+    is what fills the unobstructed area rather than a corner of it, and it
+    rhymes with the plate builder further down the page.
+
     ---------------------------------------------------------------------------
     THE BACKGROUND VIDEO
     ---------------------------------------------------------------------------
 
-    Full-bleed footage behind this section only, with the copy on its own solid
-    panel rather than laid directly over the picture.
+    Full-bleed footage behind this section only, with the copy on its own panel
+    rather than laid directly over the picture.
 
-    That composition is the whole reason the video is watchable. White text over
-    this footage needs roughly 65% navy to clear 4.5:1 — the clip averages 124
-    of 255 luminance with a near-white plate sitting exactly where a headline
-    goes — and at 65% the video is dark enough that it stops being worth the
-    bytes. Putting the text on a panel unties the two: the overlay only has to
-    make the picture pleasant, so it sits at 38%, and readability is carried by
-    an opaque surface whose colour is known at build time.
+    WHAT THE CLIP IS ALLOWED TO SHOW. The original 12.7s master opened on a
+    digital kitchen scale weighing a bowl of vegetables, filmed over the
+    shoulder of a woman with a tailor's measuring tape round her neck, and
+    closed on a rank of gym treadmills. Frame 0 was the scale — which meant the
+    poster was the scale, which meant the visitors we deliberately spare the
+    video (reduced motion, Save-Data, 2g/3g) were the only ones GUARANTEED to
+    see it. It is now trimmed to the two on-message scenes, cross-dissolved so
+    the loop has no cut. Every one of the 128 surviving frames was checked.
 
-    THE PANEL IS OPAQUE ON PURPOSE. A translucent one would composite against
-    whatever frame happens to be behind it, which makes the contrast ratio a
-    property of the video rather than of the stylesheet — untestable, and
-    different every second.
+    If this file is ever replaced, check the new one the same way. A scale, a
+    tape measure or a numeric readout in the hero of this particular clinic
+    contradicts the whole offer, and it contradicts it in the one image that
+    reaches the people we were trying to protect.
+
+    THE PANEL IS TRANSLUCENT, SO ITS CONTRAST IS MEASURED, NOT ASSUMED. The
+    text now composites against whatever is behind it. That is survivable only
+    because the trimmed clip is unusually even — luminance 120.4 to 129.1 out
+    of 255 across every frame — and because backdrop-blur flattens what is left,
+    so an isolated dark pixel cannot drag a glyph below threshold. The opacity
+    below is the value the measurement supports, not a value that looked nice.
+    HeroContrastTest pins it.
 
     LAYER ORDER. Section background colour, then poster, then video, then
-    overlay, then content. `isolate` keeps the negative z-indices inside this
-    section instead of sliding behind the page.
+    overlay, then the header scrim, then content. `isolate` keeps the negative
+    z-indices inside this section instead of sliding behind the page.
+
+    ONE POSTER SIZE, NOT A RESPONSIVE SET, AND THAT IS A MEASUREMENT.
+
+    Chrome caps an image's LCP size by its INTRINSIC area, and does not cap a
+    video's. A 828-wide poster is smaller than the area this hero paints on a
+    phone, so the video — same pixels, same box — outranked it the moment it
+    faded in, and LCP jumped from 1.27s to 2.82s for a crossfade between two
+    identical frames. Serving the 1280 poster everywhere makes the two tie, and
+    a tie keeps the first one, which is the poster. Measured: 2.82s to 1.39s.
+    The extra bytes on a phone cost about 130ms of first paint and buy back 1.4
+    seconds of the metric that actually scores this page.
 
     THE POSTER IS AN <img>, NOT A poster="" ATTRIBUTE. It is a real element, so
     the preload scanner finds it, it can be given fetchpriority, and it stays
     painted underneath forever — the video fades in on top of it and never
     replaces it. Every failure path therefore lands on the poster rather than on
-    a black box: no JS, reduced motion, Save-Data, a slow connection, a 404, a
-    codec the browser will not decode.
+    a black box: no JS, reduced motion, Save-Data, a 404, a codec the browser
+    will not decode.
 
     NOTHING ABOUT THE VIDEO CAN SHIFT THE LAYOUT. Both the poster and the video
     are absolutely positioned and out of flow, so the section is sized by its
@@ -63,10 +131,6 @@
 --}}
 
 @php
-    // The adherence figure lives here, not in the translation files, so the
-    // bar width and the printed percentage can never disagree.
-    $adherence = 86;
-
     /*
      * Save-Data is answered on the server as well as in the browser. If the
      * request says the visitor is conserving data, the source never reaches the
@@ -77,6 +141,12 @@
      */
     $saveData = request()->header('Save-Data') === 'on';
     $showVideo = $media && ! $saveData;
+
+    /*
+     * Where the plate sits in the frame. Everything about the framing is
+     * derived from this one measurement rather than eyeballed per breakpoint.
+     */
+    $plateFocus = '38% 50%';
 @endphp
 
 @if ($media)
@@ -92,20 +162,38 @@
             as="image"
             fetchpriority="high"
             href="{{ asset('brand/hero-poster.jpg') }}"
-            imagesrcset="{{ asset('brand/hero-poster-828.webp') }} 828w, {{ asset('brand/hero-poster-1280.webp') }} 1280w"
+            imagesrcset="{{ asset('brand/hero-poster-1280.webp') }} 1280w"
             imagesizes="100vw"
             type="image/webp"
         >
     @endpush
 @endif
 
-<section class="relative isolate overflow-hidden bg-ink py-16 sm:py-24" data-hero>
+{{--
+    -mt-18 pulls this section up under the header.
+
+    The header is position:sticky, which means it OCCUPIES FLOW SPACE — it is
+    not an overlay. Without this the hero starts below it, "transparent" header
+    shows the page background rather than the footage, and the white nav ends up
+    on paper where it is close to invisible. The top padding below already
+    clears the header's own height, so nothing lands underneath it.
+
+    Only when there is media to be transparent over: on a hero without it the
+    header stays solid and there is nothing to slide under.
+--}}
+<section
+    @class([
+        'relative isolate overflow-hidden bg-ink pt-28 pb-16 sm:pt-32 sm:pb-24 lg:min-h-[42rem] lg:pt-40 lg:pb-32',
+        '-mt-18' => $media,
+    ])
+    data-hero
+>
     @if ($media)
         {{-- Painted on first contentful paint and never taken away. --}}
         <picture>
             <source
                 type="image/webp"
-                srcset="{{ asset('brand/hero-poster-828.webp') }} 828w, {{ asset('brand/hero-poster-1280.webp') }} 1280w"
+                srcset="{{ asset('brand/hero-poster-1280.webp') }} 1280w"
                 sizes="100vw"
             />
             <img
@@ -114,6 +202,7 @@
                 aria-hidden="true"
                 fetchpriority="high"
                 decoding="async"
+                style="object-position: {{ $plateFocus }}"
                 class="absolute inset-0 -z-20 size-full object-cover"
                 data-hero-poster
             />
@@ -134,6 +223,7 @@
             --}}
             <video
                 class="absolute inset-0 -z-20 size-full object-cover opacity-0 transition-opacity duration-1000 ease-out motion-reduce:transition-none"
+                style="object-position: {{ $plateFocus }}"
                 muted
                 loop
                 playsinline
@@ -149,29 +239,39 @@
 
         {{--
             The overlay. 38% ink: enough to settle the footage down behind a
-            near-white panel and to keep the white case card from disappearing
+            translucent panel and to keep the white case card from disappearing
             into the plate, and not so much that the picture goes to mud.
-
-            It is NOT what makes any text readable — see the block comment
-            above. Nothing on this page relies on it for contrast.
         --}}
         <div class="absolute inset-0 -z-10 bg-ink/[0.38]" aria-hidden="true" data-hero-overlay></div>
+
+        {{--
+            The header scrim. The header is transparent over this section, and
+            white nav links over a near-white plate would fail on their own —
+            measured, not guessed. A gradient rather than a bar because the
+            point of the transparent header is that it has no edge.
+        --}}
+        <div
+            class="absolute inset-x-0 top-0 -z-10 h-40 bg-linear-to-b from-ink/85 via-ink/45 to-transparent"
+            aria-hidden="true"
+            data-hero-scrim
+        ></div>
     @endif
 
-    <x-container>
-        <div class="grid items-center gap-8 lg:grid-cols-12 lg:gap-12">
-            <div class="lg:col-span-7">
-                {{--
-                    The panel. Opaque paper, the same colour the page background
-                    already is, so every text pair inside it is one the contrast
-                    test has always covered and the copy needs no rework.
-
-                    Paper rather than navy: under the overlay the footage sits
-                    mid-dark and navy-tinted, so a near-white surface separates
-                    from it cleanly, where a navy panel would sink into the
-                    overlay it is supposed to stand out from.
-                --}}
-                <div class="rounded-3xl bg-paper p-7 shadow-xl ring-1 ring-white/40 sm:p-10">
+    <x-container class="relative">
+        {{--
+            The composition. One relative box; the panel sits in it and the
+            card is positioned against the same coordinates, so the overlap is
+            a property of the layout rather than of two margins that have to be
+            kept in step.
+        --}}
+        <div class="relative lg:pb-[15rem]">
+            {{--
+                The panel. ml-auto is PHYSICAL on purpose — see the composition
+                note above. The text inside stays logical, so Arabic aligns
+                right and English aligns left within the same shape.
+            --}}
+            <div class="lg:ml-auto lg:w-[52%]">
+                <div data-hero-panel class="rounded-[1.75rem] bg-paper/[0.93] p-6 shadow-md ring-1 ring-white/50 backdrop-blur-xl sm:rounded-[2rem] sm:p-9 lg:pb-44">
                     <x-section-heading
                         level="h1"
                         :eyebrow="__('home.hero.eyebrow')"
@@ -203,9 +303,27 @@
                 </div>
             </div>
 
-            <div class="lg:col-span-5">
-                <x-card class="reveal" :padding="false">
-                    <div class="p-6 sm:p-7">
+            {{--
+                The case card, straddling the panel's inner edge and dropped
+                below its baseline. Tighter radius and a heavier shadow than the
+                panel, and opaque where the panel is not: that difference is
+                what gives the pair depth instead of making them a matched set.
+
+                Positioned with PHYSICAL left, to match the panel's physical
+                ml-auto. Logical positioning would mirror the card while the
+                panel stayed put, giving the two locales different overlaps.
+
+                The panel carries extra bottom padding on large screens so this
+                corner is empty before the card lands on it. Overlapping live
+                copy would clip a credential chip, which is content, not
+                decoration.
+
+                Stacked underneath on small screens, where there is no room for
+                an overlap and pretending otherwise would just crush both.
+            --}}
+            <div class="mt-6 lg:absolute lg:left-[24%] lg:top-[calc(100%-15rem-7rem)] lg:mt-0 lg:w-[21rem]">
+                <x-card class="reveal rounded-xl shadow-2xl ring-black/5" :padding="false" data-hero-card>
+                    <div class="p-6">
                         <div class="flex items-start justify-between gap-4">
                             <div>
                                 <p class="text-xs font-medium tracking-wide text-accent-dark uppercase">
@@ -220,39 +338,16 @@
                             <x-logo.mark :size="34" class="text-ink/25" />
                         </div>
 
-                        <dl class="mt-6 space-y-4">
+                        <dl class="mt-5 space-y-3">
                             @foreach (__('home.hero.case_card.metrics') as $metric)
-                                <div class="flex items-center justify-between gap-4 border-b border-line pb-3 last:border-0">
+                                <div class="flex items-center justify-between gap-4 border-b border-line pb-2.5 last:border-0">
                                     <dt class="text-sm text-muted">{{ $metric['label'] }}</dt>
                                     <dd class="text-end text-sm font-medium text-ink">{{ $metric['value'] }}</dd>
                                 </div>
                             @endforeach
                         </dl>
 
-                        <div class="mt-5">
-                            <div class="flex items-center justify-between gap-4">
-                                <span class="text-sm text-muted">{{ __('home.hero.case_card.adherence') }}</span>
-                                <span class="font-display text-sm font-semibold text-accent-dark">{{ $adherence }}%</span>
-                            </div>
-
-                            {{--
-                                A meter, not a decorative div: role/aria give the
-                                value to a screen reader, which otherwise hears a
-                                percentage with no indication of what it is out of.
-                            --}}
-                            <div
-                                class="mt-2 h-2 w-full overflow-hidden rounded-pill bg-sage"
-                                role="meter"
-                                aria-valuenow="{{ $adherence }}"
-                                aria-valuemin="0"
-                                aria-valuemax="100"
-                                aria-label="{{ __('home.hero.case_card.adherence') }}"
-                            >
-                                <div class="h-full rounded-pill bg-accent" style="width: {{ $adherence }}%"></div>
-                            </div>
-                        </div>
-
-                        <p class="mt-5 text-xs leading-relaxed text-muted">
+                        <p class="mt-4 text-xs leading-relaxed text-muted">
                             {{ __('home.hero.case_card.note') }}
                         </p>
                     </div>

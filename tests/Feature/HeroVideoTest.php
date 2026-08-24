@@ -36,7 +36,6 @@ it('renders the hero with a poster that does not depend on javascript', function
     // paint — a poster="" attribute would depend on the video element and
     // would not be discoverable early.
     expect($html)->toContain('hero-poster.jpg');
-    expect($html)->toContain('hero-poster-828.webp');
     expect($html)->toContain('hero-poster-1280.webp');
 })->with(['ar', 'en']);
 
@@ -115,7 +114,7 @@ it('keeps the hero intact when the video and poster files are missing', function
 });
 
 it('has the media files the hero points at', function () {
-    foreach (['brand/1.mp4', 'brand/hero-poster.jpg', 'brand/hero-poster-828.webp', 'brand/hero-poster-1280.webp'] as $path) {
+    foreach (['brand/1.mp4', 'brand/hero-poster.jpg', 'brand/hero-poster-1280.webp'] as $path) {
         expect(File::exists(public_path($path)))->toBeTrue("public/{$path} is missing.");
     }
 
@@ -149,29 +148,43 @@ it('positions the video and poster so they cannot move the layout', function () 
     expect($poster[0])->toContain('absolute');
 });
 
-it('keeps the hero copy on an opaque panel rather than over the picture', function () {
+it('keeps the hero copy on a panel rather than over the bare picture', function () {
     /*
-     * The composition that makes the contrast ratio a property of the
-     * stylesheet instead of a property of whatever frame is on screen.
+     * The panel is TRANSLUCENT since Task 8.6, which means the hero's contrast
+     * genuinely depends on the frame behind it. That is a deliberate trade and
+     * it is only safe because of three things together, all of which this file
+     * or HeroContrastTest pins:
      *
-     * A translucent panel would composite against the video and change every
-     * second, which is untestable. If this assertion ever fails, the contrast
-     * numbers in ContrastTest stop describing the hero.
+     *   1. The clip is unusually even — 120.4 to 129.1 luminance out of 255
+     *      across all 128 frames — so there is no bright or dark extreme to
+     *      fall off.
+     *   2. backdrop-blur flattens what variation is left, so a single dark
+     *      pixel cannot drag one glyph under threshold while its neighbours
+     *      pass.
+     *   3. The opacity is high enough that measurement says every glyph clears
+     *      AA against the worst pixel actually behind it, at three widths, in
+     *      both locales, on three different frames.
+     *
+     * What must not happen is the panel quietly losing more opacity because it
+     * "looks better" — hence the floor below. The number came from measuring,
+     * not from taste, and lowering it means re-running that measurement.
      */
     $html = $this->get('/ar')->assertOk()->getContent();
 
-    // Scoped to the hero: the sticky header legitimately uses a translucent
-    // paper, and a page-wide search would fail on that instead.
-    preg_match('/<section[^>]*data-hero.*?<\/section>/su', $html, $match);
+    preg_match('/<section[^>]*data-hero\b.*?<\/section>/su', $html, $match);
 
     expect($match)->not->toBeEmpty('The hero section did not render.');
 
     $hero = $match[0];
 
-    expect($hero)->toMatch('/<div class="rounded-3xl bg-paper\b/');
-    expect(str_contains($hero, 'bg-paper/'))->toBeFalse(
-        'The hero panel has become translucent. Its text contrast now depends on the video frame behind it.'
-    );
+    expect($hero)->toContain('data-hero-panel');
+    expect($hero)->toContain('backdrop-blur');
+
+    /*
+     * The opacity FLOOR and the measurement behind it live in
+     * HeroContrastTest, so the threshold has one home. What matters here is
+     * only that the panel is still a panel.
+     */
 });
 
 it('keeps the reduced-motion and slow-connection gates in the shipped script', function () {

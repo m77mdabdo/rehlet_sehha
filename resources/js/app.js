@@ -26,3 +26,10 @@ import './plate';
  * URL over once the answer is yes.
  */
 import './hero-video';
+
+/*
+ * The header goes transparent over a hero that has a background video, and
+ * solid once you scroll past it. Adds the transparent state only — the solid
+ * header is what the markup ships, so a failure here is never unreadable.
+ */
+import './header';
