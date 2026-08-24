@@ -194,58 +194,71 @@ it('keeps every movement behind a reduced-motion guard', function () {
     }
 });
 
-it('mirrors the hero entrance with the writing direction', function () {
+it('fixes the entrance direction to the composition rather than to reading order', function () {
     /*
-     * The panel enters from the inline START — the right in Arabic, the left in
-     * English — and the card from the inline END.
+     * THIS IS NOT AN RTL OVERSIGHT. Do not "fix" it to mirror.
      *
-     * There is no logical equivalent of translateX, so the mirroring is done by
-     * multiplying the offset by --dir, which is 1 on an LTR document and -1 on
-     * an RTL one. Hardcode a signed translateX instead and English silently
-     * animates the wrong way while Arabic still looks right, which is the
-     * hardest kind of direction bug to notice.
+     * Almost everything directional on this site is logical and flips with the
+     * document — which is exactly why a hardcoded direction here looks like a
+     * bug worth correcting, and why this test exists to say that it is not.
      *
-     * Note this is the one place where the hero's motion and its LAYOUT
-     * disagree on purpose: the panel is pinned to the physical right in both
-     * locales (Task 8.6), so in English it arrives from the side opposite the
-     * edge it rests against. That was a deliberate instruction.
+     * The hero's objects are positioned against the FOOTAGE, not against the
+     * text. The copy panel is pinned to the physical right in both languages
+     * (Task 8.6) so it never lands on the plate in the frame, and the case card
+     * sits low and to its left. Each therefore arrives from the edge it comes to
+     * rest against — the panel from the right, the card from the left — in both
+     * locales.
+     *
+     * Mirroring the motion while the layout stayed put would send the English
+     * panel travelling across the frame to reach a home edge it was already
+     * beside. Arriving from its own side is the whole idea; crossing the frame
+     * to get there is the thing the idea rules out.
+     *
+     * A previous revision did mirror this, using a --dir multiplier. It was
+     * removed on purpose.
      */
     $css = stylesheet();
 
-    expect($css)->toMatch('/html\s*\{[^}]*--dir:\s*1\s*;/s');
-    expect($css)->toMatch('/html\[dir="rtl"\]\s*\{[^}]*--dir:\s*-1\s*;/s');
-
-    // The keyframe must actually use it.
-    $position = strpos($css, '@keyframes enter-slide');
-
-    expect($position)->not->toBeFalse('The hero entrance keyframes are gone.');
-
-    $block = substr($css, $position, 400);
-
-    expect($block)->toContain('var(--dir');
-    expect(preg_match('/transform:\s*translateX\(\s*-?\d/', $block))->toBe(
-        0,
-        'The hero entrance uses a hardcoded translateX. It will not mirror, and '
-        .'English will animate from the wrong side while Arabic still looks correct.'
-    );
-
-    // The panel and the card must start from opposite sides.
     preg_match('/\[data-enter="panel"\]\s*\{[^}]*--enter-x:\s*(-?\d+)px/s', $css, $panel);
     preg_match('/\[data-enter="card"\]\s*\{[^}]*--enter-x:\s*(-?\d+)px/s', $css, $card);
 
     expect($panel)->not->toBeEmpty('The hero panel has no entrance offset.');
     expect($card)->not->toBeEmpty('The hero case card has no entrance offset.');
 
+    // The panel rests against the right edge, so it arrives from the right.
+    expect((int) $panel[1])->toBeGreaterThan(
+        0,
+        'The hero panel now enters from the left. It comes to rest on the RIGHT in '
+        .'both locales, so entering from the left means crossing the frame to reach '
+        .'the edge it was already next to. See the comment above before changing this.'
+    );
+
+    // Opposite edges: two objects arriving together read as one shove.
     expect((int) $panel[1] * (int) $card[1])->toBeLessThan(
         0,
         'The panel and the card enter from the same side. They are meant to come '
-        .'from opposite edges — arriving together reads as one shove.'
+        .'from opposite edges.'
     );
 
     // Modest travel. Far enough to read as arrival, not a flight across the page.
     foreach ([$panel[1], $card[1]] as $offset) {
         expect(abs((int) $offset))->toBeLessThanOrEqual(60);
     }
+
+    /*
+     * And nothing may reintroduce a mirror behind the scenes — not a direction
+     * multiplier in the keyframe, and not a [dir] rule quietly flipping the
+     * offset. Either would make English animate the opposite way to Arabic
+     * while both files still looked reasonable in isolation.
+     */
+    expect(str_contains($css, '--dir'))->toBeFalse(
+        'A direction multiplier is back in the stylesheet. The hero entrance does not mirror.'
+    );
+
+    expect(preg_match('/\[dir=[^\]]*\][^{]*\{[^}]*--enter-x/s', $css))->toBe(
+        0,
+        'A [dir] rule is overriding the entrance offset. The hero entrance does not mirror.'
+    );
 });
 
 it('keeps the hero panel readable well inside its one-second budget', function () {
