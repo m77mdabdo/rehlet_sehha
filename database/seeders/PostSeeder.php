@@ -10,11 +10,25 @@ use Illuminate\Support\Carbon;
 
 class PostSeeder extends Seeder
 {
+    /*
+     * cover_path holds a PHOTO LIBRARY SLUG, not a filesystem path.
+     *
+     * The column predates the photography pipeline. What goes in it is a key
+     * into config/photos.php, which is what lets one image be served at three
+     * widths with exact dimensions and an alt in both languages — a raw path
+     * could carry none of that. App\Support\Photo resolves it.
+     *
+     * Each cover was chosen to illustrate its own article, not to decorate it:
+     * the budget-protein piece gets the counter with chickpeas and meat on it,
+     * the lab-results piece gets the flat-lay with the stethoscope. An article
+     * with no matching image gets none.
+     */
     public function run(): void
     {
         $posts = [
             [
                 'slug' => 'building-a-habit-that-lasts',
+                'cover_path' => 'food-cookbook-overhead',
                 'title' => [
                     'ar' => 'كيف تبني عادة غذائية تستمر معك',
                     'en' => 'How to build an eating habit that lasts',
@@ -34,6 +48,7 @@ class PostSeeder extends Seeder
             ],
             [
                 'slug' => 'protein-on-an-egyptian-budget',
+                'cover_path' => 'food-market-counter',
                 'title' => [
                     'ar' => 'البروتين بميزانية مصرية',
                     'en' => 'Getting enough protein on an Egyptian budget',
@@ -53,6 +68,7 @@ class PostSeeder extends Seeder
             ],
             [
                 'slug' => 'reading-your-lab-results',
+                'cover_path' => 'food-clinical-flatlay',
                 'title' => [
                     'ar' => 'ماذا تعني نتائج تحاليلك من الناحية الغذائية',
                     'en' => 'What your lab results mean nutritionally',

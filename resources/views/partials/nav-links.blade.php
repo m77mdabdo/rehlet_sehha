@@ -14,22 +14,23 @@
      * production, so the risk here is a visible TODO in staging rather than a
      * link into nothing.
      */
-    $home = route('home');
-
+    /*
+     * Every nav item is now a real page. The homepage sections keep their ids,
+     * so an in-page anchor from anywhere else still resolves — but the nav
+     * sends a visitor to the page, which is where the answers are.
+     *
+     * HomePageTest walks these and proves each one returns 200, so a nav item
+     * pointed at a route that does not exist fails the build rather than
+     * 404ing quietly in front of a patient.
+     */
     $links = [
-        ['label' => __('nav.services'), 'href' => $home.'#specialties'],
-        /*
-         * Real routes replace anchors as each page is built. The homepage
-         * sections keep their ids, so an in-page anchor still resolves for
-         * anything that already points at one — but the nav sends a visitor to
-         * the full page, which is where the answers are.
-         */
+        ['label' => __('nav.services'), 'href' => route('services')],
         ['label' => __('nav.packages'), 'href' => route('packages')],
-        ['label' => __('nav.how_it_works'), 'href' => $home.'#how-it-works'],
-        ['label' => __('nav.about'), 'href' => $home.'#about'],
-        ['label' => __('nav.articles'), 'href' => $home.'#articles'],
-        ['label' => __('nav.faq'), 'href' => $home.'#faq'],
-        ['label' => __('nav.contact'), 'href' => $home.'#contact'],
+        ['label' => __('nav.how_it_works'), 'href' => route('how-it-works')],
+        ['label' => __('nav.about'), 'href' => route('about')],
+        ['label' => __('nav.articles'), 'href' => route('articles')],
+        ['label' => __('nav.faq'), 'href' => route('faq')],
+        ['label' => __('nav.contact'), 'href' => route('contact')],
     ];
 @endphp
 

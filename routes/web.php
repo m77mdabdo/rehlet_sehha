@@ -1,12 +1,18 @@
 <?php
 
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\ArticlesController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ExportAppointmentController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HowItWorksController;
 use App\Http\Controllers\ManageAppointmentController;
 use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\PackagesController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SpecialtyController;
 use App\Support\Locales;
 use Illuminate\Support\Facades\Route;
@@ -78,7 +84,18 @@ Route::prefix('{locale}')
          * the specialty and article pages. Seven more land here as they are
          * built — services, how-it-works, about, articles, faq, contact.
          */
+        Route::get('services', ServicesController::class)->name('services');
         Route::get('packages', PackagesController::class)->name('packages');
+        Route::get('how-it-works', HowItWorksController::class)->name('how-it-works');
+        Route::get('about', AboutController::class)->name('about');
+        Route::get('faq', FaqController::class)->name('faq');
+        Route::get('contact', ContactController::class)->name('contact');
+
+        /*
+         * The article index sits ABOVE articles/{slug} so a post can never
+         * be reached at a URL the index would have claimed.
+         */
+        Route::get('articles', ArticlesController::class)->name('articles');
 
         // Stub. The consent notice links here, so it must resolve today.
         Route::view('privacy', 'pages.privacy')->name('privacy');

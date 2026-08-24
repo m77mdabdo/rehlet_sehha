@@ -60,6 +60,7 @@ final class PublicContent
         'testimonials',
         'faqs',
         'faqs-buying',
+        'faqs-all',
         'latest-posts',
         'opening-hours',
         'videos',
@@ -145,6 +146,21 @@ final class PublicContent
             'faqs',
             fn (): Collection => Faq::active()->category(Faq::CATEGORY_GENERAL)->get(),
         );
+    }
+
+    /**
+     * Every active FAQ, grouped by category, for the standalone FAQ page.
+     *
+     * Grouped here rather than in the view so the page cannot accidentally
+     * drop a category by listing them by hand — a new category appears on the
+     * page the moment a row uses it.
+     *
+     * @return \Illuminate\Support\Collection<string, Collection<int, Faq>>
+     */
+    public static function faqsByCategory(): \Illuminate\Support\Collection
+    {
+        return self::remember('faqs-all', fn (): Collection => Faq::active()->get())
+            ->groupBy('category');
     }
 
     /**
