@@ -52,6 +52,7 @@ return [
     ],
 
     'packages' => [
+        'see_all' => 'See full details and pricing',
         'eyebrow' => 'Packages',
         'title' => 'Start wherever suits you',
         'lead' => 'A single consultation to find out where you stand, or a full programme if you want a result that lasts.',

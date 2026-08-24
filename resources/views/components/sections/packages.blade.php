@@ -24,7 +24,20 @@
             :eyebrow="__('home.packages.eyebrow')"
             :title="__('home.packages.title')"
             :lead="__('home.packages.lead')"
-        />
+        >
+            {{-- The section summarises; the page decides. Anyone still
+                 comparing after four cards wants the comparison table, the
+                 terms and the buying questions, and all three are there. --}}
+            <a
+                href="{{ route('packages') }}"
+                class="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-accent-dark underline-offset-4 hover:underline"
+            >
+                {{ __('home.packages.see_all') }}
+                <svg class="size-4 rtl:-scale-x-100" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M7 4l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </a>
+        </x-section-heading>
 
         @if ($services->isEmpty())
             <p class="mt-10 text-muted">{{ __('home.packages.empty') }}</p>

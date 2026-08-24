@@ -59,6 +59,7 @@ final class PublicContent
         'specialties',
         'testimonials',
         'faqs',
+        'faqs-buying',
         'latest-posts',
         'opening-hours',
         'videos',
@@ -130,7 +131,37 @@ final class PublicContent
      */
     public static function faqs(): Collection
     {
-        return self::remember('faqs', fn (): Collection => Faq::active()->get());
+        /*
+         * GENERAL questions only, which is what the homepage has always shown.
+         *
+         * The scope is not cosmetic. Before FAQs had categories this returned
+         * every active row, so seeding the packages page's buying questions
+         * into the same table would have silently added six answers about
+         * refunds and payment to a homepage section that is meant to be
+         * untouched by that work — and to a visitor who has not yet decided
+         * the clinic does what she needs.
+         */
+        return self::remember(
+            'faqs',
+            fn (): Collection => Faq::active()->category(Faq::CATEGORY_GENERAL)->get(),
+        );
+    }
+
+    /**
+     * The questions somebody asks with a card in her hand.
+     *
+     * Its own cache entry rather than a filter over the general set, because
+     * the two are read by different pages and neither should pay to load the
+     * other's rows.
+     *
+     * @return Collection<int, Faq>
+     */
+    public static function buyingFaqs(): Collection
+    {
+        return self::remember(
+            'faqs-buying',
+            fn (): Collection => Faq::active()->category(Faq::CATEGORY_BUYING)->get(),
+        );
     }
 
     /**

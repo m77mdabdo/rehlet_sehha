@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 return [
+    // Names the breadcrumb nav for a screen reader; never shown.
+    'breadcrumb' => 'Breadcrumb',
+
     'brand' => 'Rehlet Sehha',
     'brand_tagline' => 'Clinical nutrition practice',
     'currency' => 'EGP',
