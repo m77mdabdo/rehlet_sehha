@@ -6,7 +6,6 @@ namespace Database\Seeders;
 
 use App\Models\Post;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 
 class PostSeeder extends Seeder
 {
@@ -22,6 +21,23 @@ class PostSeeder extends Seeder
      * the budget-protein piece gets the counter with chickpeas and meat on it,
      * the lab-results piece gets the flat-lay with the stethoscope. An article
      * with no matching image gets none.
+     */
+    /*
+     * THESE THREE SEED AS DRAFTS, AND THAT IS DELIBERATE.
+     *
+     * They were written to give the article templates something to render.
+     * Nobody clinically reviewed them, and two of them make statements a
+     * patient could act on — the lab-results piece talks about vitamin D near
+     * the bottom of its reference range alongside fatigue, which is a clinical
+     * reading, published under a licensed practitioner's byline.
+     *
+     * The model now refuses to publish an article without a named reviewer, so
+     * the honest state for placeholder prose is a draft. Dr. Rana writes or
+     * approves each body, is recorded as the reviewer, and only then does
+     * published_at get a date.
+     *
+     * Seeding them published and reviewed would have been one line and would
+     * have made this whole rule decorative.
      */
     public function run(): void
     {
@@ -43,7 +59,7 @@ class PostSeeder extends Seeder
                 ],
                 'category' => ['ar' => 'تغذية', 'en' => 'Nutrition'],
                 'reading_minutes' => 4,
-                'published_at' => Carbon::now()->subDays(7),
+                'published_at' => null,
                 'is_featured' => true,
             ],
             [
@@ -63,7 +79,7 @@ class PostSeeder extends Seeder
                 ],
                 'category' => ['ar' => 'تغذية', 'en' => 'Nutrition'],
                 'reading_minutes' => 5,
-                'published_at' => Carbon::now()->subDays(21),
+                'published_at' => null,
                 'is_featured' => false,
             ],
             [
@@ -83,7 +99,7 @@ class PostSeeder extends Seeder
                 ],
                 'category' => ['ar' => 'صحة عامة', 'en' => 'General health'],
                 'reading_minutes' => 6,
-                'published_at' => Carbon::now()->subDays(45),
+                'published_at' => null,
                 'is_featured' => false,
             ],
         ];

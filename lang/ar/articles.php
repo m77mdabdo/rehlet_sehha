@@ -41,6 +41,35 @@ return [
     'published_on' => 'اتنشر في :date',
 
     'author_line' => 'مكتوبة بمعرفة :name',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Clinical review
+    |--------------------------------------------------------------------------
+    |
+    | Every published article names the clinician who checked it. Not a
+    | decoration: an article on a clinic's site is read as advice from the
+    | practitioner the reader is about to book with, and «مكتوبة بمعرفة» — the
+    | old byline — said who typed it, not who is answerable for it.
+    |
+    | The date is separate from the publication date on purpose. An article
+    | reviewed two years ago and republished last week is a different thing
+    | from one reviewed last week, and the reader can only tell if both are
+    | shown.
+    */
+    'reviewed_by' => 'روجعت إكلينيكيًا بمعرفة :name',
+    'reviewed_on' => 'روجعت في :date',
+
+    /*
+    | The disclaimer, in the body rather than only in the footer.
+    |
+    | A footer disclaimer is read by nobody and is on the wrong screen: by the
+    | time a reader reaches it she has already read the article. This one sits
+    | above the first paragraph, where it is part of the thing being read.
+    */
+    'disclaimer_heading' => 'اقري ده الأول',
+    'disclaimer_body' => 'المقال ده للتوعية العامة. مش تشخيص، ومش خطة علاجية، ومش بديل عن إنك تتكلمي مع طبيبك أو مع أخصائي تغذية شاف حالتك وتحاليلك. متغيّريش دوا ولا جرعة بناءً على أي حاجة مكتوبة هنا.',
+
     'back_to_index' => 'كل المقالات',
 
     'related_heading' => 'مقالات في نفس الموضوع',

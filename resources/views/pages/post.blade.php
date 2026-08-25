@@ -13,6 +13,7 @@
     :meta-title="$post->title.' — '.__('common.brand')"
     :meta-description="$post->excerpt"
     :footer-services="$footerServices"
+    :article="$post"
     :trail="[
         ['label' => __('nav.home'), 'url' => route('home')],
         ['label' => __('nav.articles'), 'url' => route('articles')],
@@ -23,12 +24,26 @@
     <x-slot:cta-lead>{{ __('articles.cta.lead') }}</x-slot:cta-lead>
 
     <x-slot:actions>
-        {{-- Byline under the title: who wrote it, when, and how long it takes.
-             The name is still TODO_COPY — an article published under a
-             practitioner's name has to carry the real one, and inventing it
-             would be inventing an author. --}}
+        {{--
+            Byline under the title: WHO IS ANSWERABLE FOR THIS, when it was
+            checked, when it went up, and how long it takes to read.
+
+            The reviewer is named, not the author. A reader arriving from a
+            search for her own condition is not reading a blog post — she is
+            reading what she reasonably takes to be advice from the clinician
+            she is about to book with. «Who typed it» is not the question she
+            needs answered; «who is professionally answerable for it» is.
+
+            reviewer is never null on a page that renders, because the model
+            refuses to publish an article without one and scopePublished
+            refuses to serve one. Both guards exist so this line cannot quietly
+            become blank.
+        --}}
         <p class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
-            <span>{{ __('articles.author_line', ['name' => __('about.name')]) }}</span>
+            <span class="font-medium text-ink">{{ __('articles.reviewed_by', ['name' => $post->reviewer?->name]) }}</span>
+            <span aria-hidden="true" class="text-line">·</span>
+            <span><bdi dir="auto">{{ __('articles.reviewed_on', ['date' => $post->reviewed_at?->translatedFormat('j F Y')]) }}</bdi></span>
+            <span aria-hidden="true" class="text-line">·</span>
             <span aria-hidden="true" class="text-line">·</span>
             <span><bdi dir="auto">{{ $post->published_at?->translatedFormat('j F Y') }}</bdi></span>
 
@@ -52,6 +67,24 @@
                     class="mb-12 ring-1 ring-line"
                 />
             @endif
+
+            {{--
+                THE DISCLAIMER, ABOVE THE FIRST PARAGRAPH.
+
+                There is one in the footer already, and it is worthless for
+                this purpose: by the time a reader reaches the footer she has
+                read the article. A disclaimer is only doing its job if it is
+                read BEFORE the thing it qualifies.
+
+                It is styled to be read rather than skipped — a bordered block
+                in the body's own measure, not fine print. It says the three
+                things that matter: this is not a diagnosis, it is not a plan,
+                and do not change a medication because of it.
+            --}}
+            <aside class="mb-10 rounded-xl bg-sage/60 p-5 ring-1 ring-line" role="note">
+                <h2 class="font-display text-base font-semibold text-ink">{{ __('articles.disclaimer_heading') }}</h2>
+                <p class="mt-2 text-sm leading-relaxed text-muted">{{ __('articles.disclaimer_body') }}</p>
+            </aside>
 
             {{--
                 The body.

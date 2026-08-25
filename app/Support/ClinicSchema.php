@@ -43,6 +43,15 @@ final class ClinicSchema
     ];
 
     /**
+     * The clinic's stable identifier, so other nodes in the graph can point at
+     * it instead of restating it.
+     */
+    public static function id(): string
+    {
+        return url('/').'#clinic';
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public static function build(): array
@@ -50,7 +59,7 @@ final class ClinicSchema
         $schema = [
             '@context' => 'https://schema.org',
             '@type' => 'MedicalClinic',
-            '@id' => url('/').'#clinic',
+            '@id' => self::id(),
             'name' => __('common.brand'),
             'description' => __('home.meta_description'),
             'url' => url()->current(),
