@@ -25,7 +25,12 @@ class PostController extends Controller
      */
     public function show(string $slug): View
     {
-        $post = Post::published()->where('slug', $slug)->firstOrFail();
+        /*
+         * The reviewer is eager-loaded because the byline names them on every
+         * article page. Left lazy it is one extra query per article view, for
+         * a relation the template is guaranteed to touch.
+         */
+        $post = Post::published()->with('reviewer')->where('slug', $slug)->firstOrFail();
 
         $published = PublicContent::latestPosts(50);
 

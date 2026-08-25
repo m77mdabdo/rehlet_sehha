@@ -41,6 +41,15 @@ return [
     'published_on' => 'Published :date',
 
     'author_line' => 'Written by :name',
+
+    // See the Arabic file for why the reviewer is named separately from the
+    // author, and why the disclaimer sits in the body rather than the footer.
+    'reviewed_by' => 'Clinically reviewed by :name',
+    'reviewed_on' => 'Reviewed :date',
+
+    'disclaimer_heading' => 'Read this first',
+    'disclaimer_body' => 'This article is general awareness. It is not a diagnosis, it is not a treatment plan, and it is not a substitute for speaking to your doctor or to a dietitian who has seen your case and your lab work. Do not change a medication or a dose based on anything written here.',
+
     'back_to_index' => 'All articles',
 
     'related_heading' => 'More on this topic',

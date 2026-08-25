@@ -323,6 +323,19 @@ return [
     */
     'training' => [
         [
+            /*
+             * VERIFIED AGAINST THE CERTIFICATE. DO NOT "CORRECT" THIS.
+             *
+             * «معهد وأمراض الكبد المصري» is an odd construction and reads like
+             * a typo. It is not. It is the entity's registered name, matching
+             * "Egyptian Liver Research Institute and Hospital" as printed on
+             * the certificate.
+             *
+             * This is a credential published under a licensed practitioner's
+             * name. Smoothing the grammar would replace a verified fact with a
+             * plausible invention — the same failure as the master's degree
+             * and the medical syndicate that this file exists to undo.
+             */
             'institution_ar' => 'معهد وأمراض الكبد المصري، جامعة المنصورة',
             'programme_ar' => 'برنامج دايتيتيك',
             'hours' => 150,
