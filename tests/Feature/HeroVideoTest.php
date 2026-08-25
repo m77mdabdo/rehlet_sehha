@@ -58,7 +58,7 @@ it('ships the video element without a src so nothing can be fetched early', func
     expect($html)->toContain('preload="none"');
 
     // The URL is present, but parked where only the script can act on it.
-    expect($html)->toContain('data-src="'.asset('brand/1.mp4').'"');
+    expect($html)->toContain('data-src="'.asset('brand/hero.mp4').'"');
 });
 
 it('never gives the video controls, sound or a download button', function () {
@@ -114,17 +114,23 @@ it('keeps the hero intact when the video and poster files are missing', function
 });
 
 it('has the media files the hero points at', function () {
-    foreach (['brand/1.mp4', 'brand/hero-poster.jpg', 'brand/hero-poster-1280.webp'] as $path) {
+    foreach (['brand/hero.mp4', 'brand/hero-poster.jpg', 'brand/hero-poster-1280.webp'] as $path) {
         expect(File::exists(public_path($path)))->toBeTrue("public/{$path} is missing.");
     }
 
     /*
-     * A size budget with a reason. The clip was re-encoded from 4.55 MiB to
-     * under a megabyte before it was ever committed; this stops a future
-     * "let's use the nicer master" from quietly putting the 4.5 MB version
-     * back in front of somebody on 3g.
+     * A size budget with a reason, and the reason keeps being needed.
+     *
+     * The first hero was re-encoded from 4.55 MiB before it was ever
+     * committed. Its replacement arrived as a 14.84 MiB master — 1280x720
+     * like the one it replaced, so the extra weight bought no pixels, only
+     * 3.1 Mbps of encoder slack, 40 seconds of runtime and a digitally
+     * silent audio track.
+     *
+     * What ships is 3.5 seconds of that master at 413 KB. This number is what
+     * stops the master itself going in front of somebody on 3g.
      */
-    expect(File::size(public_path('brand/1.mp4')))->toBeLessThan(
+    expect(File::size(public_path('brand/hero.mp4')))->toBeLessThan(
         1_400_000,
         'The hero video has grown past its budget. Re-encode it rather than raising this number.'
     );
