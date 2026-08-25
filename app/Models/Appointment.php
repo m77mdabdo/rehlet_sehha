@@ -377,6 +377,19 @@ class Appointment extends Model
     }
 
     /**
+     * The review invitation for this visit, if one has been sent.
+     *
+     * hasOne rather than hasMany: reviews.appointment_id is unique, so a
+     * patient is invited once per visit however many times the scheduler runs.
+     *
+     * @return HasOne<Review, $this>
+     */
+    public function review(): HasOne
+    {
+        return $this->hasOne(Review::class);
+    }
+
+    /**
      * @return HasMany<NotificationLog, $this>
      */
     public function notificationLogs(): HasMany

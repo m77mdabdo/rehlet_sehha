@@ -57,7 +57,13 @@ function countQueries(Closure $callback): array
 it('renders every section in both locales', function (string $locale) {
     $response = $this->get("/{$locale}")->assertOk();
 
-    foreach (['specialties', 'packages', 'how-it-works', 'stories', 'articles', 'faq', 'book', 'contact'] as $id) {
+    /*
+     * 'stories' is deliberately absent. The reviews section renders only once
+     * three real reviews have been approved, and a fresh database has none —
+     * see CredentialsAndReviewsTest, which asserts both the absence and the
+     * appearance. An almost-empty testimonials block is worse than none.
+     */
+    foreach (['specialties', 'packages', 'how-it-works', 'articles', 'faq', 'book', 'contact'] as $id) {
         $response->assertSee('id="'.$id.'"', false);
     }
 })->with(['ar', 'en']);
@@ -314,7 +320,11 @@ it('degrades to empty states rather than breaking when there is no content', fun
     // Every section still renders its heading and says so plainly.
     $response->assertSee(__('home.specialties.empty', [], $locale), false);
     $response->assertSee(__('home.packages.empty', [], $locale), false);
-    $response->assertSee(__('home.stories.empty', [], $locale), false);
+    /*
+     * No stories assertion: the reviews section does not render at all below
+     * three approved reviews, so there is no empty state to see. That absence
+     * is asserted in CredentialsAndReviewsTest.
+     */
     $response->assertSee(__('home.articles.empty', [], $locale), false);
     $response->assertSee(__('home.faq.empty', [], $locale), false);
 })->with(['ar', 'en']);
@@ -334,11 +344,12 @@ it('uses a native details accordion rather than javascript', function () {
 });
 
 it('reads the stats band from config', function () {
-    config()->set('clinic.stats.cases', 1234);
-    config()->set('clinic.stats.years', 42);
+    config()->set('clinic.practitioner.cases_followed', 1234);
+    config()->set('clinic.practitioner.years_practising', 42);
 
     $this->get('/ar')
         ->assertOk()
         ->assertSee('1,234+', false)
-        ->assertSee('42+', false);
+        // No suffix on years: the strip shows "4 years practising", not "4+".
+        ->assertSee('42', false);
 });

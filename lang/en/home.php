@@ -37,11 +37,10 @@ return [
 
     'stats' => [
         'title' => 'The practice in numbers',
-        'cases' => 'cases supported',
-        'years' => 'years in clinical nutrition',
-        'rating' => 'patient rating',
+        'cases' => 'cases followed',
+        'years' => 'years practising',
+        'training_hours' => 'hours of clinical training in university hospitals',
         'support_days' => 'days of follow-up a week',
-        'rating_suffix' => 'out of 5',
     ],
 
     'specialties' => [
@@ -88,6 +87,7 @@ return [
     ],
 
     'stories' => [
+        'aggregate' => 'from :count reviews',
         'eyebrow' => 'Stories',
         'title' => 'People who have walked this',
         'lead' => 'In their own words, about what changed.',

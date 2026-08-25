@@ -111,6 +111,18 @@ Schedule::command('clinic:send-reminders')
  * 10:00 in Cairo depending on daylight saving — which is after the first
  * appointment of the day has already started.
  */
+/*
+ * Review invitations, once a day.
+ *
+ * Not every minute like the reminders: the trigger is "three days have
+ * passed", which does not need minute precision, and a patient receiving this
+ * at 10am reads better than one receiving it at 03:14.
+ */
+Schedule::command('clinic:send-review-requests')
+    ->dailyAt('10:00')
+    ->timezone(config('clinic.timezone'))
+    ->withoutOverlapping();
+
 Schedule::command('clinic:send-daily-schedule')
     ->dailyAt('07:00')
     ->timezone(config('clinic.timezone'));

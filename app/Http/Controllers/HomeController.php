@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Support\ClinicSchema;
 use App\Support\PublicContent;
+use App\Support\Reviews;
 use Illuminate\Contracts\View\View;
 
 class HomeController extends Controller
@@ -38,7 +39,14 @@ class HomeController extends Controller
             'schema' => ClinicSchema::toJson(),
             'services' => PublicContent::services(),
             'specialties' => PublicContent::specialties(),
-            'testimonials' => PublicContent::testimonials(3),
+            /*
+             * Real reviews, and only if there are enough of them. Below three
+             * approved the section does not render at all — see the section
+             * component and App\Support\Reviews for why an almost-empty
+             * testimonials block is worse than none.
+             */
+            'reviews' => Reviews::shouldDisplay() ? Reviews::published(3) : null,
+            'reviewAggregate' => Reviews::aggregate(),
             'faqs' => PublicContent::faqs(),
             'posts' => PublicContent::latestPosts(3),
             'videos' => PublicContent::videos(),

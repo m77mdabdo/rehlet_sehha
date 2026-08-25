@@ -43,13 +43,32 @@ it('emits exactly one valid json-ld block on the page', function () {
 it('carries the fields a rich result needs', function () {
     $schema = ClinicSchema::build();
 
-    foreach (['name', 'url', 'telephone', 'address', 'openingHoursSpecification'] as $field) {
+    foreach (['name', 'url', 'telephone', 'areaServed', 'availableChannel', 'openingHoursSpecification'] as $field) {
         expect($schema)->toHaveKey($field);
     }
 
     expect($schema['telephone'])->toBe('+201004818303');
-    expect($schema['address']['@type'])->toBe('PostalAddress');
-    expect($schema['address']['addressCountry'])->toBe('EG');
+
+    /*
+     * NO PostalAddress, AND THAT IS THE POINT.
+     *
+     * This used to assert one. The practice is online and has no premises, so
+     * an address in the structured data would tell Google there is a place —
+     * putting a pin on a map and an address in a knowledge panel that a
+     * patient could travel to and find nothing at. That fails worse than
+     * having no listing, because it looks authoritative.
+     *
+     * areaServed says where consultations are available, which is the true
+     * version of the same fact, and availableChannel says how to reach them:
+     * a URL to book rather than a door to walk through.
+     */
+    expect(array_key_exists('address', $schema))->toBeFalse(
+        'The clinic schema declares a postal address for a practice with no premises.'
+    );
+
+    expect($schema['areaServed']['@type'])->toBe('Country');
+    expect($schema['availableChannel']['@type'])->toBe('ServiceChannel');
+    expect($schema['availableChannel']['serviceUrl'])->toContain('/booking');
 });
 
 it('groups the schedule instead of repeating a row per day', function () {

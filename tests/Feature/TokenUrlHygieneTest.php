@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\AppointmentStatus;
 use App\Models\Appointment;
+use App\Models\Review;
 use App\Models\Service;
 use App\Services\Availability\AvailabilityEngine;
 use Carbon\CarbonImmutable;
@@ -76,7 +77,46 @@ function tokenAppointment(): Appointment
  */
 function tokenBearingRouteNames(): array
 {
-    return ['appointment.export', 'appointment.manage'];
+    return ['appointment.export', 'appointment.manage', 'review.show', 'review.store'];
+}
+
+/**
+ * The token routes a browser can GET, which is what the page-level checks
+ * below need.
+ *
+ * review.store is POST and renders nothing, so there is no markup to inspect
+ * for a leaked token. It is not therefore unguarded: the drift test asserts
+ * every token-bearing route carries the token-url middleware, which is where
+ * the noindex, no-store and no-referrer headers come from.
+ *
+ * @return list<string>
+ */
+function tokenBearingPages(): array
+{
+    return ['appointment.export', 'appointment.manage', 'review.show'];
+}
+
+/**
+ * A working URL for whichever token route is being checked.
+ *
+ * The review routes carry a REVIEW token, not the appointment's cancel token —
+ * two different bearer credentials for two different capabilities, and using
+ * one where the other belongs would test nothing.
+ */
+function tokenUrlFor(string $routeName): string
+{
+    $appointment = tokenAppointment();
+
+    if (str_starts_with($routeName, 'review.')) {
+        $review = Review::factory()->create([
+            'appointment_id' => $appointment->id,
+            'patient_id' => $appointment->patient_id,
+        ]);
+
+        return route($routeName, ['locale' => 'ar', 'token' => $review->token]);
+    }
+
+    return route($routeName, ['locale' => 'ar', 'token' => $appointment->cancel_token]);
 }
 
 it('guards every token-bearing route the application actually registers', function () {
@@ -107,13 +147,30 @@ it('guards every token-bearing route the application actually registers', functi
         .'Add the new route to tokenBearingRouteNames() so it is checked too.'
     );
 
+    /*
+     * And every one of them must carry the middleware that sets the headers.
+     * This is what covers review.store, which is POST and renders no markup
+     * for the page-level checks to inspect — a token route without these
+     * headers leaks through the Referer of whatever it redirects to.
+     */
+    foreach (Route::getRoutes() as $route) {
+        if (! in_array('token', $route->parameterNames(), true) || $route->getName() === null) {
+            continue;
+        }
+
+        expect(in_array('token-url', $route->gatherMiddleware(), true))->toBeTrue(
+            "Route {$route->getName()} takes a token but does not use the token-url middleware, "
+            .'so it emits no noindex, no no-store and no no-referrer.'
+        );
+    }
+
     expect($covered)->not->toBeEmpty();
 });
 
 it('never emits the token in a tag meant for machines', function (string $routeName) {
     $appointment = tokenAppointment();
 
-    $content = $this->get(route($routeName, ['locale' => 'ar', 'token' => $appointment->cancel_token]))
+    $content = $this->get(tokenUrlFor($routeName))
         ->assertOk()
         ->getContent();
 
@@ -137,12 +194,12 @@ it('never emits the token in a tag meant for machines', function (string $routeN
         ."Anything in a <link> or <meta> is meant to be given away.\n\n"
         .implode("\n", $leaking)."\n"
     );
-})->with(tokenBearingRouteNames());
+})->with(tokenBearingPages());
 
 it('never advertises a token url to a crawler as a translation', function (string $routeName) {
     $appointment = tokenAppointment();
 
-    $content = $this->get(route($routeName, ['locale' => 'ar', 'token' => $appointment->cancel_token]))
+    $content = $this->get(tokenUrlFor($routeName))
         ->assertOk()
         ->getContent();
 
@@ -165,7 +222,7 @@ it('never advertises a token url to a crawler as a translation', function (strin
         expect($anchor)->not->toContain('rel="alternate"');
         expect($anchor)->not->toContain('hreflang');
     }
-})->with(tokenBearingRouteNames());
+})->with(tokenBearingPages());
 
 it('has a language switcher on the manage page that is clean rather than absent', function () {
     // Guards the guard above: if the switcher ever stopped rendering, that
@@ -189,7 +246,7 @@ it('has a language switcher on the manage page that is clean rather than absent'
 it('never sends a token to somewhere that is not us', function (string $routeName) {
     $appointment = tokenAppointment();
 
-    $content = $this->get(route($routeName, ['locale' => 'ar', 'token' => $appointment->cancel_token]))
+    $content = $this->get(tokenUrlFor($routeName))
         ->assertOk()
         ->getContent();
 
@@ -205,7 +262,7 @@ it('never sends a token to somewhere that is not us', function (string $routeNam
     foreach ($urls[1] as $url) {
         expect(parse_url($url, PHP_URL_HOST))->toBe(parse_url(config('app.url'), PHP_URL_HOST));
     }
-})->with(tokenBearingRouteNames());
+})->with(tokenBearingPages());
 
 it('tells crawlers to stay away in a header, not only a meta tag', function (string $routeName) {
     $appointment = tokenAppointment();
@@ -215,7 +272,7 @@ it('tells crawlers to stay away in a header, not only a meta tag', function (str
      * generators, HEAD requests, archivers and proxies read headers and often
      * never build a DOM at all.
      */
-    $response = $this->get(route($routeName, ['locale' => 'ar', 'token' => $appointment->cancel_token]))->assertOk();
+    $response = $this->get(tokenUrlFor($routeName))->assertOk();
 
     expect($response->headers->get('X-Robots-Tag'))->toBe('noindex, nofollow, noarchive');
 
@@ -225,7 +282,7 @@ it('tells crawlers to stay away in a header, not only a meta tag', function (str
 
     // And a shared cache must not hold one patient's page for another.
     expect($response->headers->get('Cache-Control'))->toContain('no-store');
-})->with(tokenBearingRouteNames());
+})->with(tokenBearingPages());
 
 it('keeps those headers off ordinary pages', function () {
     // The headers are correct for token pages and wrong everywhere else:

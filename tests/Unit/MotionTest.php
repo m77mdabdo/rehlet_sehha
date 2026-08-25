@@ -339,10 +339,15 @@ it('renders the stats strip visible, with no inline opacity and the real figures
     // Nothing hidden inline either — a style attribute would bypass the rule above.
     expect(preg_match('/style="[^"]*opacity:\s*0[^.\d]/', $html))->toBe(0, 'Something is inline-hidden.');
 
+    /*
+     * Read from the practitioner record, which is where the figures moved when
+     * the invented ones were replaced by her real ones. config('clinic.stats')
+     * is now a map of POINTERS to these keys, not the values themselves.
+     */
     foreach ([
-        number_format((int) config('clinic.stats.cases')).'+',
-        config('clinic.stats.years').'+',
-        number_format((float) config('clinic.stats.rating'), 1),
+        number_format((int) config('clinic.practitioner.cases_followed')).'+',
+        (string) config('clinic.practitioner.years_practising'),
+        number_format((int) config('clinic.practitioner.clinical_training_hours')).'+',
     ] as $value) {
         // str_contains rather than toContain: Pest reads extra arguments to
         // toContain as further needles, not as a failure message.

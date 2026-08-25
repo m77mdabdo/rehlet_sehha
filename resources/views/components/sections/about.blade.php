@@ -33,7 +33,7 @@
                     @if ($portrait ?? false)
                         <img
                             src="{{ $portrait }}"
-                            alt="{{ __('about.portrait_alt', ['name' => __('about.name')]) }}"
+                            alt="{{ __('about.portrait_alt', ['name' => config('clinic.practitioner.name_ar')]) }}"
                             class="size-full object-cover"
                             width="480"
                             height="600"
@@ -50,20 +50,37 @@
                 <x-section-heading
                     id="about-heading"
                     :eyebrow="__('about.eyebrow')"
-                    :title="__('about.name')"
-                    :lead="__('about.title')"
+                    :title="config('clinic.practitioner.name_ar')"
+                    :lead="app()->getLocale() === 'ar' ? config('clinic.practitioner.title_ar') : config('clinic.practitioner.title_en')"
                 />
 
                 <p class="mt-6 leading-relaxed text-pretty text-muted">
                     {{ __('about.philosophy') }}
                 </p>
 
+                {{--
+                    THE CREDENTIALS COME FROM config/clinic.php, not from copy.
+
+                    These are claims about a real person's professional
+                    standing published under her name, and one source means the
+                    homepage and the about page cannot state them differently.
+                    CredentialsAndReviewsTest fails if a page names a
+                    university or a syndicate config does not hold — the
+                    version this replaced named the wrong one of each.
+
+                    The summary here is the degree and the licence; the full
+                    training record is on the about page.
+                --}}
                 <h3 class="mt-8 font-display text-base font-semibold text-ink">
                     {{ __('about.credentials_heading') }}
                 </h3>
 
                 <ul class="mt-4 space-y-3">
-                    @foreach (__('about.credentials') as $credential)
+                    @foreach ([config('clinic.practitioner.degree_ar'), __('about.licence_value', [
+                        'body' => config('clinic.practitioner.licence_body_ar'),
+                        'number' => config('clinic.practitioner.licence_number'),
+                        'year' => config('clinic.practitioner.licence_year'),
+                    ])] as $credential)
                         <li class="flex items-start gap-3 text-sm leading-relaxed text-muted">
                             <svg class="mt-1 size-4 shrink-0 text-accent-dark" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                 <path d="m4 10.5 4 4 8-9" stroke-linecap="round" stroke-linejoin="round" />
@@ -73,10 +90,12 @@
                     @endforeach
                 </ul>
 
-                {{-- The clinical registration line. Small, factual, last. --}}
-                <p class="mt-8 border-t border-line pt-6 text-sm text-muted">
-                    {{ __('about.registration') }}
-                </p>
+                <a href="{{ route('about') }}" class="mt-8 inline-flex items-center gap-1.5 border-t border-line pt-6 text-sm font-medium text-accent-dark underline-offset-4 hover:underline">
+                    {{ __('about.training_heading') }}
+                    <svg class="size-4 rtl:-scale-x-100" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M7 4l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
             </div>
         </div>
     </x-container>
