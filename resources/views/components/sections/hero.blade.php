@@ -238,7 +238,7 @@
                 disablepictureinpicture
                 controlslist="nodownload noplaybackrate noremoteplayback"
                 data-hero-video
-                data-src="{{ asset('brand/hero.mp4') }}"
+                data-src="{{ asset('brand/2.mp4') }}"
             ></video>
         @endif
 
