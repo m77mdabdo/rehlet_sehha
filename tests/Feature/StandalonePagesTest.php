@@ -86,9 +86,29 @@ function catalogueFor(string $page, string $locale): array
         $entries[] = (string) __('about.philosophy', [], $locale);
         $entries[] = (string) __('about.registration', [], $locale);
 
-        foreach ((array) __('about.credentials', [], $locale) as $value) {
-            $entries[] = (string) $value;
-        }
+        /*
+         * The credentials themselves, straight from the record they are both
+         * rendered from.
+         *
+         * This block used to read a translation key, `about.credentials`, that
+         * no longer exists — and a missing key does not fail, it returns its
+         * own name, so the catalogue was silently being handed the literal
+         * string "about.credentials" and the real credentials were never
+         * excluded at all. Reading config means the entry cannot go stale
+         * without the page going stale with it.
+         */
+        $entries[] = (string) config('clinic.practitioner.degree_ar');
+        $entries[] = (string) config('clinic.practitioner.licence_body_ar');
+        $entries[] = (string) config('clinic.practitioner.licence_number');
+
+        /*
+         * And the reserved-photograph caption. It is one UI string shown by
+         * one component in both places — the empty state for a portrait that
+         * has not been supplied — so counting it measures the component, not
+         * anybody restating prose.
+         */
+        $entries[] = (string) __('about.portrait_pending', [], $locale);
+        $entries[] = (string) __('about.portrait_pending_title', [], $locale);
     }
 
     if ($page === 'contact') {
@@ -223,13 +243,25 @@ it('does not restate its homepage section', function (string $locale) {
         $catalogue = catalogueFor($name, $locale);
 
         $strip = function (string $text) use ($catalogue): string {
-            $text = (string) preg_replace('/[^.!؟?\n]*TODO_COPY[^.!؟?\n]*/u', ' ', $text);
-
+            /*
+             * CATALOGUE FIRST, PLACEHOLDERS SECOND. The order is not cosmetic.
+             *
+             * The placeholder regex clears one SENTENCE around the marker, and
+             * the philosophy placeholder is two sentences. Running it first
+             * chewed the front off a string that the catalogue was about to
+             * remove whole, so the exact match failed and the placeholder's
+             * own tail — «من ٤٠ لـ ٦٠ كلمة، بنفس نبرة باقي الموقع» — was
+             * counted as prose duplicated between the page and the homepage.
+             *
+             * Two strips that overlap have to run widest-first or they fight.
+             */
             foreach ($catalogue as $entry) {
                 if (trim($entry) !== '') {
                     $text = str_replace($entry, ' ', $text);
                 }
             }
+
+            $text = (string) preg_replace('/[^.!؟?\n]*TODO_COPY[^.!؟?\n]*/u', ' ', $text);
 
             return trim((string) preg_replace('/\s+/u', ' ', $text));
         };
@@ -243,14 +275,24 @@ it('does not restate its homepage section', function (string $locale) {
          * A PAGE STILL WAITING ON COPY CANNOT BE MEASURED, and must not
          * silently stay unmeasured.
          *
-         * About is almost entirely TODO_COPY and section labels right now, so
-         * both texts reduce to the same handful of headings and the ratio says
-         * 100% about nothing. This branch stops firing the moment the clinic
-         * supplies real copy, at which point the page is measured exactly like
-         * every other — the exemption removes itself rather than needing
-         * somebody to remember it.
+         * THIS USED TO TEST FOR THE MARKER, and that was too blunt. About was
+         * almost entirely TODO_COPY when it was written, so «has a marker» and
+         * «has nothing to measure» were the same condition. They stopped being
+         * the same the moment real credentials replaced most of the
+         * placeholders: the page carried 302 five-word runs of genuine prose
+         * and was still being skipped whole, because ONE paragraph — the
+         * philosophy, which has to be in the practitioner's own voice and
+         * cannot be invented — still held a marker.
+         *
+         * So the condition is now what it always meant: is there enough real
+         * prose LEFT, after the placeholders are stripped, to compare? A page
+         * that is genuinely still a skeleton has almost none and is skipped; a
+         * page waiting on one last paragraph is measured like every other.
+         *
+         * The exemption still removes itself, and now it removes itself in
+         * proportion rather than all at once.
          */
-        if (str_contains($pageHtml, 'TODO_COPY')) {
+        if (count($pageGrams) < 40) {
             continue;
         }
 
@@ -388,6 +430,21 @@ it('reserves space for the photographs the clinic has not supplied yet', functio
 |------------------------------------------------------------------------------
 */
 
+/**
+ * A published article to point the two article-page tests at.
+ *
+ * They used to name a seeded slug. The seeded articles are now DRAFTS —
+ * placeholder prose nobody clinically reviewed cannot be published under a
+ * practitioner's byline — so that slug 404s, and rightly.
+ *
+ * The factory supplies a reviewer, because the model will not save a published
+ * article without one.
+ */
+function liveArticle(): Post
+{
+    return Post::factory()->create(['slug' => 'a-published-article']);
+}
+
 it('issues a bounded number of queries on every page', function () {
     /*
      * Every page pays for the cached sets it reads and nothing else. The
@@ -430,9 +487,20 @@ it('issues a bounded number of queries on every page', function () {
         '/ar/faq' => 3,
         // working_hours + services
         '/ar/contact' => 2,
-        // the article itself is already in the cached post set
-        // the post itself, then the cached set for related, services, working_hours
-        '/ar/articles/reading-your-lab-results' => 4,
+        /*
+         * The post, its REVIEWER, the cached set for related, services and
+         * working_hours.
+         *
+         * Raised from 4 to 5 when the clinical-review byline landed. The extra
+         * query is the reviewer lookup, and it is eager-loaded rather than
+         * lazy so it stays one query rather than one per article.
+         *
+         * It is not avoidable by storing the reviewer's name on the post: a
+         * denormalised name is how a byline ends up naming somebody by a title
+         * they no longer hold, on an article about a condition, under a
+         * licence. One join is the cheaper mistake.
+         */
+        '/ar/articles/'.liveArticle()->slug => 5,
     ];
 
     foreach ($bounds as $path => $expected) {
@@ -508,7 +576,7 @@ it('shares without handing a third party the reading history', function () {
      * that learns which article a patient read, on a site whose position is
      * that it does not do that.
      */
-    $html = $this->get('/ar/articles/reading-your-lab-results')->assertOk()->getContent();
+    $html = $this->get('/ar/articles/'.liveArticle()->slug)->assertOk()->getContent();
 
     expect($html)->toContain('wa.me');
     expect($html)->toContain('data-copy=');

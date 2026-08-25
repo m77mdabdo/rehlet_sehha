@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use App\Models\Post;
+
 /**
  * Structured data for a standalone page.
  *
@@ -30,7 +32,7 @@ final class PageSchema
      *                                                               page itself and carries no url — schema.org wants the current item
      *                                                               named but not linked.
      */
-    public static function toJson(array $trail): string
+    public static function toJson(array $trail, ?Post $article = null): string
     {
         $graph = [ClinicSchema::build()];
 
@@ -38,10 +40,51 @@ final class PageSchema
             $graph[] = self::breadcrumbs($trail);
         }
 
+        if ($article !== null) {
+            $graph[] = self::article($article);
+        }
+
         return json_encode(
             ['@context' => 'https://schema.org', '@graph' => $graph],
             JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR,
         );
+    }
+
+    /**
+     * A clinical article, with the person who checked it named in the markup.
+     *
+     * `reviewedBy` is the field that matters here and it is not decoration.
+     * Google's own guidance for health content asks who reviewed it and when,
+     * and a clinic that shows a reviewer on the page but omits it from the
+     * markup is telling the reader one thing and the machine another.
+     *
+     * `author` and `reviewedBy` are the same person for now, and are still
+     * emitted as separate properties, because they answer different questions
+     * and will not always have the same answer: the clinic may commission a
+     * piece it reviews without writing.
+     *
+     * NOTHING HERE IS medicalSpecialty OR MedicalWebPage. Those types invite
+     * rich results that present the page as clinical reference material, which
+     * is a claim this practice has not earned and does not want. An Article is
+     * what it is.
+     *
+     * @return array<string, mixed>
+     */
+    private static function article(Post $post): array
+    {
+        $reviewer = $post->reviewer?->name;
+
+        return array_filter([
+            '@type' => 'Article',
+            'headline' => (string) $post->title,
+            'description' => (string) $post->excerpt,
+            'inLanguage' => Locales::current(),
+            'datePublished' => $post->published_at?->toIso8601String(),
+            'dateModified' => $post->updated_at?->toIso8601String(),
+            'author' => $reviewer === null ? null : ['@type' => 'Person', 'name' => $reviewer],
+            'reviewedBy' => $reviewer === null ? null : ['@type' => 'Person', 'name' => $reviewer],
+            'publisher' => ['@id' => ClinicSchema::id()],
+        ], static fn (mixed $value): bool => $value !== null && $value !== '');
     }
 
     /**

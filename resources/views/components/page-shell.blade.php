@@ -11,6 +11,14 @@
      */
     'trail' => [],
     'footerServices' => null,
+
+    /**
+     * The article this page IS, when it is one.
+     *
+     * Only the article page passes it. Everything else emits the clinic and
+     * the trail, which is all a service or FAQ page has to say about itself.
+     */
+    'article' => null,
 ])
 
 {{--
@@ -39,7 +47,7 @@
     :title="$metaTitle"
     :description="$metaDescription"
     :footer-services="$footerServices"
-    :schema="\App\Support\PageSchema::toJson($trail)"
+    :schema="\App\Support\PageSchema::toJson($trail, $article)"
 >
     <header class="border-b border-line bg-linear-to-b from-sage to-paper pt-10 pb-16 sm:pt-14 sm:pb-24">
         <x-container>

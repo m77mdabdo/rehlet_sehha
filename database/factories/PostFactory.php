@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -45,13 +46,48 @@ class PostFactory extends Factory
             ]),
             'reading_minutes' => fake()->numberBetween(2, 12),
             'published_at' => Carbon::now()->subDays(fake()->numberBetween(1, 120)),
+
+            /*
+             * A published article needs a named clinical reviewer, and the
+             * model refuses to save one without it. A factory is a test
+             * fixture rather than a publication, so it supplies a real doctor
+             * user to stand in that role — which also means a test asserting
+             * "the reviewer line names somebody" has somebody to name.
+             */
+            'reviewed_by' => User::factory()->state(['name' => 'د. رنا سالم']),
+            'reviewed_at' => Carbon::now()->subDays(fake()->numberBetween(1, 120)),
+
             'is_featured' => false,
         ];
     }
 
+    /**
+     * Not published, and therefore not reviewed.
+     *
+     * Both are cleared together because that is the real shape of a draft: a
+     * piece nobody has signed off because nobody has been asked to yet.
+     */
     public function draft(): self
     {
-        return $this->state(fn (): array => ['published_at' => null]);
+        return $this->state(fn (): array => [
+            'published_at' => null,
+            'reviewed_by' => null,
+            'reviewed_at' => null,
+        ]);
+    }
+
+    /**
+     * Written and dated, but nobody has checked it.
+     *
+     * The state that must never reach the public site. It exists so a test can
+     * try to publish one and prove the model refuses.
+     */
+    public function unreviewed(): self
+    {
+        return $this->state(fn (): array => [
+            'reviewed_by' => null,
+            'reviewed_at' => null,
+        ]);
     }
 
     public function scheduled(): self
