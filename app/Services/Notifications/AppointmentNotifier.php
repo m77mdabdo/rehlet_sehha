@@ -7,6 +7,7 @@ namespace App\Services\Notifications;
 use App\Enums\NotificationChannel;
 use App\Models\Appointment;
 use App\Models\NotificationLog;
+use App\Models\Review;
 use App\Notifications\AppointmentReminder1h;
 use App\Notifications\AppointmentReminder24h;
 use App\Notifications\BookingCancelled;
@@ -17,6 +18,7 @@ use App\Notifications\Contracts\LogsDelivery;
 use App\Notifications\DailySchedule;
 use App\Notifications\NewBookingAlert;
 use App\Notifications\PatientMailFailedAlert;
+use App\Notifications\ReviewRequested;
 use App\Support\Contact;
 use Illuminate\Notifications\Notification as BaseNotification;
 use Illuminate\Support\Carbon;
@@ -84,6 +86,21 @@ class AppointmentNotifier
     public function bookingRescheduled(Appointment $appointment, Carbon $previousStartsAt): void
     {
         $this->toPatient($appointment, new BookingRescheduled($appointment, $previousStartsAt));
+    }
+
+    /**
+     * Invite a patient to review a visit that has already happened.
+     *
+     * Through the same door as everything else, for the same three reasons —
+     * and one more that is specific to this message. A review invitation goes
+     * to a patient who may well have no email address, and the invitation is
+     * the only thing that carries her review token. If it is not delivered,
+     * the token exists and she never learns of it; the SKIPPED row is what
+     * tells the clinic to stop expecting a reply.
+     */
+    public function reviewRequested(Appointment $appointment, Review $review): void
+    {
+        $this->toPatient($appointment, new ReviewRequested($appointment, $review));
     }
 
     /*

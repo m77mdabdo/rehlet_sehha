@@ -177,4 +177,12 @@ return [
         'recipient' => 'Recipient',
         'error' => 'Error',
     ],
+    'review_requested' => [
+        'subject' => 'Would you tell us how it went?',
+        'heading' => 'Your view matters',
+        'lead' => 'It has been a few days since your session. If you would like to say how it went, this link opens a short page — a rating and a couple of lines, a minute at most.',
+        'button' => 'Write your review',
+        'consent_note' => 'Nothing is published automatically. There is a box on the page where you choose whether it may appear on the site, and it is not ticked. Leave it unticked and your review reaches us only.',
+        'no_obligation' => 'And if you would rather not write anything, that is completely fine — we will not ask again about this visit.',
+    ],
 ];

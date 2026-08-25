@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 return [
-    'about' => 'A clinical nutrition practice in Cairo. We help you reach your goal with a realistic plan built around your case and your lab work, not a template.',
+    // No premises — see the note on the Arabic string. Cairo remains elsewhere
+    // in the site as a time zone, which is a different claim and a true one.
+    'about' => 'An online clinical nutrition practice. We help you reach your goal with a realistic plan built around your case and your lab work, not a template.',
     'services_heading' => 'Services',
     'links_heading' => 'Links',
     'contact_heading' => 'Get in touch',

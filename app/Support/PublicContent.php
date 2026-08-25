@@ -7,6 +7,7 @@ namespace App\Support;
 use App\Models\Faq;
 use App\Models\PlateFood;
 use App\Models\Post;
+use App\Models\Review;
 use App\Models\Service;
 use App\Models\Specialty;
 use App\Models\Testimonial;
@@ -61,6 +62,7 @@ final class PublicContent
         'faqs',
         'faqs-buying',
         'faqs-all',
+        'reviews-approved',
         'latest-posts',
         'opening-hours',
         'videos',
@@ -198,6 +200,19 @@ final class PublicContent
         );
 
         return $posts->take($limit);
+    }
+
+    /**
+     * Reviews a patient consented to publish AND the clinic approved.
+     *
+     * Both conditions live in the model's approved() scope, so no caller can
+     * accidentally read a set that satisfies only one of them.
+     *
+     * @return Collection<int, Review>
+     */
+    public static function approvedReviews(): Collection
+    {
+        return self::remember('reviews-approved', fn (): Collection => Review::approved()->get());
     }
 
     /**

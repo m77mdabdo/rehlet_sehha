@@ -7,29 +7,30 @@ declare(strict_types=1);
 | The contact page
 |------------------------------------------------------------------------------
 |
+| THE PRACTICE IS ONLINE AND HAS NO PREMISES. There is no address block on
+| this page, no map, and no address in config — because there is nowhere to
+| go. A published address for a practice with no premises is worse than none:
+| it looks authoritative and sends a patient to a door that is not there.
+|
 | NO CONTACT FORM, DELIBERATELY, and the page says so rather than leaving a
 | visitor hunting for one. A patient who fills in a "get in touch" box has done
 | something that feels like progress and is not — she then waits, for a reply
 | that competes with the booking she actually wanted. Every route offered here
 | is one she controls and gets an answer from: booking, WhatsApp, the phone.
 |
-| NO EMBEDDED MAP EITHER. An embed is a third-party request on a site built not
-| to track its visitors, made to render an address we can render as text. The
-| address block below is real text: selectable, translatable, readable by a
-| screen reader, and free.
+| The platform list comes from config/clinic.php so this page and the schema
+| cannot disagree about what a session runs on.
 |
-| Every detail comes from config/clinic.php. Dropping in the real address is a
-| one-line change there, and nothing on this page needs touching.
 |
 */
 
 return [
     'meta_title' => 'Contact — Rehlet Sehha',
-    'meta_description' => 'The clinic address, opening hours, WhatsApp and phone. Online booking is available around the clock without a phone call.',
+    'meta_description' => 'Opening hours, WhatsApp and phone, and the platforms sessions run on. The practice is online and booking is available around the clock without a phone call.',
 
     'eyebrow' => 'Contact',
     'title' => 'How to reach us',
-    'lead' => 'The fastest way to start is to book online — it is confirmed immediately, with no waiting for a reply. If you have a question before booking, WhatsApp is quickest.',
+    'lead' => 'The practice is online. There are no premises to visit — sessions happen by video, and booking is confirmed immediately without a phone call.',
 
     'book_first' => [
         'title' => 'Booking is faster than asking',
@@ -47,9 +48,16 @@ return [
     'phone_note' => 'The phone is during opening hours only.',
     'email_note' => 'Email is for administrative matters and invoices.',
 
-    'address_heading' => 'Address',
-    'address_note' => 'The clinic is in :address. If you need exact directions, message us on WhatsApp and we will send the location.',
-    'address_pending' => 'TODO_COPY — the clinic\'s full address: street, building number, floor, and the nearest landmark.',
+    'online_title' => 'The practice is online, and there are no premises',
+    'online_body' => 'Every session happens by video. This is not a temporary arrangement, it is what the practice is. It means no travelling, no transport to arrange and no waiting room — and it also means there is no address to come to, so do not go looking for one.',
+
+    'platforms_heading' => 'What the session runs on',
+    'platforms_note' => 'You choose the platform that suits you when you book, and the link arrives with your confirmation. No account to register and nothing to install if you use WhatsApp.',
+    'platforms' => [
+        'zoom' => 'Zoom',
+        'google_meet' => 'Google Meet',
+        'whatsapp_video' => 'WhatsApp video call',
+    ],
 
     'hours_heading' => 'Opening hours',
     'hours_note' => 'These are the clinic\'s hours. Online sessions can be arranged outside them by agreement.',

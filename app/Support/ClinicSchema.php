@@ -67,18 +67,36 @@ final class ClinicSchema
         }
 
         /*
-         * PostalAddress with addressCountry as the ISO code, because that is
-         * the field consumers actually parse. The locality is the translated
-         * address line — "المعادي، القاهرة" is genuinely the address for an
-         * Arabic reader, and schema.org permits localised address text.
+         * NO PostalAddress, DELIBERATELY.
+         *
+         * The practice is online and has no premises. A PostalAddress in the
+         * structured data tells Google there is a place, which puts a pin on a
+         * map and an address in a knowledge panel that a patient could travel
+         * to and find nothing at — a worse failure than having no listing,
+         * because it looks authoritative.
+         *
+         * areaServed says where consultations are available, which is the true
+         * version of the same fact, and availableChannel says how: a URL to
+         * book rather than a door to walk through.
          */
-        if (($address = Contact::address()) !== null) {
-            $schema['address'] = [
-                '@type' => 'PostalAddress',
-                'addressLocality' => $address,
-                'addressCountry' => 'EG',
-            ];
-        }
+        $schema['areaServed'] = [
+            '@type' => 'Country',
+            'name' => (string) config('clinic.contact.area_served', 'EG'),
+        ];
+
+        $schema['availableChannel'] = [
+            '@type' => 'ServiceChannel',
+            /*
+             * The locale is passed explicitly. Without a request in flight the
+             * URL generator has no default for it, and this class is built
+             * from a console command and a test as well as from a page.
+             */
+            'serviceUrl' => route('booking', ['locale' => Locales::current()]),
+            'availableLanguage' => array_map(
+                static fn (string $locale): array => ['@type' => 'Language', 'name' => $locale],
+                Locales::all(),
+            ),
+        ];
 
         $hours = self::openingHours();
 

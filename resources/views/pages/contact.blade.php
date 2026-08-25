@@ -1,8 +1,17 @@
 @php
-    use App\Support\Contact;
     use Illuminate\Support\Carbon;
 
-    $address = Contact::address();
+    /*
+     * THE PRACTICE IS ONLINE AND HAS NO PREMISES, so there is no address block
+     * on this page. config/clinic.php holds a null address deliberately — a
+     * published address for a practice with nowhere to go is worse than none,
+     * because it looks authoritative and sends somebody to a door that is not
+     * there.
+     *
+     * What replaces it is the platform list, read from config so this page and
+     * the structured data cannot disagree about what a session runs on.
+     */
+    $platforms = config('clinic.platforms', []);
 
     /*
      * Day names come from Carbon in the current locale rather than a table of
@@ -82,38 +91,32 @@
         </x-container>
     </section>
 
-    {{-- Address and hours, side by side and asymmetric. --}}
+    {{-- Where the practice actually is: online. And the hours it keeps. --}}
     <section class="bg-sage/50 py-16 sm:py-24" aria-labelledby="where-heading">
         <x-container>
             <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
                 <div class="lg:col-span-5">
                     <h2 id="where-heading" class="font-display text-2xl font-semibold text-ink sm:text-3xl">
-                        {{ __('contact.address_heading') }}
+                        {{ __('contact.online_title') }}
                     </h2>
 
-                    {{--
-                        A static address block. No embedded map: that is a
-                        third-party request on a site built not to track its
-                        visitors, to draw an address we can render as text.
+                    <p class="mt-4 leading-relaxed text-pretty text-muted">{{ __('contact.online_body') }}</p>
 
-                        <address> is the right element, and it is not italic
-                        here because the browser default italicises it and an
-                        Arabic address in italics is unpleasant to read.
-                    --}}
-                    <address class="mt-4 text-lg leading-relaxed text-pretty text-ink not-italic">
-                        {{ $address }}
-                    </address>
+                    <h3 class="mt-8 text-sm font-semibold tracking-wide text-accent-dark uppercase">
+                        {{ __('contact.platforms_heading') }}
+                    </h3>
 
-                    <p class="mt-4 text-sm leading-relaxed text-muted">
-                        {{ __('contact.address_note', ['address' => $address]) }}
-                    </p>
+                    {{-- From config, so the page, the booking wizard and the
+                         schema cannot disagree about what is on offer. --}}
+                    <ul class="mt-4 flex flex-wrap gap-2">
+                        @foreach ($platforms as $platform)
+                            <li class="rounded-pill bg-white px-4 py-2 text-sm font-medium text-ink ring-1 ring-line">
+                                {{ __('contact.platforms.'.$platform) }}
+                            </li>
+                        @endforeach
+                    </ul>
 
-                    {{-- The exact street address is still TODO_COPY. It renders
-                         here so the gap is visible in staging rather than
-                         discovered by a patient standing in Maadi. --}}
-                    <p class="mt-4 rounded-lg bg-white p-4 text-sm leading-relaxed text-muted ring-1 ring-line">
-                        {{ __('contact.address_pending') }}
-                    </p>
+                    <p class="mt-4 text-sm leading-relaxed text-muted">{{ __('contact.platforms_note') }}</p>
                 </div>
 
                 <div class="lg:col-span-7">
@@ -174,12 +177,24 @@
                     </ul>
                 </div>
 
-                {{-- Reserved for the clinic's own photograph. Never a stock
-                     interior: a picture of somebody else's waiting room on the
-                     page telling you where to come is a lie you can walk into. --}}
+                {{--
+                    No reserved photograph here any more.
+
+                    This slot used to hold space for a picture of the clinic
+                    interior. There is no interior: the practice is online. A
+                    frame waiting for a photograph of premises that do not
+                    exist is a promise nobody can keep, so it is gone rather
+                    than left hopeful.
+                --}}
                 <div class="lg:col-span-6 lg:mt-6">
-                    <x-photo-frame ratio="aspect-3/2" :label="__('contact.clinic_photo_pending')" :size="140" class="shadow-sm" />
-                    <p class="mt-3 text-sm text-muted">{{ __('contact.clinic_photo_pending') }}</p>
+                    <x-card>
+                        <h3 class="font-display text-lg font-semibold text-ink">{{ __('contact.book_first.title') }}</h3>
+                        <p class="mt-2 text-sm leading-relaxed text-muted">{{ __('contact.book_first.body') }}</p>
+
+                        <div class="mt-5">
+                            <x-button :href="route('booking')" size="lg" class="w-full">{{ __('contact.book_first.cta') }}</x-button>
+                        </div>
+                    </x-card>
                 </div>
             </div>
         </x-container>
