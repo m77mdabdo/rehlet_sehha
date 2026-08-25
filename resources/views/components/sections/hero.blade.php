@@ -143,10 +143,15 @@
     $showVideo = $media && ! $saveData;
 
     /*
-     * Where the plate sits in the frame. Everything about the framing is
+     * Where the SUBJECT sits in the frame. Everything about the framing is
      * derived from this one measurement rather than eyeballed per breakpoint.
+     *
+     * The footage changed in 8.13 and this number moved with it. The old value
+     * centred a plate that sat left of centre; the new clip is a counter of
+     * vegetables running along the bottom third with a dark cabinet on the
+     * left, so the interest is low and centre-right.
      */
-    $plateFocus = '38% 50%';
+    $plateFocus = '50% 75%';
 @endphp
 
 @if ($media)
@@ -233,7 +238,7 @@
                 disablepictureinpicture
                 controlslist="nodownload noplaybackrate noremoteplayback"
                 data-hero-video
-                data-src="{{ asset('brand/1.mp4') }}"
+                data-src="{{ asset('brand/hero.mp4') }}"
             ></video>
         @endif
 
