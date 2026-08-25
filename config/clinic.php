@@ -217,10 +217,22 @@ return [
         // Translated in config rather than in lang/ because it is a fact about
         // the clinic, not a piece of interface copy — the booking confirmation
         // and the footer want the same string, in whichever language is active.
-        'address' => [
-            'ar' => 'المعادي، القاهرة',
-            'en' => 'Maadi, Cairo',
-        ],
+        /*
+         * NO ADDRESS. THE PRACTICE IS ONLINE AND HAS NO PREMISES.
+         *
+         * This is null rather than deleted so the reason is visible: an
+         * address here would put a place on the contact page, in the footer
+         * and in the structured data that a patient could travel to and find
+         * nothing at. Contact::address() returns null and every component that
+         * renders it already renders nothing for an unset value.
+         *
+         * areaServed below is what replaces it — where she practises, not
+         * where you go.
+         */
+        'address' => null,
+
+        // Where consultations are actually available. Not a building.
+        'area_served' => 'EG',
     ],
 
     /*
@@ -247,12 +259,137 @@ return [
     |
     */
 
-    'stats' => [
-        'cases' => (int) env('CLINIC_STAT_CASES', 500),
-        'years' => (int) env('CLINIC_STAT_YEARS', 8),
-        'rating' => (float) env('CLINIC_STAT_RATING', 4.9),
-        'support_days' => (int) env('CLINIC_STAT_SUPPORT_DAYS', 6),
+    /*
+    |--------------------------------------------------------------------------
+    | The practitioner
+    |--------------------------------------------------------------------------
+    |
+    | HER ACTUAL RECORD, FROM HER CERTIFICATES. Single source of truth: no page
+    | states a qualification, a licensing body or a number that is not here,
+    | and CredentialsTest fails the build if one appears.
+    |
+    | This replaced fabricated placeholder data. What was there before claimed
+    | a different university, a master's degree she does not hold, and the
+    | wrong syndicate — she is licensed by نقابة المهن الزراعية, the
+    | agricultural professions syndicate, which is the correct body for a
+    | clinical nutrition specialist holding an agricultural sciences degree in
+    | Egypt. Naming the medical syndicate instead would be claiming a
+    | registration she does not have, in public, under her own name.
+    |
+    | EVERY FIGURE HERE MUST BE EVIDENCED. Each carries a note saying what the
+    | evidence is. A number on a clinic's homepage is a claim a patient may
+    | act on, and one nobody can trace is worse than no number at all.
+    */
+    'practitioner' => [
+        'name_ar' => 'رنا محمد أحمد سالم',
+
+        // Evidence: syndicate licence card.
+        'title_ar' => 'أخصائية تغذية إكلينيكية',
+        'title_en' => 'Clinical Nutrition Specialist',
+
+        // Evidence: degree certificate.
+        'degree_ar' => 'بكالوريوس العلوم الزراعية — جامعة المنصورة، 2025',
+
+        /*
+         * The licence. A verifiable membership number is a far stronger trust
+         * signal than any adjective, which is why it is displayed rather than
+         * summarised — a patient can check it against the syndicate register.
+         */
+        'licence_body_ar' => 'نقابة المهن الزراعية',
+        'licence_number' => '949728',
+        'licence_year' => 2025,
+
+        // Evidence: practice history. Counted from her second undergraduate
+        // year, when supervised practice began — not from graduation.
+        'years_practising' => 4,
+
+        // Evidence: training logs and her own caseload, combined. Training,
+        // supervised practice and independent follow-up.
+        'cases_followed' => 1000,
+
+        // Evidence: the two hospital programmes below, 150 hours each.
+        'clinical_training_hours' => 300,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Clinical training
+    |--------------------------------------------------------------------------
+    |
+    | In the order it happened. Two NAMED university hospitals is the strongest
+    | fact on this list, and the reason the about page shows this as a timeline
+    | rather than a paragraph: an institution a patient can look up carries
+    | weight that "extensive training" never will.
+    */
+    'training' => [
+        [
+            'institution_ar' => 'معهد وأمراض الكبد المصري، جامعة المنصورة',
+            'programme_ar' => 'برنامج دايتيتيك',
+            'hours' => 150,
+            'year' => null,
+        ],
+        [
+            'institution_ar' => 'مستشفى دمياط التخصصي',
+            'programme_ar' => 'تدريب دايتيتيك',
+            'hours' => 150,
+            'year' => 2023,
+        ],
+        [
+            'institution_ar' => 'مبادئ التغذية الإكلينيكية',
+            'programme_ar' => 'دورة تدريبية',
+            'hours' => 12,
+            'year' => 2022,
+        ],
+        [
+            'institution_ar' => 'مركز تدريب نقابة المهن الزراعية',
+            'programme_ar' => 'برنامج أخصائي تغذية',
+            'hours' => 45,
+            'year' => null,
+        ],
+        [
+            'institution_ar' => 'مؤتمر Nutrition Specialist Professional، المنصورة',
+            'programme_ar' => 'حضور مؤتمر',
+            'hours' => null,
+            'year' => 2023,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Consultation platforms
+    |--------------------------------------------------------------------------
+    |
+    | The practice is ONLINE. There is no clinic address to visit, so the
+    | question a patient actually has is "on what?" — and the answer belongs in
+    | config rather than in prose, so the contact page and the schema cannot
+    | disagree about it.
+    */
+    'platforms' => ['zoom', 'google_meet', 'whatsapp_video'],
+
+    /*
+    |--------------------------------------------------------------------------
+    | The headline figures
+    |--------------------------------------------------------------------------
+    |
+    | POINTERS, NOT VALUES. Each entry names a key under `practitioner` or a
+    | count derived elsewhere, so the strip on the homepage cannot drift away
+    | from the record on the about page — there is one number and two places
+    | that read it.
+    |
+    | THERE IS NO RATING HERE ANY MORE. The 4.9 that used to sit in this block
+    | was invented. A rating is now computed from real approved reviews and is
+    | only displayed once there are enough of them to mean anything; see
+    | App\Support\Reviews.
+    */
+    'stats' => [
+        'years' => 'practitioner.years_practising',
+        'cases' => 'practitioner.cases_followed',
+        'training_hours' => 'practitioner.clinical_training_hours',
+        'support_days' => 'support_days',
+    ],
+
+    // Evidence: the working_hours table — six days with an active schedule.
+    'support_days' => (int) env('CLINIC_STAT_SUPPORT_DAYS', 6),
 
     /*
     |--------------------------------------------------------------------------

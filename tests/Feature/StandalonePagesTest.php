@@ -362,7 +362,13 @@ it('reserves space for the photographs the clinic has not supplied yet', functio
      * never a stock stand-in, which on a page about who will be treating you
      * is a false claim a patient cannot check, and never a broken frame.
      */
-    foreach (['about', 'contact'] as $path) {
+    /*
+     * Only ABOUT now. The contact page used to reserve a frame for a
+     * photograph of the clinic interior; there is no interior, because the
+     * practice is online. A frame waiting for a picture of premises that do
+     * not exist is a promise nobody can keep.
+     */
+    foreach (['about'] as $path) {
         $html = $this->get("/{$locale}/{$path}")->assertOk()->getContent();
 
         // str_contains rather than toContain(): Pest reads a second argument
@@ -454,9 +460,16 @@ it('does not offer a contact form', function (string $locale) {
     expect(str_contains($html, 'google.com/maps'))->toBeFalse('The contact page embeds a map.');
     expect(str_contains($html, '<iframe'))->toBeFalse('The contact page embeds a third party.');
 
-    // The address is real text, from config.
-    expect(str_contains($html, '<address'))->toBeTrue('The address is not marked up as an address.');
-    expect(str_contains($html, (string) config('clinic.contact.address.'.$locale)))->toBeTrue('The address does not come from config.');
+    /*
+     * AND NO ADDRESS EITHER. The practice is online and has no premises, so
+     * this page says where sessions happen — the platform list from config —
+     * rather than naming a place that does not exist.
+     */
+    expect(str_contains($html, '<address'))->toBeFalse('The contact page renders an address for a practice with no premises.');
+
+    foreach (config('clinic.platforms') as $platform) {
+        expect($html)->toContain(__("contact.platforms.{$platform}", [], $locale));
+    }
 })->with(['ar', 'en']);
 
 it('keeps the practitioner page honest about what it does not know', function () {

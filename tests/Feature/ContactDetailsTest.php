@@ -106,14 +106,29 @@ it('treats an empty string as an unfilled detail', function () {
     expect($this->get('/ar')->getContent())->not->toContain('mailto:');
 });
 
-it('gives the address in the active locale', function () {
-    expect(Contact::address('ar'))->toBe('المعادي، القاهرة');
-    expect(Contact::address('en'))->toBe('Maadi, Cairo');
+it('returns no address, because the practice has no premises', function () {
+    /*
+     * THIS USED TO ASSERT AN ADDRESS AND NOW ASSERTS ITS ABSENCE.
+     *
+     * The practice is online and there is nowhere to go. A published address
+     * for a practice with no premises is worse than none: it looks
+     * authoritative and sends a patient to a door that is not there.
+     *
+     * Contact::address() returning null is the mechanism — every component
+     * that renders it already renders nothing at all for an unset value, so
+     * the footer, the contact page and the structured data all drop it
+     * without any of them knowing why.
+     */
+    expect(Contact::address('ar'))->toBeNull();
+    expect(Contact::address('en'))->toBeNull();
 
     app()->setLocale('en');
-    expect(Contact::address())->toBe('Maadi, Cairo');
+    expect(Contact::address())->toBeNull();
 });
 
-it('falls back to the default locale for an address it has no translation for', function () {
-    expect(Contact::address('de'))->toBe('المعادي، القاهرة');
+it('renders no address anywhere on the site', function () {
+    $html = $this->get('/ar')->getContent();
+
+    expect(str_contains($html, 'PostalAddress'))->toBeFalse();
+    expect(str_contains($html, '<address'))->toBeFalse();
 });

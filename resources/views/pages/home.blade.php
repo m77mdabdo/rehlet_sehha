@@ -27,7 +27,11 @@
 
     <x-sections.plate :foods="$plateFoods" />
 
-    <x-sections.stories :testimonials="$testimonials" />
+    {{-- Skipped entirely below three approved reviews. An empty testimonials
+         block advertises that nobody has said anything. --}}
+    @if ($reviews)
+        <x-sections.stories :reviews="$reviews" :aggregate="$reviewAggregate" />
+    @endif
 
     <x-sections.videos :videos="$videos" />
 

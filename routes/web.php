@@ -12,6 +12,7 @@ use App\Http\Controllers\ManageAppointmentController;
 use App\Http\Controllers\ManifestController;
 use App\Http\Controllers\PackagesController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\SpecialtyController;
 use App\Support\Locales;
@@ -116,6 +117,22 @@ Route::prefix('{locale}')
          */
         Route::get('articles/{slug}', [PostController::class, 'show'])
             ->name('posts.show');
+
+        /*
+         * Leaving a review. Same token discipline as the cancellation link:
+         * the token is a bearer credential, so the page is noindex, no-store
+         * and no-referrer, and never appears in a canonical, an hreflang or an
+         * og:url. TokenUrlHygieneTest asserts all of that.
+         */
+        Route::get('review/{token}', [ReviewController::class, 'show'])
+            ->middleware('token-url')
+            ->name('review.show')
+            ->where('token', '[A-Za-z0-9]{32,80}');
+
+        Route::post('review/{token}', [ReviewController::class, 'store'])
+            ->middleware('token-url')
+            ->name('review.store')
+            ->where('token', '[A-Za-z0-9]{32,80}');
 
         Route::get('site.webmanifest', ManifestController::class)
             ->middleware('cache.headers:public;max_age=86400;etag')

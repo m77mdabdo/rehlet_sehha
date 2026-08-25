@@ -1,6 +1,24 @@
-@props(['testimonials'])
+@props(['reviews', 'aggregate' => null])
 
 {{--
+    REAL REVIEWS FROM REAL PATIENTS. Nothing here is written by the clinic.
+
+    Every quote arrived through an invitation sent three days after a completed
+    appointment, was written by the patient, and carries her explicit consent
+    to be published — an unticked box she had to tick. The model refuses to
+    approve anything without it, so no amount of admin-side enthusiasm can put
+    an unconsented quote on this page.
+
+    THE SECTION DOES NOT RENDER BELOW THREE APPROVED REVIEWS. A testimonials
+    block with one quote in it advertises that almost nobody has said anything,
+    which is worse than not having the section — so the caller checks before
+    rendering and the homepage simply skips it.
+
+    THE AGGREGATE RATING APPEARS ONLY ABOVE TEN. Three fives average to "5.0
+    out of 5", which reads as a fact about the practice and is really a fact
+    about the sample size. It is computed, never stored — the 4.9 this replaced
+    was a number typed into a config file by nobody in particular.
+
     Quotes only.
 
     No before/after photographs and no weight figures — the same rule as the
@@ -21,11 +39,18 @@
             :lead="__('home.stories.lead')"
         />
 
-        @if ($testimonials->isEmpty())
-            <p class="mt-10 text-muted">{{ __('home.stories.empty') }}</p>
-        @else
-            <ul class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                @foreach ($testimonials as $testimonial)
+        @if ($aggregate !== null)
+            {{-- Computed from the approved set at render time. Only shown
+                 because there are enough reviews for an average to mean
+                 something. --}}
+            <p class="mt-6 flex items-center gap-2 text-sm text-muted">
+                <bdi dir="ltr" class="font-display text-2xl font-semibold text-ink">{{ number_format($aggregate, 1) }}</bdi>
+                <span>{{ __('home.stories.aggregate', ['count' => $reviews->count()]) }}</span>
+            </p>
+        @endif
+
+        <ul class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                @foreach ($reviews as $testimonial)
                     <li class="reveal flex">
                         <x-card as="figure" class="flex w-full flex-col">
                             @if ($testimonial->rating)
@@ -65,7 +90,7 @@
 
                             <blockquote class="mt-4 flex-1">
                                 <p class="text-base leading-relaxed text-pretty text-ink">
-                                    {{ $testimonial->quote }}
+                                    {{ $testimonial->comment }}
                                 </p>
                             </blockquote>
 
@@ -74,13 +99,17 @@
                                     class="inline-flex size-11 items-center justify-center rounded-pill bg-ink font-display text-sm font-semibold text-white"
                                     aria-hidden="true"
                                 >
-                                    {{ $testimonial->initials }}
+                                    {{ mb_substr((string) $testimonial->display_name, 0, 1) }}
                                 </span>
 
                                 <span>
-                                    <span class="block text-sm font-medium text-ink">{{ $testimonial->name }}</span>
-                                    @if ($testimonial->context)
-                                        <span class="block text-sm text-muted">{{ $testimonial->context }}</span>
+                                    <span class="block text-sm font-medium text-ink">{{ $testimonial->display_name }}</span>
+                                    @if ($testimonial->approved_at)
+                                        {{-- The date it was published, not the
+                                             visit: a review dated to an
+                                             appointment would narrow down who
+                                             wrote it. --}}
+                                        <span class="block text-sm text-muted"><bdi dir="auto">{{ $testimonial->approved_at->translatedFormat('F Y') }}</bdi></span>
                                     @endif
                                 </span>
                             </figcaption>
@@ -88,6 +117,5 @@
                     </li>
                 @endforeach
             </ul>
-        @endif
     </x-container>
 </section>
