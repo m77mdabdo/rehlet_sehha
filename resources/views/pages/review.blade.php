@@ -38,6 +38,40 @@
                             </div>
                         @endif
                     </dl>
+
+                    {{--
+                        WITHDRAWING CONSENT, AFTER THE FACT.
+
+                        She ticked a box in one mood and may think better of it
+                        a week later. Before this existed the form redirected
+                        once submitted and her only route back was telephoning
+                        the clinic — which is not a mechanism, it is a hope.
+
+                        Shown only while consent actually stands, so a patient
+                        who never agreed to publication is not offered a button
+                        to undo something she did not do.
+                    --}}
+                    @if ($review->consented_at)
+                        <form
+                            method="POST"
+                            action="{{ route('review.withdraw', ['token' => $review->token]) }}"
+                            class="mt-8 border-t border-line pt-6"
+                        >
+                            @csrf
+
+                            <h2 class="text-sm font-semibold text-ink">{{ __('review.withdraw_heading') }}</h2>
+                            <p class="mt-2 text-sm leading-relaxed text-muted">{{ __('review.withdraw_body') }}</p>
+
+                            <x-button type="submit" variant="ghost" class="mt-4">
+                                {{ __('review.withdraw_action') }}
+                            </x-button>
+                        </form>
+                    @endif
+                </x-card>
+            @elseif (session('review-withdrawn'))
+                <x-card>
+                    <h1 class="font-display text-2xl font-semibold text-ink">{{ __('review.withdrawn_title') }}</h1>
+                    <p class="mt-3 leading-relaxed text-muted">{{ __('review.withdrawn_body') }}</p>
                 </x-card>
             @else
                 <div class="mb-10">

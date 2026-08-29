@@ -97,11 +97,56 @@ it('never points a thumbnail at googles cdn', function () {
 
     $html = $this->get('/ar')->assertOk()->getContent();
 
-    preg_match_all('/<img[^>]+src="([^"]+)"/i', $html, $images);
+    /*
+     * EVERY WAY A URL CAN REACH THE BROWSER, not just <img src>.
+     *
+     * This used to scan `<img src="…">` alone. Measured, the homepage emits
+     * exactly ONE of those — the images moved to <picture>/srcset when the
+     * photography pipeline landed, and the real URLs now live in `srcset` and
+     * in <source>. A thumbnail hotlinked through srcset would have sailed
+     * straight past a test that read as though it covered images.
+     */
+    $urls = [];
 
-    foreach ($images[1] as $src) {
-        expect(str_contains($src, 'ytimg'))->toBeFalse("Thumbnail hotlinked from Google: {$src}");
-        expect(str_contains($src, 'youtube'))->toBeFalse("Thumbnail hotlinked from Google: {$src}");
+    preg_match_all('/(?:src|data-src|href|poster)="([^"]+)"/i', $html, $plain);
+    $urls = array_merge($urls, $plain[1]);
+
+    // srcset is a comma-separated candidate list: "a.webp 320w, b.webp 640w".
+    preg_match_all('/srcset="([^"]+)"/i', $html, $sets);
+
+    expect($sets[1])->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
+    foreach ($sets[1] as $set) {
+        foreach (preg_split('/\s*,\s*/', $set) ?: [] as $candidate) {
+            $urls[] = trim((string) preg_split('/\s+/', trim($candidate))[0]);
+        }
+    }
+
+    preg_match_all('/url\(\s*[\'"]?([^)\'"]+)/i', $html, $css);
+    $urls = array_merge($urls, $css[1]);
+
+    $urls = array_values(array_filter(array_unique($urls)));
+
+    /*
+     * The guard that stops this becoming a test about nothing again. If the
+     * page ever stops emitting URLs in a shape this understands, the loop
+     * below runs zero times and passes — so the count is asserted first.
+     */
+    expect(count($urls))->toBeGreaterThan(
+        5,
+        'Found almost no URLs on the homepage. The extraction has stopped '
+        .'matching how the page emits them, and this test is no longer checking anything.'
+    );
+
+    foreach ($urls as $url) {
+        foreach (['ytimg', 'youtube.com', 'youtu.be', 'ggpht', 'googleusercontent'] as $google) {
+            expect(str_contains($url, $google))->toBeFalse(
+                "A Google-hosted asset is referenced from the page: {$url}\n"
+                .'That discloses the visit to Google exactly as an embed would.'
+            );
+        }
     }
 });
 

@@ -244,21 +244,37 @@ it('keeps the token out of anything indexable or outbound', function () {
     expect($content)->toContain('no-referrer');
 
     /*
-     * The canonical and hreflang tags must NOT echo this URL — those are meant
-     * to be handed to search engines, and doing so would publish the token.
+     * THE TOKEN MUST NOT APPEAR IN ANY MACHINE-FACING TAG.
+     *
+     * This used to loop over preg_match_all results and check each tag. Both
+     * loops ran ZERO times when measured — the page emits no canonical,
+     * hreflang or og:url at all. That is the desired state, and it meant the
+     * assertions never executed. The test would have passed just as happily
+     * with the token leaking in a shape the regex missed: single-quoted
+     * attributes, or a reordered <link>.
+     *
+     * The check is now the direct one. Take the whole <head> and assert the
+     * token is not in it. That holds whether the tags are absent, present and
+     * clean, or written in a format nobody anticipated.
      */
-    preg_match_all('/<link[^>]*(rel="canonical"|hreflang)[^>]*>/', $content, $matches);
+    preg_match('/<head\\b.*?<\\/head>/su', $content, $head);
 
-    foreach ($matches[0] as $tag) {
-        expect($tag)->not->toContain($appointment->cancel_token);
-    }
+    expect($head)->not->toBeEmpty('The page rendered no <head> to inspect.');
 
-    // No og:url either, for the same reason: a pasted link would preview it.
-    preg_match_all('/<meta property="og:url"[^>]*>/', $content, $og);
+    expect(str_contains($head[0], $appointment->cancel_token))->toBeFalse(
+        'The cancel token appears in the document head, which is handed to '
+        .'crawlers, link previewers and share cards.'
+    );
 
-    foreach ($og[0] as $tag) {
-        expect($tag)->not->toContain($appointment->cancel_token);
-    }
+    /*
+     * And the absence of those tags is asserted as a FACT rather than left as
+     * the silent reason a loop was empty.
+     */
+    preg_match_all('/<link[^>]*(?:rel="canonical"|hreflang)[^>]*>/i', $content, $indexable);
+    preg_match_all('/<meta[^>]*property="og:url"[^>]*>/i', $content, $og);
+
+    expect($indexable[0])->toBe([], 'The manage page emits canonical/hreflang tags. It must not.');
+    expect($og[0])->toBe([], 'The manage page emits og:url. It must not.');
 });
 
 /*
@@ -620,6 +636,10 @@ it('never forces a latin direction onto a date that contains arabic', function (
      * Arabic.
      */
     preg_match_all('/<span class="ltr">(.*?)<\/span>/su', $body, $forced);
+
+    expect($forced[1])->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
 
     foreach ($forced[1] as $value) {
         expect($value)->not->toMatch('/\p{Arabic}/u');

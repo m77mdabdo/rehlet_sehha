@@ -134,6 +134,19 @@ Route::prefix('{locale}')
             ->name('review.store')
             ->where('token', '[A-Za-z0-9]{32,80}');
 
+        /*
+         * Taking a published review back down.
+         *
+         * A separate route rather than a flag on store(), because store()
+         * refuses a second submission — which is right, and which left a
+         * patient who ticked the consent box and changed her mind with no way
+         * back except telephoning the clinic.
+         */
+        Route::post('review/{token}/withdraw', [ReviewController::class, 'withdraw'])
+            ->middleware('token-url')
+            ->name('review.withdraw')
+            ->where('token', '[A-Za-z0-9]{32,80}');
+
         Route::get('site.webmanifest', ManifestController::class)
             ->middleware('cache.headers:public;max_age=86400;etag')
             ->name('manifest');

@@ -486,4 +486,32 @@ class Appointment extends Model
             ->dontLogEmptyChanges()
             ->useLogName('appointment');
     }
+
+    /**
+     * How long a manage link keeps working after the appointment has ended.
+     *
+     * A cancel token is a bearer credential: whoever holds the URL can cancel
+     * or reschedule without proving anything else. It used to have no expiry
+     * at all, so a link mailed a year ago still worked, and every forwarded
+     * message, shared screenshot and synced mailbox was a permanent key.
+     *
+     * Fourteen days past the appointment is enough for the ordinary reasons
+     * somebody re-opens it — checking what time it was, reading the intake
+     * back, exercising a data right — and short enough that an old mailbox
+     * is not a way in.
+     */
+    public const TOKEN_GRACE_DAYS = 14;
+
+    /**
+     * When this appointment's manage link stops working.
+     */
+    public function tokenExpiresAt(): Carbon
+    {
+        return $this->ends_at->copy()->addDays(self::TOKEN_GRACE_DAYS);
+    }
+
+    public function tokenHasExpired(): bool
+    {
+        return Carbon::now()->greaterThan($this->tokenExpiresAt());
+    }
 }

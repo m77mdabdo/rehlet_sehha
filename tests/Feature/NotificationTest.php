@@ -179,6 +179,10 @@ it('states the appointment date without mangling it in arabic', function () {
 
     preg_match_all('/<bdi dir="ltr">(.*?)<\/bdi>/su', $html, $forced);
 
+    expect($forced[1])->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach ($forced[1] as $value) {
         expect($value)->not->toMatch('/\p{Arabic}/u');
     }
@@ -283,6 +287,10 @@ it('sends no request to any host but our own', function () {
 
     // No tracking pixel, no remote CSS, no third-party image.
     preg_match_all('/<img\b[^>]*src="([^"]+)"/i', $html, $images);
+
+    expect($images[1])->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
 
     foreach ($images[1] as $src) {
         expect($src)->toStartWith(rtrim((string) config('app.url'), '/'));

@@ -19,7 +19,6 @@ use Database\Seeders\WorkingHoursSeeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
-use LogicException;
 
 /**
  * Two rules, and neither is cosmetic.
@@ -95,6 +94,10 @@ it('publishes the licence number so a patient can verify it', function () {
 
 it('lists every training entry from config, with its hours', function () {
     $html = $this->get('/ar/about')->assertOk()->getContent();
+
+    expect(config('clinic.training'))->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
 
     foreach (config('clinic.training') as $entry) {
         expect($html)->toContain($entry['institution_ar']);
