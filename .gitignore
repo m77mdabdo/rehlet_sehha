@@ -46,12 +46,3 @@ Thumbs.db
 /public/css/filament
 /public/js/filament
 /public/fonts/filament
-
-# Video masters. The SERVED hero is public/brand/hero.mp4 (413 KB) and is
-# committed; the multi-megabyte masters it is cut from are not.
-#
-# 2.mp4 is 14.84 MiB of 1280x720 — the same resolution as what ships, so its
-# weight buys no pixels, only runtime and encoder slack. A blob that size is
-# permanent once it is in history, and it is a working file, not a deliverable.
-# Same rule as public/photos.
-/public/brand/2.mp4

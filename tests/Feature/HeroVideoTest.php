@@ -58,7 +58,7 @@ it('ships the video element without a src so nothing can be fetched early', func
     expect($html)->toContain('preload="none"');
 
     // The URL is present, but parked where only the script can act on it.
-    expect($html)->toContain('data-src="'.asset('brand/2.mp4').'"');
+    expect($html)->toContain('data-src="'.asset('brand/1.mp4').'"');
 });
 
 it('never gives the video controls, sound or a download button', function () {
@@ -114,25 +114,56 @@ it('keeps the hero intact when the video and poster files are missing', function
 });
 
 it('has the media files the hero points at', function () {
-    foreach (['brand/2.mp4', 'brand/hero-poster.jpg', 'brand/hero-poster-1280.webp'] as $path) {
+    foreach (['brand/1.mp4', 'brand/hero-poster.jpg', 'brand/hero-poster-1280.webp'] as $path) {
         expect(File::exists(public_path($path)))->toBeTrue("public/{$path} is missing.");
     }
 
     /*
      * A size budget with a reason, and the reason keeps being needed.
      *
-     * The first hero was re-encoded from 4.55 MiB before it was ever
-     * committed. Its replacement arrived as a 14.84 MiB master — 1280x720
-     * like the one it replaced, so the extra weight bought no pixels, only
-     * 3.1 Mbps of encoder slack, 40 seconds of runtime and a digitally
-     * silent audio track.
+     * The clip was re-encoded from 4.55 MiB to under a megabyte before it
+     * was ever committed. This stops a future "let's use the nicer master"
+     * from quietly putting a multi-megabyte file in front of somebody on 3g.
      *
-     * What ships is 3.5 seconds of that master at 413 KB. This number is what
-     * stops the master itself going in front of somebody on 3g.
+     * It has happened once already: a 14.84 MiB replacement was pointed at
+     * from the page while being excluded from git, so the hero 404'd on a
+     * fresh clone and weighed 36x the budget where it did load.
      */
-    expect(File::size(public_path('brand/2.mp4')))->toBeLessThan(
+    expect(File::size(public_path('brand/1.mp4')))->toBeLessThan(
         1_400_000,
         'The hero video has grown past its budget. Re-encode it rather than raising this number.'
+    );
+});
+
+it('serves a hero the repository actually contains', function () {
+    /*
+     * THE FAILURE THIS EXISTS TO STOP, because it already happened once.
+     *
+     * The hero was repointed at a file that was excluded by .gitignore. It
+     * played perfectly on the machine where the file happened to sit, and on
+     * a fresh clone — which is what a deploy is — the video 404'd. Nothing in
+     * the suite noticed, because every other test asserts the page CONTAINS a
+     * path, and it did.
+     *
+     * So this asserts the path the page hands the browser is a file git is
+     * tracking, not merely a file that exists on disk right now.
+     */
+    preg_match('/data-src="([^"]+)"/', $this->get('/ar')->assertOk()->getContent(), $match);
+
+    expect($match)->not->toBeEmpty('The hero video element has no data-src.');
+
+    $path = ltrim(parse_url($match[1], PHP_URL_PATH) ?? '', '/');
+
+    expect(file_exists(public_path($path)))->toBeTrue("The hero points at {$path}, which is not on disk.");
+
+    $tracked = trim((string) shell_exec(
+        'cd '.escapeshellarg(base_path()).' && git ls-files --error-unmatch '.escapeshellarg('public/'.$path).' 2>&1'
+    ));
+
+    expect($tracked)->toBe(
+        'public/'.$path,
+        "The hero points at public/{$path}, which git is NOT tracking.\n"
+        .'It works here and 404s on a fresh clone. Either commit the file or point at one that is committed.'
     );
 });
 

@@ -30,6 +30,22 @@ beforeEach(function () {
     $this->seed(SpecialtySeeder::class);
     $this->seed(FaqSeeder::class);
     $this->seed(PostSeeder::class);
+
+    /*
+     * PostSeeder seeds DRAFTS. It has to: those three articles are placeholder
+     * clinical prose nobody reviewed, and the model refuses to publish an
+     * article without a named clinical reviewer.
+     *
+     * That left every loop over Post::published() in this file running zero
+     * times — the articles catalogue was empty and no article page was ever
+     * fetched. So one genuinely publishable article is created here, with a
+     * reviewer, which is what a published article actually looks like.
+     */
+    Post::factory()->create([
+        'slug' => 'a-published-article',
+        'title' => ['ar' => 'مقال منشور للاختبار', 'en' => 'A published article'],
+        'category' => ['ar' => 'تغذية', 'en' => 'Nutrition'],
+    ]);
 });
 
 /** Every standalone page, and the homepage section it must not restate. */
@@ -56,6 +72,10 @@ function catalogueFor(string $page, string $locale): array
     $entries = [];
 
     if ($page === 'articles') {
+        expect(Post::published()->get())->not->toBeEmpty(
+            'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+        );
+
         foreach (Post::published()->get() as $post) {
             foreach (['title', 'excerpt', 'category'] as $field) {
                 $entries[] = (string) $post->getTranslation($field, $locale, false);
@@ -64,6 +84,10 @@ function catalogueFor(string $page, string $locale): array
     }
 
     if ($page === 'services') {
+        expect(Specialty::where('is_active', true)->get())->not->toBeEmpty(
+            'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+        );
+
         foreach (Specialty::where('is_active', true)->get() as $specialty) {
             foreach (['name', 'description'] as $field) {
                 $entries[] = (string) $specialty->getTranslation($field, $locale, false);
@@ -72,6 +96,10 @@ function catalogueFor(string $page, string $locale): array
     }
 
     if ($page === 'faq') {
+        expect(Faq::where('is_active', true)->get())->not->toBeEmpty(
+            'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+        );
+
         foreach (Faq::where('is_active', true)->get() as $faq) {
             foreach (['question', 'answer'] as $field) {
                 $entries[] = (string) $faq->getTranslation($field, $locale, false);
@@ -126,6 +154,10 @@ it('answers in both locales', function (string $locale) {
     }
 
     // And every published article.
+    expect(Post::published()->get())->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach (Post::published()->get() as $post) {
         $this->get("/{$locale}/articles/{$post->slug}")->assertOk();
     }
@@ -338,10 +370,26 @@ it('does not restate its homepage section', function (string $locale) {
 */
 
 it('gives every image a real alt, a size, and lazy loading', function (string $locale) {
+    /*
+     * COUNTED ACROSS ALL PAGES, not asserted per page.
+     *
+     * Several of these pages carry no photograph at all and are supposed to:
+     * FAQ and contact have none, and the four specialties without an image get
+     * none by rule. So "this page has images" is the wrong assertion.
+     *
+     * What must be true is that the sweep examined SOME images somewhere. It
+     * did not: a non-empty guard added here failed immediately, which is how
+     * the emptiness was found. Without the total, every assertion in the loop
+     * was being skipped on every page and the test passed regardless.
+     */
+    $examined = 0;
+
     foreach (standalonePages() as $name => $page) {
         $html = $this->get("/{$locale}/{$page['path']}")->assertOk()->getContent();
 
         preg_match_all('/<img\b[^>]*>/s', $html, $images);
+
+        $examined += count($images[0]);
 
         foreach ($images[0] as $tag) {
             // The logo and other decorative marks are SVG, so anything that
@@ -366,6 +414,13 @@ it('gives every image a real alt, a size, and lazy loading', function (string $l
             "{$name} loads more than one image eagerly."
         );
     }
+
+    expect($examined)->toBeGreaterThan(
+        0,
+        "No <img> was found on any standalone page in {$locale}, so every "
+        .'attribute assertion above was skipped. Either the pages have lost '
+        .'their photography or the extraction no longer matches how they emit it.'
+    );
 })->with(['ar', 'en']);
 
 it('places no image on a section that has none to illustrate it', function () {
@@ -378,6 +433,10 @@ it('places no image on a section that has none to illustrate it', function () {
     $html = $this->get('/ar/services')->assertOk()->getContent();
 
     $withPhotos = ['medical-nutrition', 'weight-management', 'pregnancy-nutrition', 'child-nutrition'];
+
+    expect(Specialty::where('is_active', true)->get())->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
 
     foreach (Specialty::where('is_active', true)->get() as $specialty) {
         preg_match('/<section id="'.preg_quote($specialty->slug, '/').'".*?<\/section>/su', $html, $match);
@@ -431,18 +490,21 @@ it('reserves space for the photographs the clinic has not supplied yet', functio
 */
 
 /**
- * A published article to point the two article-page tests at.
+ * The one published article, created in beforeEach.
  *
- * They used to name a seeded slug. The seeded articles are now DRAFTS —
- * placeholder prose nobody clinically reviewed cannot be published under a
- * practitioner's byline — so that slug 404s, and rightly.
+ * PostSeeder's three articles are DRAFTS — placeholder clinical prose nobody
+ * reviewed cannot be published under a practitioner's byline — so beforeEach
+ * adds a single properly reviewed one. Every loop over Post::published() in
+ * this file depends on it existing, and so do the two tests that fetch an
+ * article page directly.
  *
- * The factory supplies a reviewer, because the model will not save a published
- * article without one.
+ * It is FETCHED rather than created here: creating a second one would collide
+ * on the unique slug, and more importantly the article the page tests exercise
+ * should be the same article the catalogue and duplicate-content checks see.
  */
 function liveArticle(): Post
 {
-    return Post::factory()->create(['slug' => 'a-published-article']);
+    return Post::query()->where('slug', 'a-published-article')->sole();
 }
 
 it('issues a bounded number of queries on every page', function () {
@@ -535,6 +597,10 @@ it('does not offer a contact form', function (string $locale) {
      */
     expect(str_contains($html, '<address'))->toBeFalse('The contact page renders an address for a practice with no premises.');
 
+    expect(config('clinic.platforms'))->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach (config('clinic.platforms') as $platform) {
         expect($html)->toContain(__("contact.platforms.{$platform}", [], $locale));
     }
@@ -560,6 +626,10 @@ it('lists articles without pretending there are more than there are', function (
      * honest entries.
      */
     $html = $this->get('/ar/articles')->assertOk()->getContent();
+
+    expect(Post::published()->get())->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
 
     foreach (Post::published()->get() as $post) {
         expect($html)->toContain($post->getTranslation('title', 'ar'));

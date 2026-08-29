@@ -77,7 +77,13 @@ function tokenAppointment(): Appointment
  */
 function tokenBearingRouteNames(): array
 {
-    return ['appointment.export', 'appointment.manage', 'review.show', 'review.store'];
+    return [
+        'appointment.export',
+        'appointment.manage',
+        'review.show',
+        'review.store',
+        'review.withdraw',
+    ];
 }
 
 /**
@@ -259,6 +265,33 @@ it('never sends a token to somewhere that is not us', function (string $routeNam
         $urls,
     );
 
+    /*
+     * ZERO IS THE CORRECT ANSWER, so the loop alone proves nothing.
+     *
+     * A non-empty guard here failed immediately, which is how this was found:
+     * no absolute URL on the page carries the token, and the loop below had
+     * been running zero times since it was written.
+     *
+     * Two assertions replace it. The first proves the EXTRACTION works, by
+     * finding absolute URLs on the page at all — without that, a regex that
+     * silently stopped matching would look exactly like a clean page. The
+     * second is the actual rule.
+     */
+    preg_match_all('#(?:href|src|action|content)="(https?://[^"]+)"#i', $content, $absolute);
+
+    expect($absolute[1])->not->toBeEmpty(
+        'No absolute URL was found on the page at all. The extraction has stopped '
+        .'matching how URLs are emitted, so this test can no longer see a leak.'
+    );
+
+    foreach ($absolute[1] as $url) {
+        expect(str_contains($url, $appointment->cancel_token))->toBeFalse(
+            "An absolute URL carries the token: {$url}\n"
+            .'If it points anywhere but our own host, the credential has left the building.'
+        );
+    }
+
+    // And any that DID carry it would have to be ours.
     foreach ($urls[1] as $url) {
         expect(parse_url($url, PHP_URL_HOST))->toBe(parse_url(config('app.url'), PHP_URL_HOST));
     }

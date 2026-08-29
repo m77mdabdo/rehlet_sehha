@@ -74,6 +74,17 @@ class Review extends Model
      */
     public const MINIMUM_TO_DISPLAY = 3;
 
+    /**
+     * How long a review invitation stays open.
+     *
+     * The token is a bearer credential that writes to the public site, and it
+     * used to have no expiry, so an invitation from any point in the past
+     * still accepted a submission. Thirty days is longer than anybody takes to
+     * answer an email they were going to answer, and it means an old mailbox
+     * cannot be used to post under a patient's name a year later.
+     */
+    public const TOKEN_VALID_DAYS = 30;
+
     /** @var list<string> */
     protected $fillable = [
         'token',
@@ -188,5 +199,89 @@ class Review extends Model
         return $this->consented_at !== null
             && $this->approved_at !== null
             && $this->comment !== null;
+    }
+
+    /**
+     * When this invitation stops accepting a submission.
+     *
+     * Measured from the invitation, not the appointment: the clock a patient
+     * experiences starts when the email arrives.
+     */
+    public function tokenExpiresAt(): Carbon
+    {
+        /*
+         * invited_at is the clock the patient experiences. created_at is the
+         * fallback for a row written some other way, and now() for one not yet
+         * persisted — an unsaved invitation has not started counting.
+         *
+         * Normalised through Carbon::parse so the three branches return one
+         * type: the union of a cast attribute and Carbon::now() otherwise
+         * widens to the base Carbon class.
+         */
+        $from = Carbon::parse($this->invited_at ?? $this->created_at ?? Carbon::now());
+
+        return $from->addDays(self::TOKEN_VALID_DAYS);
+    }
+
+    /**
+     * An expired invitation cannot be answered — but one already answered is
+     * never treated as expired, because the page still has to show her what
+     * she said and let her withdraw consent.
+     */
+    public function tokenHasExpired(): bool
+    {
+        if ($this->submitted_at !== null) {
+            return false;
+        }
+
+        return Carbon::now()->greaterThan($this->tokenExpiresAt());
+    }
+
+    /**
+     * Take everything the patient wrote off the site, permanently.
+     *
+     * Called by erasure on the self-service page, and available to the clinic
+     * if she asks by telephone.
+     *
+     * THE ROW SURVIVES, THE CONTENT DOES NOT. The invitation and its
+     * timestamps are the clinic's own record that it asked and she answered;
+     * deleting the row would destroy that and free the appointment to be
+     * invited all over again. What goes is every word of hers, the name she
+     * chose to appear under, and her consent — and with consent null the
+     * saving hook can never let it be approved again.
+     */
+    public function eraseForPatient(): bool
+    {
+        // Withdraw the approval FIRST. The hook refuses to save an approved
+        // review without consent, so clearing consent while approval stands
+        // would throw rather than erase.
+        $this->approved_at = null;
+        $this->approved_by = null;
+
+        $this->comment = null;
+        $this->rating = null;
+        $this->display_name = null;
+        $this->consented_at = null;
+        $this->moderation_note = null;
+
+        return $this->save();
+    }
+
+    /**
+     * She agreed to publication and has changed her mind.
+     *
+     * Separate from erasure because it is a smaller thing: her words stay with
+     * the clinic, they just stop being public. A patient who ticked the box in
+     * a good mood and thought better of it a week later had no way back before
+     * this existed — the form redirects once submitted, and her only recourse
+     * was telephoning.
+     */
+    public function withdrawConsent(): bool
+    {
+        $this->approved_at = null;
+        $this->approved_by = null;
+        $this->consented_at = null;
+
+        return $this->save();
     }
 }

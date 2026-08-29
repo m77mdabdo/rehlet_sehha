@@ -51,4 +51,10 @@ return [
     'already_body' => 'This is what reached us. If you would like to change something, message us on WhatsApp.',
 
     'expired' => 'This link is no longer active. If you would like to leave a review, message us on WhatsApp.',
+    'withdraw_heading' => 'Changed your mind?',
+    'withdraw_body' => 'You can withdraw your consent to publish at any time. Your review comes off the site and stays with the clinic only.',
+    'withdraw_action' => 'Withdraw consent to publish',
+    'withdrawn_title' => 'Withdrawn',
+    'withdrawn_body' => 'Your review no longer appears on the site. If you would like it removed from our records too, you can do that from your appointment page.',
+
 ];
