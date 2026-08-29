@@ -3,22 +3,33 @@
 declare(strict_types=1);
 
 /**
- * The logo is drawn twice: inline in a Blade component, and as a file in
- * public/brand/. Those two copies must not drift.
+ * THERE IS ONE MARK, AND EVERY SURFACE DRAWS IT.
  *
- * They exist for different reasons and neither can replace the other. The
- * inline SVG is what the site renders — it has to inherit currentColor so the
- * mark inverts on the navy footer, which a file referenced by <img> cannot do.
- * The file is what goes to a printer, a designer or a social profile.
+ * The logo is written out in many places: inline in a Blade component, as flat
+ * files for print and social, as mono files for single-colour reproduction, on
+ * a navy plate for the favicon and app icons, and embedded inside the lockup
+ * files. Those copies exist for reasons none of the others can serve — the
+ * inline SVG has to inherit currentColor so the mark inverts on the navy
+ * footer, which a file referenced by <img> cannot do; the exported file is what
+ * goes to a printer.
  *
- * So the shapes are duplicated, and duplicated shapes drift: someone nudges
- * the pulse in the Blade file to fix the hero, and six months later the
- * printed letterhead is a slightly different logo. Nothing catches that by
- * eye, because nobody ever sees the two side by side.
+ * Duplicated shapes drift. Somebody nudges the pulse in the Blade file to fix
+ * the hero, and six months later the letterhead is a slightly different logo.
+ * Nothing catches that by eye, because nobody ever sees them side by side.
  *
- * This test compares the GEOMETRY only. Colour deliberately differs — the
- * component uses currentColor and a CSS token where the file uses literal hex,
- * and that difference is the whole point of having both.
+ * public/brand/mark-navy.svg is the reference. Every other surface is compared
+ * against it.
+ *
+ * WHAT THIS TEST NO LONGER CHECKS. It used to assert that a second, pulse-less
+ * mark existed for use below 48px, and that the two tiers differed by exactly
+ * the pulse. That variant is gone: one mark now renders at every size, from
+ * the 16px favicon up. The trade-off was measured and then overridden
+ * deliberately — see the note in mark-full.blade.php before reintroducing one.
+ *
+ * Colour is deliberately NOT compared. The component uses currentColor and a
+ * CSS token where the files use literal hex, the mono set collapses gold into
+ * the body colour, and the tiles invert to white. That is the whole point of
+ * having more than one file.
  */
 
 /**
@@ -84,80 +95,136 @@ function geometryPair(string $component, string $brandFile): array
     ];
 }
 
-it('keeps the full mark identical to its brand file', function () {
-    [$component, $file] = geometryPair('mark-full.blade.php', 'mark-navy.svg');
-
-    expect($file)->not->toBeEmpty();
-
-    expect($component)->toBe(
-        $file,
-        "components/logo/mark-full.blade.php has drifted from public/brand/mark-navy.svg.\n\n"
-        ."The site would render one logo and the print/social assets another.\n"
-        ."Whichever is right, make the other match it — do not delete this test.\n"
-    );
-});
-
-it('keeps the icon mark identical to its brand file', function () {
-    [$component, $file] = geometryPair('mark.blade.php', 'mark-icon-navy.svg');
-
-    expect($file)->not->toBeEmpty();
-
-    expect($component)->toBe(
-        $file,
-        "components/logo/mark.blade.php has drifted from public/brand/mark-icon-navy.svg.\n"
-    );
-});
-
-it('draws the pulse only in the full mark', function () {
-    // The tier difference IS the pulse. If the icon mark ever grows one, or
-    // the full mark loses it, the 48px rule has stopped meaning anything.
-    $full = file_get_contents(resource_path('views/components/logo/mark-full.blade.php'));
-    $icon = file_get_contents(resource_path('views/components/logo/mark.blade.php'));
-
-    expect(svgGeometry($full))->toHaveCount(6);
-    expect(svgGeometry($icon))->toHaveCount(3);
-
-    expect($full)->toContain('M124 202 H162 L176 176 L194 230 L206 202 H320');
-    expect($icon)->not->toContain('M124 202');
-});
-
-it('centres both marks in their frame', function () {
-    /*
-     * Guards the correction this test file was written alongside: the icon
-     * mark carried viewBox "-17 0 400 400", which pushed it 34 units RIGHT of
-     * centre rather than centring it. Offsetting the frame is the opposite
-     * sign to offsetting the content.
-     *
-     * Content bounds are measured values (getBBox, stroke included):
-     *   icon  x 72 .. 362   -> centre 217    -> 400-wide frame starts at 17
-     *   full  x 76.5 .. 349 -> centre 212.75 -> 400-wide frame starts at 12.75
-     */
-    $expected = [
-        'mark.blade.php' => ['minX' => 17.0, 'centre' => 217.0],
-        'mark-full.blade.php' => ['minX' => 12.75, 'centre' => 212.75],
+/**
+ * Every place the mark is drawn.
+ *
+ * Names only, no path helpers: Pest builds a dataset at collection time,
+ * before the application has booted, and resource_path() is not available
+ * yet. markSurfacePath() resolves them once a test is actually running.
+ *
+ * @return list<string>
+ */
+function markSurfaces(): array
+{
+    return [
+        'components/logo/mark-full.blade.php',
+        'brand/mark-white.svg',
+        'brand/mark-mono-navy.svg',
+        'brand/mark-mono-white.svg',
+        'brand/mark-mono-black.svg',
+        'brand/favicon.svg',
+        'brand/icon-tile-navy.svg',
+        'brand/lockup-h-ar-dark.svg',
+        'brand/lockup-h-ar-light.svg',
+        'brand/lockup-h-en-dark.svg',
+        'brand/lockup-h-en-light.svg',
+        'brand/lockup-v-ar-dark.svg',
+        'brand/lockup-v-ar-light.svg',
     ];
+}
 
-    foreach ($expected as $file => $geometry) {
-        $markup = file_get_contents(resource_path('views/components/logo/'.$file));
+function markSurfacePath(string $name): string
+{
+    return str_starts_with($name, 'brand/')
+        ? public_path($name)
+        : resource_path('views/'.$name);
+}
 
-        expect(preg_match('/viewBox="([^"]+)"/', $markup, $match))->toBe(1);
+it('draws the same mark on every surface', function (string $name) {
+    $reference = svgGeometry(file_get_contents(public_path('brand/mark-navy.svg')));
 
-        [$minX, $minY, $width, $height] = array_map('floatval', preg_split('/\s+/', trim($match[1])));
+    expect($reference)->toHaveCount(6);
 
-        expect($minX)->toBe($geometry['minX'], "{$file}: viewBox does not centre the mark.");
-        expect($width)->toBe(400.0);
-        expect($height)->toBe(400.0);
+    $markup = file_get_contents(markSurfacePath($name));
 
-        // The frame's centre must land on the content's centre.
-        expect($minX + $width / 2)->toBe($geometry['centre'], "{$file}: frame centre misses content centre.");
+    /*
+     * The tiles and the lockups wrap the mark in furniture — a rounded plate
+     * behind it, a wordmark beside it. Only the mark's own shapes are
+     * compared, matched by taking the run that starts at the plate ring.
+     */
+    $shapes = svgGeometry($markup);
+    $offset = null;
 
-        // y is already centred at 200 for both marks.
-        expect($minY)->toBe(0.0);
+    foreach ($shapes as $i => $shape) {
+        if ($shape === $reference[0]) {
+            $offset = $i;
+
+            break;
+        }
     }
+
+    expect($offset)->not->toBeNull("{$name}: no plate ring matching mark-navy.svg was found at all.");
+
+    expect(array_values(array_slice($shapes, $offset, 6)))->toBe(
+        $reference,
+        "{$name} has drifted from public/brand/mark-navy.svg.\n\n"
+        ."The site would render one logo and this surface another.\n"
+        ."There is ONE mark; whichever is right, make the other match it.\n"
+    );
+})->with(markSurfaces());
+
+it('keeps the pulse on every surface, including the favicon', function (string $name) {
+    /*
+     * The specific regression this guards. There used to be a pulse-less mark
+     * for small sizes, and the favicon used it. One mark now runs everywhere,
+     * which was a deliberate override of a measured legibility rule — so the
+     * way it would silently come undone is somebody quietly dropping the pulse
+     * from the favicon again because it looks like mush at 16px. It does. That
+     * was accepted.
+     */
+    $markup = file_get_contents(markSurfacePath($name));
+
+    expect(str_contains($markup, 'M124 202 H162 L176 176 L194 230 L206 202 H320'))->toBeTrue(
+        "{$name} has no pulse. Every surface carries the full mark."
+    );
+})->with(markSurfaces());
+
+it('has no pulse-less mark left to reach for', function () {
+    /*
+     * Deleting the component is not enough on its own — the exported icon
+     * variants were the other half of the retired tier, and leaving them on
+     * disk is an invitation to point a <link rel="icon"> back at one.
+     */
+    foreach (['mark-icon-navy.svg', 'mark-icon-white.svg'] as $retired) {
+        expect(file_exists(public_path('brand/'.$retired)))->toBeFalse(
+            "public/brand/{$retired} is back. The reduced variant was retired deliberately."
+        );
+    }
+
+    expect(file_exists(resource_path('views/components/logo/mark.blade.php')))->toBeFalse(
+        'The icon-tier component is back. There is one mark.'
+    );
+});
+
+it('centres the mark in its frame', function () {
+    /*
+     * Guards a correction this file was written alongside: a mark once carried
+     * viewBox "-17 0 400 400", which pushed it 34 units RIGHT of centre rather
+     * than centring it. Offsetting the frame is the opposite sign to
+     * offsetting the content.
+     *
+     * Content bounds are measured (getBBox, stroke included): x 76.5 .. 349,
+     * centre 212.75, so a 400-wide frame starts at 12.75.
+     */
+    $markup = file_get_contents(resource_path('views/components/logo/mark-full.blade.php'));
+
+    expect(preg_match('/viewBox="([^"]+)"/', $markup, $match))->toBe(1);
+
+    [$minX, $minY, $width, $height] = array_map('floatval', preg_split('/\s+/', trim($match[1])));
+
+    expect($minX)->toBe(12.75, 'mark-full.blade.php: viewBox does not centre the mark.');
+    expect($width)->toBe(400.0);
+    expect($height)->toBe(400.0);
+
+    // The frame's centre must land on the content's centre.
+    expect($minX + $width / 2)->toBe(212.75, 'mark-full.blade.php: frame centre misses content centre.');
+
+    // y is already centred at 200.
+    expect($minY)->toBe(0.0);
 });
 
 it('uses currentColor for the body and the token for the gold', function () {
-    foreach (['mark.blade.php', 'mark-full.blade.php'] as $file) {
+    foreach (['mark-full.blade.php'] as $file) {
         $markup = file_get_contents(resource_path('views/components/logo/'.$file));
 
         // A literal hex here would stop the mark inverting on the navy footer,
