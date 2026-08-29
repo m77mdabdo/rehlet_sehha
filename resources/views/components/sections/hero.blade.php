@@ -340,7 +340,7 @@
                                 <p class="text-sm text-muted">{{ __('home.hero.case_card.subtitle') }}</p>
                             </div>
 
-                            <x-logo.mark :size="34" class="text-ink/25" />
+                            <x-logo.mark-full :size="34" class="text-ink/25" />
                         </div>
 
                         <dl class="mt-5 space-y-3">

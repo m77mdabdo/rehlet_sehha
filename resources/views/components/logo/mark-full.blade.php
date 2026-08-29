@@ -3,37 +3,47 @@
 ])
 
 {{--
-    THE FULL MARK — use this at 48px and above.
+    THE MARK. There is only one, and it is used at every size.
 
-    ┌──────────────────────────────────────────────────────────────────────┐
-    │  <x-logo.mark-full>   48px and up: hero, footer, anywhere it reads   │
-    │                       as the logo rather than as an icon.            │
-    │  <x-logo.mark>        under 48px only: favicon, inline nav, dense    │
-    │                       UI. It drops the ECG pulse.                    │
-    └──────────────────────────────────────────────────────────────────────┘
+    Plate ring, capsule, and the gold pulse crossing through it and out to the
+    endpoint dot on the right. It matches public/brand/mark-navy.svg, which is
+    what a printer, a designer or a social profile gets, and LogoGeometryTest
+    holds the two together so they cannot drift.
 
-    The pulse is removed at icon size because a 10-unit stroke zig-zagging
-    through a 24px box turns to mush — NOT because it is optional. Above 48px,
-    a mark without the pulse is a different logo, so do not reach for
-    <x-logo.mark> just because it is shorter to type. x-logo.lockup picks the
-    tier for you from its size prop; prefer that over choosing by hand.
+    ────────────────────────────────────────────────────────────────────────
+    WHY THERE IS NO REDUCED VARIANT ANY MORE — READ THIS BEFORE "FIXING" IT.
 
-    Geometry is copied verbatim from public/brand/mark-navy.svg and is held to
-    it by LogoGeometryTest — the inline copy and the file cannot drift apart.
+    There used to be a second mark for use below 48px, with the pulse removed,
+    and x-logo.lockup switched to it automatically. The reason was measured
+    rather than invented: a 10-unit stroke zig-zagging through a 24px box has
+    nowhere near the pixels it needs, so at 16–32px the pulse turns to mush and
+    the favicon reads as a dark ring with a gold smudge across it.
 
-    Only the framing differs from that file, deliberately. mark-navy.svg is
+    That is still true. It was overridden deliberately, by the client, with
+    the trade-off stated and accepted: one mark everywhere is worth more than
+    a legible favicon. This is a DECISION, not an oversight.
+
+    So if you are here because the favicon looks bad at 16px — it does, that is
+    known, and reintroducing a pulse-less variant is not the fix. Take it up as
+    a brand question rather than a code one.
+    ────────────────────────────────────────────────────────────────────────
+
+    Only the framing differs from mark-navy.svg, deliberately. That file is
     cropped tight (viewBox "70 70 286 262") because an exported asset should
-    carry no padding. Here the mark shares the icon tier's square 400 frame so
-    the two render at the same optical size, and the lockup can swap tiers at
-    48px without the logo visibly jumping. 12.75 is the offset that centres the
-    content: it spans x 76.5–349, whose midpoint is 212.75, so a 400-wide frame
-    starts at 12.75. (The x offset centres the FRAME on the content, which is
-    the opposite sign to offsetting the content itself — the reason the icon
-    tier carried a wrong -17 until it was measured.)
+    carry no padding. Here the mark sits in a square 400 frame so it drops into
+    any square slot without the caller doing arithmetic. 12.75 is the offset
+    that centres the content: it spans x 76.5–349, whose midpoint is 212.75, so
+    a 400-wide frame starts at 12.75. (The x offset centres the FRAME on the
+    content, which is the opposite sign to offsetting the content itself — a
+    sign error that once pushed the retired icon mark 34 units off centre.)
 
     Navy parts are currentColor so the mark inverts on the navy footer with no
     second asset. The gold is a token and stays gold on every surface: it is
     the one element that carries the brand regardless of what is behind it.
+
+    Decorative by default: the lockup beside it already carries the name in
+    real text, so announcing it again would make a screen reader say the
+    clinic's name twice.
 --}}
 
 <svg
