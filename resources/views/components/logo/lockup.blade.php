@@ -11,17 +11,11 @@
     it stays sharp at any zoom, and someone using a screen reader hears the
     name rather than alt text approximating it.
 
-    The mark tier is chosen from the size rather than passed in, so the brand
-    rule holds by construction: raise this lockup past 48px and the pulse comes
-    back on its own. Choosing by hand is how the hero ended up showing the
-    sub-48px mark at 200px.
+    ONE MARK, AT EVERY SIZE. This used to pick between two marks from the size
+    prop — a full mark at 48px and up, a pulse-less one below. There is now a
+    single mark, so there is nothing to choose and the selection is gone rather
+    than left switching between two identical things.
 --}}
-
-@php
-    // 48px is the brand pack's threshold: below it the ECG pulse turns to mush,
-    // above it a mark without the pulse is a different logo.
-    $markTier = $size >= 48 ? 'logo.mark-full' : 'logo.mark';
-@endphp
 
 {{--
     NO COLOUR OF ITS OWN — it inherits.
@@ -33,7 +27,7 @@
     wordmark can never disagree with the text around them.
 --}}
 <span {{ $attributes->merge(['class' => 'inline-flex items-center gap-3']) }}>
-    <x-dynamic-component :component="$markTier" :size="$size" />
+    <x-logo.mark-full :size="$size" />
 
     <span class="flex flex-col leading-none">
         <span class="font-display text-xl font-semibold tracking-tight">
