@@ -373,6 +373,22 @@ class AppointmentManager extends Component
 
         $intake->eraseClinicalContent();
 
+        /*
+         * HER REVIEW COMES DOWN WITH IT.
+         *
+         * Erasure used to stop at the intake form, which meant a patient who
+         * asked to be erased could still find her own name and her own words
+         * published on the front page. The privacy page promises erasure under
+         * Egyptian law 151/2020; a promise the code does not keep is worse
+         * than no promise.
+         *
+         * The review row is not deleted — the invitation and its timestamps
+         * are the clinic's record that it asked and she answered — but every
+         * word she wrote, her display name and her consent go, and with the
+         * consent gone the model can never publish it again.
+         */
+        $this->appointment()?->review?->eraseForPatient();
+
         $this->erasureConfirmation = '';
         $this->confirmingErasure = false;
         $this->editingIntake = false;

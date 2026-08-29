@@ -32,6 +32,13 @@ class ReviewController extends Controller
     {
         $review = Review::where('token', $token)->firstOrFail();
 
+        if ($review->tokenHasExpired()) {
+            return view('pages.token-expired', [
+                'reason' => 'tokens.expired.review',
+                'footerServices' => PublicContent::services(),
+            ]);
+        }
+
         return view('pages.review', [
             'review' => $review,
             'footerServices' => PublicContent::services(),
@@ -58,6 +65,11 @@ class ReviewController extends Controller
     {
         $review = Review::where('token', $token)->firstOrFail();
 
+        // An invitation that has aged out cannot be answered. Checked on the
+        // server as well as hidden in the view: the form is a POST endpoint
+        // and a stale tab would otherwise still submit against it.
+        abort_if($review->tokenHasExpired(), 410);
+
         if ($review->submitted_at !== null) {
             return redirect()->route('review.show', ['token' => $token]);
         }
@@ -82,5 +94,29 @@ class ReviewController extends Controller
         return redirect()
             ->route('review.show', ['token' => $token])
             ->with('review-submitted', true);
+    }
+
+    /**
+     * Withdraw consent to publish, after the fact.
+     *
+     * Sits on the review page beside her own words, not buried in the data
+     * rights on the appointment page: this is where she is when she reads what
+     * she wrote and thinks better of it.
+     *
+     * NOT gated on expiry. The invitation expiring stops her ANSWERING; it
+     * must never stop her taking back something already published, or the
+     * expiry becomes a lock on her own words.
+     */
+    public function withdraw(string $token): RedirectResponse
+    {
+        $review = Review::where('token', $token)->firstOrFail();
+
+        if ($review->consented_at !== null) {
+            $review->withdrawConsent();
+        }
+
+        return redirect()
+            ->route('review.show', ['token' => $token])
+            ->with('review-withdrawn', true);
     }
 }

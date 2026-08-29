@@ -29,6 +29,10 @@ beforeEach(function () {
 });
 
 it('serves a page for every active specialty in both locales', function (string $locale) {
+    expect(Specialty::active()->get())->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach (Specialty::active()->get() as $specialty) {
         $this->get("/{$locale}/specialties/{$specialty->slug}")
             ->assertOk()
@@ -43,6 +47,10 @@ it('gives the homepage cards a working link, not a dead end', function () {
     // The bug this whole feature exists to fix: eight cards a visitor could
     // read and then do nothing with.
     $content = $this->get('/ar')->assertOk()->getContent();
+
+    expect(Specialty::active()->get())->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
 
     foreach (Specialty::active()->get() as $specialty) {
         expect(str_contains($content, '/ar/specialties/'.$specialty->slug))->toBeTrue(

@@ -27,6 +27,10 @@ use Illuminate\Support\Facades\File;
 it('marks no library image as containing an identifiable face', function () {
     $offenders = [];
 
+    expect(config('photos.library'))->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach (config('photos.library') as $slug => $entry) {
         if (($entry['faces'] ?? false) === true) {
             $offenders[] = $slug;
@@ -61,6 +65,10 @@ it('gives every rejection a written reason', function () {
      * has to say what is wrong with the image, so the next person deciding
      * whether to re-add it is reading an argument rather than a filename.
      */
+    expect(config('photos.rejected'))->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach (config('photos.rejected') as $file => $reason) {
         expect(strlen($reason))->toBeGreaterThan(
             40,
@@ -92,6 +100,10 @@ it('has processed every library image into the served set', function () {
     $directory = public_path((string) config('photos.output_directory'));
     $missing = [];
 
+    expect(config('photos.library'))->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach (config('photos.library') as $slug => $entry) {
         foreach (array_keys((array) config('photos.variants')) as $variant) {
             $path = $directory."/{$slug}-{$variant}.webp";
@@ -117,6 +129,10 @@ it('keeps every processed file inside its weight budget', function () {
      */
     $directory = public_path((string) config('photos.output_directory'));
     $over = [];
+
+    expect(config('photos.library'))->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
 
     foreach (config('photos.library') as $slug => $entry) {
         foreach ((array) config('photos.variants') as $variant => $budget) {

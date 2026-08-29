@@ -78,6 +78,10 @@ function translationKeysFor(string $locale): array
 }
 
 it('defines every locale directory named in the allow-list', function () {
+    expect(Locales::all())->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach (Locales::all() as $locale) {
         expect(is_dir(lang_path($locale)))->toBeTrue(
             "config('app.supported_locales') offers `{$locale}` but lang/{$locale}/ does not exist. "
@@ -99,6 +103,10 @@ it('keeps the same translation files in every locale', function () {
     };
 
     $reference = Locales::DEFAULT;
+
+    expect(Locales::all())->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
 
     foreach (Locales::all() as $locale) {
         if ($locale === $reference) {
@@ -148,6 +156,10 @@ it('keeps identical key structures across locales', function () {
 });
 
 it('has no empty translation values', function () {
+    expect(Locales::all())->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach (Locales::all() as $locale) {
         foreach (Finder::create()->files()->in(lang_path($locale))->name('*.php')->depth(0) as $file) {
             /** @var array<array-key, mixed> $translations */

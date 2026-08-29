@@ -254,6 +254,10 @@ it('gives every active package a row in the comparison matrix', function (string
     $matrix = __('packages.matrix', [], $locale);
     $rows = ['format', 'plan', 'between', 'labs', 'adjust', 'suits'];
 
+    expect(Service::query()->where('is_active', true)->get())->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach (Service::query()->where('is_active', true)->get() as $service) {
         // array_key_exists rather than toHaveKey(): Pest reads a second
         // argument to toHaveKey as the EXPECTED VALUE at that key, not as a
@@ -302,6 +306,10 @@ it('reads its prices from the services table rather than from copy', function ()
      */
     $html = $this->get('/ar/packages')->assertOk()->getContent();
 
+    expect(Service::query()->where('is_active', true)->get())->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach (Service::query()->where('is_active', true)->get() as $service) {
         expect($html)->toContain(number_format((float) $service->price));
         expect($html)->toContain((string) $service->sessions_count);
@@ -309,6 +317,10 @@ it('reads its prices from the services table rather than from copy', function ()
 
     foreach (['ar', 'en'] as $locale) {
         $flat = json_encode(__('packages', [], $locale), JSON_UNESCAPED_UNICODE);
+
+        expect(Service::all())->not->toBeEmpty(
+            'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+        );
 
         foreach (Service::all() as $service) {
             expect(str_contains((string) $flat, number_format((float) $service->price)))->toBeFalse(

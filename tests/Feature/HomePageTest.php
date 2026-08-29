@@ -272,6 +272,10 @@ it('renders no untranslated keys', function (string $locale) {
 it('deep-links each package to the booking route with its service preselected', function () {
     $content = $this->get('/ar')->assertOk()->getContent();
 
+    expect(Service::active()->get())->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach (Service::active()->get() as $service) {
         expect($content)->toContain('booking?service='.$service->slug);
     }

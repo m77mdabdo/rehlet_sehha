@@ -44,6 +44,10 @@ it('sets the document language and direction from the locale', function () {
 it('publishes hreflang alternates for every locale plus x-default', function () {
     $response = $this->get('/ar');
 
+    expect(Locales::all())->not->toBeEmpty(
+        'A loop that never runs is a test that lies: this collection was empty, so every assertion inside the loop below was skipped and the test passed without checking anything.'
+    );
+
     foreach (Locales::all() as $locale) {
         $response->assertSee('hreflang="'.$locale.'"', false);
     }
