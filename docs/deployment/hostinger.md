@@ -297,13 +297,199 @@ Then run [the first-hour smoke test](#d--first-hour-smoke-test).
 
 ## 13. Monitoring, from day one
 
+- [ ] **`https://rehletsehha.com/up`** — the one URL worth bookmarking. It
+      answers **200** when the site is well and **503** when it is not, and it
+      checks the six things that fail *silently*: the database, disk space, the
+      cache, the scheduler, the message queue, and the age of the last backup.
+      None of those are visible to a visitor; the site keeps serving pages
+      perfectly through every one of them.
+
+      Point an uptime monitor at it — UptimeRobot's free tier is enough — and
+      set the alert on the **status code**, not on the page text. Add
+      `?format=json` for a machine-readable answer.
+
+      The page itself is written for whoever is at the front desk: each line
+      says what has stopped working *for a patient* rather than which
+      subsystem is down. It is deliberately unauthenticated, and equally
+      deliberately says nothing but names and pass/fail — no versions, no
+      paths, no error text.
+
 - [ ] `storage/logs/laravel.log` — check daily for the first week.
 - [ ] Admin → the delivery log. Any row stuck at `queued` for more than a few
       minutes means **cron is not running**. This is the single most useful
       signal on the whole site: it catches a dead scheduler before a patient
-      notices a missing reminder.
+      notices a missing reminder. `/up` now catches the same thing
+      automatically, but the log tells you *which* messages were lost.
 - [ ] Any `failed` row with a reason. A `skipped` row is normal — it means a
       patient gave no email address.
+
+---
+
+## 14. Backups
+
+### What is backed up, and what is not
+
+**The database, nightly, and nothing else.**
+
+The code is in git and the served photography with it; the original downloads
+are documented in `docs/media/photography.md` and can be fetched again. What
+cannot be recreated from anywhere is the appointments, the patients and the
+intake forms.
+
+Archiving the whole application directory every night would take minutes on
+shared hosting, eat the disk quota, and produce files nobody would ever
+restore from. A dump of this practice's database is a few hundred kilobytes.
+
+Two commands run through the **same cron entry as everything else** (step 11 —
+there is no second schedule to forget):
+
+| Time (Cairo) | Command | What it does |
+| --- | --- | --- |
+| 02:00 | `backup:clean` | Applies the retention policy |
+| 02:30 | `backup:run --only-db` | Writes the night's dump |
+
+Both before `clinic:verify-key` at 03:00, so a morning that starts with a key
+mismatch already has last night's dump sitting beside it.
+
+### Where they go
+
+```
+~/domains/rehletsehha.com/app/storage/app/private/Rehlet Sehha/YYYY-MM-DD-HH-MM-SS.zip
+```
+
+Outside the document root, and `storage/app/private/.gitignore` ignores
+everything in it, so an archive cannot be committed by accident.
+
+### How long they are kept
+
+Seven days of every dump, then thinned: sixteen daily, eight weekly, four
+monthly. Seven days covers the ordinary case — somebody deletes the wrong
+record on Friday and nobody notices until Monday. The months cover the slower
+one: a data problem introduced weeks ago and only visible now.
+
+Hard cap of **500 MB**, far above what that policy can actually use. It exists
+to bound the failure that hurts: a full disk stops new intake forms saving.
+
+### Encrypt them, and write the password down
+
+- [ ] Set `BACKUP_ARCHIVE_PASSWORD` in `.env` **before the first dump is
+      written**, and store it in the same place as `APP_KEY` — off this server.
+      See [APP_KEY.md](APP_KEY.md).
+
+On the server the dump and the `.env` sit on the same disk, so this buys
+nothing against somebody already inside the account. What it protects is the
+copy that *leaves*, and copies do leave — see the monthly download below. That
+file lands in a downloads folder, gets attached to an email, ends up on a
+laptop. Encrypted it is a nuisance; unencrypted it is the practice's entire
+patient list.
+
+> **An archive encrypted with a password nobody recorded is not a backup.** It
+> is a zip file that will never open again, and you find that out on the day
+> you need it. Never rotate the password: every older archive becomes
+> unopenable the moment you do.
+
+### Who is told when one fails
+
+`BACKUP_ALERT_EMAIL` in `.env`. Set it to **a person who will act**, not to the
+address on the contact page.
+
+Only failures are ever sent. There is deliberately no nightly "backup
+succeeded" email: it would be filtered into a folder within a fortnight, and
+once it is filtered the *failure* email — same sender, same shape of subject —
+is filtered with it. `/up` is what confirms the good nights.
+
+### Off the server, once a month
+
+- [ ] Download the newest archive to a machine that is not this server.
+
+A backup that only exists on the machine it backs up is not a backup. It does
+not survive a deleted account, a billing lapse, or a hosting migration that
+goes wrong — and those are more likely than disk failure.
+
+```bash
+scp -P 65002 'USER@HOST:~/domains/rehletsehha.com/app/storage/app/private/Rehlet Sehha/*.zip' ~/rehlet-backups/
+```
+
+Delete the local copies you no longer need. They are patient records.
+
+---
+
+## Restoring from a backup
+
+Read this **before** you need it. Every step assumes you have already stopped
+the site with `php artisan down --render=errors::503`.
+
+### 1. Unpack the archive
+
+```bash
+php artisan clinic:unpack-backup
+```
+
+With no arguments it picks the newest archive and unpacks it to
+`storage/app/private/restore`. Pass a path to choose a different one.
+
+> **Do not use `unzip`.** When `BACKUP_ARCHIVE_PASSWORD` is set the archive is
+> AES-256, and Info-ZIP `unzip` — which is the `unzip` on Hostinger, on macOS,
+> and on most Linux boxes — **cannot read AES zips**. It does not fail in a way
+> that looks like failure either; it prints
+>
+> ```
+> skipping: db-dumps/….sql  need PK compat. v5.1 (can do v4.5)
+> ```
+>
+> and exits leaving an empty directory. On the day you need a restore, that
+> line is indistinguishable from a corrupt backup, and the reasonable
+> conclusion — "our backups are broken" — is wrong. `clinic:unpack-backup` goes
+> through PHP's `ZipArchive`, which reads them correctly and is by definition
+> installed.
+
+### 2. Import the dump
+
+Deliberately manual. A command that overwrites a live database on one keystroke
+is a command that will one day be run against the wrong one.
+
+```bash
+mysql -u USER -p DATABASE < storage/app/private/restore/db-dumps/mysql-DATABASE.sql
+```
+
+### 3. Check the key before you believe anything
+
+```bash
+php artisan clinic:verify-key
+```
+
+**A restored database is unreadable without the `APP_KEY` that encrypted it.**
+The intake forms are encrypted at the application layer, so a dump restored
+onto a server with a different key is a table of unreadable strings — and
+nothing will tell you until somebody opens a patient record. If this command
+reports a mismatch, stop and find the right key. Do not "fix" it by
+regenerating one. See [APP_KEY.md](APP_KEY.md).
+
+### 4. Confirm the data is actually there
+
+```bash
+php artisan tinker --execute='
+  echo App\Models\Appointment::count()." appointments\n";
+  echo App\Models\IntakeForm::query()->whereNotNull("conditions")->first()?->conditions."\n";
+'
+```
+
+The second line is the one that matters: it reads through the decryption. If it
+prints Arabic, the restore is genuinely complete. If it throws a
+`DecryptException`, the key is wrong and step 3 lied to you about which
+database it was checking.
+
+### 5. Clean up, then come back up
+
+```bash
+rm -rf storage/app/private/restore   # every patient record, in plain text
+php artisan up
+```
+
+### Practise it once, on the test database
+
+A restore procedure nobody has run is a document, not a capability. Do it once
+on `rehlet_sehha_test` before you need it on a Tuesday morning.
 
 ---
 
@@ -358,6 +544,9 @@ over SSH **before** step 8, because each one changes what you do next.
 | 10 | **Disk headroom** | `du -sh ~/domains/rehletsehha.com` and hPanel's quota | Comfortable margin | `storage/logs` grows; `LOG_LEVEL=warning` keeps it slow. |
 | 11 | **HTTPS with a valid certificate** | `curl -sI https://rehletsehha.com` | `200`, no TLS warning | The clipboard copy button needs a secure context. Without it, patients with no email fall back to manual copy on the one screen holding their booking reference. |
 | 12 | **Timezone of the CLI** | `php -r 'echo date_default_timezone_get();'` | Anything — the app pins UTC internally | Only matters if it disagrees wildly; scheduled times are computed by Laravel, not the shell. |
+| 13 | **`mysqldump` exists and is reachable** | `php artisan backup:run --only-db` | `Backup completed!` and a zip under `storage/app/private/` | The single assumption the whole backup story rests on, and one the local machine cannot settle. Some shared hosts do not ship the MySQL client binaries at all. If it is missing, set `'dump_binary_path'` in `config/database.php` to wherever it lives, and if it genuinely is not installed, say so — **do not go live believing there are backups.** |
+| 14 | **The archive can be reopened on the server** | `php artisan clinic:unpack-backup --to=/tmp/restore-drill && ls /tmp/restore-drill/db-dumps && rm -rf /tmp/restore-drill` | A `.sql` file | Proves the password in `.env` actually opens the archive the server just wrote. Do this on **launch day**, not on the day of an incident. |
+| 15 | **`/up` answers honestly** | `curl -s https://rehletsehha.com/up?format=json` | `"status":"ok"` with all six checks `true` | Expect `scheduler` to be `false` until cron has run once, and `backup` to be `false` until the first dump. Both going green is how you know steps 11 and 14 really worked. |
 
 ---
 
@@ -371,9 +560,20 @@ one before, and continuing past a failure only makes the diagnosis harder.
 ```bash
 curl -sI https://rehletsehha.com/ar        # 200
 curl -sI https://rehletsehha.com/.env      # 404  ← if this is 200, take the site down
+curl -s  https://rehletsehha.com/up?format=json
 ```
 
-*Stop if:* anything but 200/404. Nothing below can work.
+The third one is the only check here that looks *behind* the page. Expect:
+
+```json
+{"status":"ok","checks":{"database":true,"storage":true,"cache":true,"scheduler":true,"queue":true,"backup":true}}
+```
+
+`scheduler` stays `false` until cron has run once, and `backup` until the first
+nightly dump — so on launch morning those two may legitimately be red. Come
+back to this after step 6.
+
+*Stop if:* anything but 200/404, or `database` is `false`.
 
 ### 2. Book a real appointment
 
@@ -429,4 +629,14 @@ incomplete deploy; an SMTP error means item 8 of section C was never true.
 
 - [ ] Delete the test appointment (admin → cancel, then delete).
 - [ ] `php artisan clinic:verify-key` — fingerprint recorded.
-- [ ] Take a database dump: `mysqldump -u USER -p DB > ~/backups/launch-$(date +%F).sql`
+- [ ] `php artisan backup:run --only-db` — the launch-day archive, taken by the
+      same machinery that will take every one after it. A dump written by hand
+      with `mysqldump` proves nothing about whether the scheduled backups work.
+- [ ] `curl -s https://rehletsehha.com/up?format=json` — all six `true`. This is
+      the last check because it is the only one that can now answer honestly:
+      cron has run, the queue has drained, and a backup exists.
+- [ ] Point an uptime monitor at `https://rehletsehha.com/up` and alert on the
+      status code. Five minutes of setup; it is what tells you the site broke
+      before a patient does.
+- [ ] Store `APP_KEY` and `BACKUP_ARCHIVE_PASSWORD` somewhere off this server,
+      together. Neither is recoverable, and each one alone is useless.

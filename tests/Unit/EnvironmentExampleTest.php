@@ -82,6 +82,13 @@ it('keeps the settings the deploy actually depends on', function (string $key, s
         'Measured fastest on single-server shared hosting; see the note in the file.'],
     ['SESSION_DRIVER', 'database',
         'Sessions must survive the deploy that replaces the filesystem.'],
+    ['SESSION_SECURE_COOKIE', 'true',
+        'Without it the session cookie travels over plain http on the first request '
+        .'of a session, before that browser has ever seen HSTS.'],
+    ['SESSION_ENCRYPT', 'true',
+        'Sessions live in the database, which is what a backup file contains.'],
+    ['SESSION_HTTP_ONLY', 'true',
+        'A session cookie readable by script is a session cookie an XSS can steal.'],
 ]);
 
 it('commits no secret', function () {
