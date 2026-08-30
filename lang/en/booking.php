@@ -269,6 +269,8 @@ return [
         'link_note' => 'Save this link. It will not be sent to you or anywhere else, and without it you cannot cancel or change the time except by calling.',
         'copy' => 'Copy',
         'copied' => 'Copied',
+        'copy_manual' => 'Copy it yourself',
+        'copy_manual_hint' => 'Your browser blocked automatic copying. The text is selected — long-press and choose Copy, or press Ctrl+C.',
         'copy_reference' => 'Copy the reference',
         'copy_link' => 'Copy the link',
         'whatsapp' => 'Send the details to yourself on WhatsApp',

@@ -543,3 +543,16 @@
     overflow-x: clip;
     contain: paint;
 }
+
+/*
+ * The text the manual-copy fallback has just selected.
+ *
+ * The browser's own selection highlight is easy to miss on a phone, and this
+ * is the moment a patient with no email confirmation is being asked to keep
+ * her booking reference by hand. A ring draws the eye to what is highlighted.
+ */
+[data-copy-selected] {
+    border-radius: 0.25rem;
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+}
