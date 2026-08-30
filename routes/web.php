@@ -6,6 +6,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ExportAppointmentController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HowItWorksController;
 use App\Http\Controllers\ManageAppointmentController;
@@ -68,7 +69,7 @@ Route::prefix('{locale}')
          * in an outbound link, and it must not be handed to any third party.
          */
         Route::get('appointment/{token}', ManageAppointmentController::class)
-            ->middleware('token-url')
+            ->middleware(['token-url', 'throttle:60,60'])
             ->name('appointment.manage')
             ->where('token', '[A-Za-z0-9]{32,80}');
 
@@ -145,12 +146,18 @@ Route::prefix('{locale}')
          * og:url. TokenUrlHygieneTest asserts all of that.
          */
         Route::get('review/{token}', [ReviewController::class, 'show'])
-            ->middleware('token-url')
+            ->middleware(['token-url', 'throttle:60,60'])
             ->name('review.show')
             ->where('token', '[A-Za-z0-9]{32,80}');
 
+        /*
+         * Throttled. The token is unguessable, so this is not brute-force
+         * protection — it is protection against a token that HAS leaked being
+         * used to hammer the endpoint, and against a stuck client retrying a
+         * submission in a loop.
+         */
         Route::post('review/{token}', [ReviewController::class, 'store'])
-            ->middleware('token-url')
+            ->middleware(['token-url', 'throttle:10,60'])
             ->name('review.store')
             ->where('token', '[A-Za-z0-9]{32,80}');
 
@@ -163,7 +170,7 @@ Route::prefix('{locale}')
          * back except telephoning the clinic.
          */
         Route::post('review/{token}/withdraw', [ReviewController::class, 'withdraw'])
-            ->middleware('token-url')
+            ->middleware(['token-url', 'throttle:10,60'])
             ->name('review.withdraw')
             ->where('token', '[A-Za-z0-9]{32,80}');
 
@@ -180,3 +187,22 @@ Route::prefix('{locale}')
 Route::get('sitemap.xml', SitemapController::class)
     ->middleware('cache.headers:public;max_age=3600;etag')
     ->name('sitemap');
+
+/*
+ * The health check.
+ *
+ * Outside the locale group and outside every cache header: a monitor asking
+ * whether the site is alive must never be answered from a cache, and a status
+ * page that is a minute stale is a status page that lies.
+ *
+ * Unauthenticated on purpose — an uptime monitor cannot hold a credential
+ * without that credential being the thing most likely to leak — which is why
+ * the response is names and pass/fail and nothing else. See HealthController.
+ *
+ * Throttled because each hit writes a file and touches the database, and an
+ * unauthenticated endpoint that does work is an endpoint somebody will point a
+ * load generator at. Thirty a minute is more than any monitor needs.
+ */
+Route::get('up', HealthController::class)
+    ->middleware('throttle:30,1')
+    ->name('health');

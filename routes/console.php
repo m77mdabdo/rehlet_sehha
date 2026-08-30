@@ -2,6 +2,7 @@
 
 use App\Models\ActivityLog;
 use App\Models\NotificationLog;
+use App\Support\Heartbeat;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -126,3 +127,42 @@ Schedule::command('clinic:send-review-requests')
 Schedule::command('clinic:send-daily-schedule')
     ->dailyAt('07:00')
     ->timezone(config('clinic.timezone'));
+
+/*
+|------------------------------------------------------------------------------
+| Backups
+|------------------------------------------------------------------------------
+|
+| Through the SAME cron entry as everything else — there is no second schedule
+| to forget. See docs/deployment/hostinger.md.
+|
+| 02:00 and 02:30 Cairo: after the day's last appointment and before
+| clinic:verify-key at 03:00, so a morning that starts with a key mismatch
+| already has last night's dump beside it.
+|
+| withoutOverlapping because a dump that is still running when the next one
+| starts produces two half-written archives and neither restores.
+*/
+Schedule::command('backup:clean')
+    ->dailyAt('02:00')
+    ->withoutOverlapping()
+    ->timezone(config('clinic.timezone'));
+
+Schedule::command('backup:run --only-db')
+    ->dailyAt('02:30')
+    ->withoutOverlapping()
+    ->timezone(config('clinic.timezone'));
+
+/*
+ * The scheduler's own pulse.
+ *
+ * Every five minutes, so /up can tell the difference between a quiet night and
+ * a cron that has stopped. Cheap on purpose: one file write, no database, no
+ * queue — it must not be the thing that fails.
+ *
+ * See App\Support\Heartbeat for why this is a file rather than a cache key.
+ */
+Schedule::call(fn () => Heartbeat::record())
+    ->everyFiveMinutes()
+    ->name('scheduler-heartbeat')
+    ->withoutOverlapping();

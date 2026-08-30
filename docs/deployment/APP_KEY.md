@@ -49,6 +49,15 @@ Store it in at least two of:
 Record it **before first deploy**, and re-verify after any key rotation. Never
 commit it, never paste it into a ticket, never send it over chat.
 
+**Store `BACKUP_ARCHIVE_PASSWORD` in the same entry, at the same time.** The two
+secrets are useless apart: a nightly database dump you cannot open is not a
+backup, and one you *can* open without the key is a table of unreadable strings
+where the intake forms used to be. Losing either one loses the same thing.
+
+Neither may be rotated casually. Regenerating `APP_KEY` destroys every
+encrypted clinical field; changing `BACKUP_ARCHIVE_PASSWORD` makes every
+archive written before the change permanently unopenable.
+
 ### 3. Verify the key as the first step of every deploy
 
 ```bash
@@ -174,6 +183,9 @@ Be honest about the position rather than hunting for a trick:
 ## Related
 
 - `app/Console/Commands/VerifyAppKey.php` — the command
+- `app/Console/Commands/UnpackBackup.php` — opens an archive; needs both secrets
 - `database/seeders/AppKeyFingerprintSeeder.php` — records the baseline
 - `routes/console.php` — the daily schedule
 - `config/app.php` — `key` and `previous_keys`
+- [hostinger.md § 14](hostinger.md) — backups, and the restore procedure that
+  checks the key before believing the data

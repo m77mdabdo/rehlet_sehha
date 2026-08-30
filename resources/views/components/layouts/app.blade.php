@@ -147,7 +147,7 @@
         the people on the slowest connections should not be the ones waiting for
         it.
     --}}
-    <script>
+    <script nonce="{{ request()->attributes->get('csp-nonce') }}">
         (function () {
             var root = document.documentElement;
 
@@ -173,6 +173,20 @@
         derived, and the footer beside it was a hand-typed sentence which went
         stale the first time the schedule was edited. Both now read the same
         rows, which is what the claim always assumed.
+    --}}
+    {{--
+        NO NONCE ON THIS ONE, AND IT IS NOT AN OVERSIGHT.
+
+        A script element whose type is not a JavaScript MIME type is a DATA
+        BLOCK, not a script: the HTML parser never prepares it for execution,
+        so the CSP inline check is never reached and a nonce has nothing to
+        authorise. It carried one briefly, which cost nothing at runtime and
+        cost seven tests that pin this markup — and it quietly implied the
+        block was executable, which is the opposite of what a reader should
+        conclude.
+
+        Verified in Chrome under the live policy: the block parses, and the
+        console reports no CSP violation.
     --}}
     @isset($schema)
         <script type="application/ld+json">{!! $schema !!}</script>
