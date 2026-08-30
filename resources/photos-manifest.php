@@ -394,4 +394,56 @@ return [
             ],
         ],
     ],
+    'kitchen-hands-herbs' => [
+        'topic' => 'food',
+        'describes' => 'Hands chopping coriander on a wooden board in warm light, a halved red onion and a bowl of rice beside them. Framed below the shoulders.',
+        'attribution' => [
+            'photographer' => 'Los Muertos Crew',
+            'source' => 'https://www.pexels.com/photo/close-up-photo-of-a-person-slicing-cilantro-7601397/',
+            'downloaded_at' => '2026-08-30',
+        ],
+        'variants' => [
+            'sm' => [
+                'width' => 725,
+                'height' => 483,
+                'bytes' => 29438,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 730,
+                'bytes' => 52996,
+            ],
+            'lg' => [
+                'width' => 1549,
+                'height' => 1033,
+                'bytes' => 86714,
+            ],
+        ],
+    ],
+    'pantry-jars-legumes' => [
+        'topic' => 'food',
+        'describes' => 'Three clip-top glass jars of red beans, lentils and rice on a wooden table. No labels and no text anywhere in frame.',
+        'attribution' => [
+            'photographer' => 'Ron Lach',
+            'source' => 'https://www.pexels.com/photo/clear-glass-jars-with-raw-beans-seeds-and-rice-on-brown-wooden-table-8287244/',
+            'downloaded_at' => '2026-08-30',
+        ],
+        'variants' => [
+            'sm' => [
+                'width' => 725,
+                'height' => 483,
+                'bytes' => 42902,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 730,
+                'bytes' => 86814,
+            ],
+            'lg' => [
+                'width' => 1549,
+                'height' => 1033,
+                'bytes' => 146330,
+            ],
+        ],
+    ],
 ];

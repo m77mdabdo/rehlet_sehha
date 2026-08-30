@@ -106,6 +106,14 @@ return [
     | `describes` is a factual note of what is in the frame, for whoever writes
     | the alt text. It is NOT the alt text: that is bilingual copy and lives in
     | the translation files with the section it appears in.
+    |
+    | `attribution` records where the image came from: photographer, the Pexels
+    | page, and the date it was fetched. Pexels asks for no credit; we keep it
+    | because a licence you cannot evidence is a licence you do not have, and
+    | because "where did this photograph on a medical site come from" should be
+    | answerable from a file rather than from memory. Entries added by hand
+    | before clinic:fetch-pexels existed have none, and that is recorded by its
+    | absence rather than by a guess.
     */
     'library' => [
 
@@ -257,6 +265,32 @@ return [
             'crop' => [0, 490, 4729, 3490],
             'describes' => 'A consultation across a white desk: the patient\'s hands folded, a clinician writing a weekly meal plan, a bowl of bananas, apples and oranges between them.',
         ],
+
+        // ---- Added via clinic:fetch-pexels, each inspected at full size ----
+        'kitchen-hands-herbs' => [
+            'source' => 'pexels-losmuertoscrew-7601397.jpg',
+            'topic' => 'food',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'Hands chopping coriander on a wooden board in warm light, a halved red onion and a bowl of rice beside them. Framed below the shoulders.',
+            'attribution' => [
+                'photographer' => 'Los Muertos Crew',
+                'source' => 'https://www.pexels.com/photo/close-up-photo-of-a-person-slicing-cilantro-7601397/',
+                'downloaded_at' => '2026-08-30',
+            ],
+        ],
+        'pantry-jars-legumes' => [
+            'source' => 'pexels-ronlach-8287244.jpg',
+            'topic' => 'food',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'Three clip-top glass jars of red beans, lentils and rice on a wooden table. No labels and no text anywhere in frame.',
+            'attribution' => [
+                'photographer' => 'Ron Lach',
+                'source' => 'https://www.pexels.com/photo/clear-glass-jars-with-raw-beans-seeds-and-rice-on-brown-wooden-table-8287244/',
+                'downloaded_at' => '2026-08-30',
+            ],
+        ],
     ],
 
     /*
@@ -276,6 +310,14 @@ return [
     | hero video.
     */
     'rejected' => [
+        // ---- From clinic:fetch-pexels on 2026-08-30. Opened, then refused --
+        'pexels-airam-dato-on-33554298.jpg' => 'A market stall of vegetable crates, and legible English price signage: "CARROTS 90", plus handwritten label cards on several crates. Legible text on a photograph is what made the 2.mp4 footage unusable.',
+        'pexels-anntarazevich-7771969.jpg' => 'Bulk-food dispensers with a hand at the lever. The printed product labels along the row are legible.',
+        'pexels-helenajankovicovakovacova-10697692.jpg' => 'A wide market aisle with a dozen shoppers, several faces identifiable at full size. No evidenced release.',
+        'pexels-pramodtiwari-17161099.jpg' => 'Market stall with a vendor facing the camera, face fully identifiable.',
+        'pexels-pramodtiwari-17160606.jpg' => 'The same stall and vendor, face identifiable.',
+        'pexels-pramodtiwari-17160607.jpg' => 'The same stall and vendor, face identifiable.',
+        'pexels-mingchelee-30393388.jpg' => 'Market scene with identifiable faces in the middle ground.',
         'pexels-andres-ayrton-6550832.jpg' => 'A digital bathroom scale with feet on it and a weight on the display. Scale and a weight readout.',
         'pexels-andres-ayrton-6551440.jpg' => 'A tape measure being pulled around a bare waist.',
         'pexels-anntarazevich-5629206.jpg' => 'A tape measure around the waist of a woman in a bra. Measuring tape and body appraisal.',

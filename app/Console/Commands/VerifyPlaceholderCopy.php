@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Models\Post;
 use App\Support\Locales;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Schema;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -48,7 +50,22 @@ class VerifyPlaceholderCopy extends Command
     {
         $outstanding = self::outstanding();
 
-        if ($outstanding === []) {
+        /*
+         * PUBLISHED ARTICLES ARE CHECKED TOO, and for a sharper reason.
+         *
+         * TODO_COPY in a translation file is a placeholder somebody forgot.
+         * CLINICAL_INPUT in a PUBLISHED article is a question addressed to the
+         * clinician appearing on a page a patient is reading — a stage
+         * direction served as medical advice under a licensed byline.
+         *
+         * Post::booted() already refuses to save such a thing, so reaching
+         * here means it arrived another way: a raw SQL insert, a restored
+         * backup, a migration that copied rows. This is the read-side check
+         * that catches what the write-side guard could not see.
+         */
+        $unanswered = self::unansweredClinicalPrompts();
+
+        if ($outstanding === [] && $unanswered === []) {
             $this->info('No placeholder copy. Safe to publish.');
 
             return self::SUCCESS;
@@ -56,6 +73,30 @@ class VerifyPlaceholderCopy extends Command
 
         $blocking = $this->option('strict') || app()->isProduction();
 
+        if ($unanswered !== []) {
+            $this->newLine();
+            $this->error(sprintf('  %d PUBLISHED article(s) still ask the clinician a question:', count($unanswered)));
+            $this->newLine();
+
+            foreach ($unanswered as $slug => $count) {
+                $this->line("  · {$slug} — {$count} unanswered ".Post::CLINICAL_MARKER.' prompt(s)');
+            }
+
+            $this->newLine();
+            $this->line('  Unpublish them, or answer every prompt. A reader must never see one.');
+            $this->newLine();
+
+            // Never a warning, in any environment. A published article with an
+            // open clinical prompt is wrong on a developer's laptop too.
+            return self::FAILURE;
+        }
+
+        /*
+         * Reaching here means $outstanding is non-empty: the combined check
+         * above returned when both were empty, and the clinical branch
+         * returned when $unanswered was not. A second emptiness check here
+         * would be unreachable.
+         */
         $this->newLine();
         $this->line(sprintf('  %d translation value(s) still contain %s:', count($outstanding), self::MARKER));
         $this->newLine();
@@ -116,6 +157,43 @@ class VerifyPlaceholderCopy extends Command
         }
 
         ksort($found);
+
+        return $found;
+    }
+
+    /**
+     * Published articles still carrying an unanswered clinical prompt.
+     *
+     * Returns slug => count. Drafts are ignored: a draft full of prompts is
+     * exactly what a draft is for, and flagging them would train everybody to
+     * ignore this command.
+     *
+     * @return array<string, int>
+     */
+    public static function unansweredClinicalPrompts(): array
+    {
+        if (! Schema::hasTable('posts')) {
+            return [];
+        }
+
+        $found = [];
+
+        foreach (Post::published()->get() as $post) {
+            $count = 0;
+
+            foreach (Locales::all() as $locale) {
+                foreach (['title', 'excerpt', 'body'] as $field) {
+                    $count += substr_count(
+                        (string) $post->getTranslation($field, $locale, false),
+                        Post::CLINICAL_MARKER,
+                    );
+                }
+            }
+
+            if ($count > 0) {
+                $found[$post->slug] = $count;
+            }
+        }
 
         return $found;
     }

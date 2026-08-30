@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Posts\Schemas;
 
 use App\Filament\Support\Bilingual;
+use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
 use Closure;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -15,6 +17,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 /**
  * Arabic and English side by side, both required. See App\Filament\Support\Bilingual
@@ -32,6 +35,44 @@ class PostForm
                     Bilingual::textarea('excerpt', 'المقدمة', rows: 3),
                     Bilingual::rich('body', 'النص'),
                 ]),
+
+            Section::make('التصنيف والوسوم')
+                ->schema([
+                    Select::make('category_id')
+                        ->label('التصنيف')
+                        ->relationship('category', 'slug')
+                        ->getOptionLabelFromRecordUsing(fn (Category $record): string => (string) $record->name)
+                        ->searchable()
+                        ->preload()
+                        ->required()
+                        ->helperText('المقال بيظهر في صفحة التصنيف ده.'),
+
+                    Select::make('tags')
+                        ->label('الوسوم')
+                        ->relationship('tags', 'slug')
+                        ->getOptionLabelFromRecordUsing(fn (Tag $record): string => (string) $record->name)
+                        ->multiple()
+                        ->preload()
+                        ->helperText('اختياري. الوسم بيجمع مقالات من تصنيفات مختلفة بتتكلم عن نفس الموضوع.'),
+
+                    Select::make('cover_path')
+                        ->label('الصورة')
+                        ->options(function (): array {
+                            /** @var array<string, array{describes: string}> $manifest */
+                            $manifest = require resource_path('photos-manifest.php');
+
+                            $options = [];
+
+                            foreach ($manifest as $slug => $entry) {
+                                $options[$slug] = $slug.' — '.Str::limit($entry['describes'], 60);
+                            }
+
+                            return $options;
+                        })
+                        ->searchable()
+                        ->helperText('من مكتبة الصور المعالجة. الوصف بيساعدك تختاري صورة تخص المقال فعلاً.'),
+                ])
+                ->columns(2),
 
             Section::make('النشر')
                 ->schema([
@@ -73,6 +114,17 @@ class PostForm
                                 }
                             },
                         ]),
+                    /*
+                     * Scheduling is published_at itself, not a separate flag.
+                     * Post::published() requires the date to have PASSED, so a
+                     * future date is a scheduled article and 404s until then —
+                     * one field, one meaning, and no way for a "scheduled"
+                     * boolean to disagree with the date beside it.
+                     */
+                    DateTimePicker::make('content_updated_at')
+                        ->label('اتحدّث في')
+                        ->helperText('سيبيها فاضية إلا لو غيّرتي كلام فعلاً. ده بيظهر للقارئة وبيتبعت لجوجل — تصحيح إملائي مش تحديث.'),
+
                     Toggle::make('is_featured')->label('مقال مميز'),
                 ])
                 ->columns(2),
