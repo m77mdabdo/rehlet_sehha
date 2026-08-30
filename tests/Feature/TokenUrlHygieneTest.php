@@ -317,14 +317,34 @@ it('tells crawlers to stay away in a header, not only a meta tag', function (str
     expect($response->headers->get('Cache-Control'))->toContain('no-store');
 })->with(tokenBearingPages());
 
-it('keeps those headers off ordinary pages', function () {
-    // The headers are correct for token pages and wrong everywhere else:
-    // no-referrer site-wide would strip analytics the clinic may want, and a
-    // stray noindex is the kind of mistake nobody notices for a month.
+it('keeps the token-page hardening off ordinary pages', function () {
+    /*
+     * WHAT CHANGED, AND WHY THIS ASSERTION IS NARROWER THAN IT WAS.
+     *
+     * This used to insist that ordinary pages carry NO Referrer-Policy at all.
+     * That stopped being right when App\Http\Middleware\SecurityHeaders
+     * started setting `strict-origin-when-cross-origin` site-wide — which is a
+     * better default than nothing, and does not cost the clinic anything: it
+     * sends the full referrer on our own pages and only the bare origin off
+     * site. The original worry was about `no-referrer` site-wide stripping
+     * analytics, and that is still true and still avoided.
+     *
+     * So what matters is no longer "no header" but "not the STRICTER header".
+     * A token page suppresses the referrer entirely because the URL itself is
+     * the credential; an ordinary page has no secret in its URL and gets the
+     * ordinary default.
+     *
+     * The noindex half is unchanged and is the one that would really hurt: a
+     * stray X-Robots-Tag on the public site is a mistake nobody notices for a
+     * month, by which time the clinic has fallen out of the index.
+     */
     $response = $this->get('/ar')->assertOk();
 
     expect($response->headers->get('X-Robots-Tag'))->toBeNull();
-    expect($response->headers->get('Referrer-Policy'))->toBeNull();
+
+    expect($response->headers->get('Referrer-Policy'))
+        ->not->toBe('no-referrer')
+        ->toBe('strict-origin-when-cross-origin');
 });
 
 it('does not put the token in the confirmation page markup for a crawler to find', function () {

@@ -8,6 +8,7 @@ use App\Http\Middleware\ExpireAdminSession;
 use App\Http\Middleware\NoIndexAdminPanel;
 use App\Http\Middleware\SetAdminLocale;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
+use Filament\FontProviders\LocalFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -69,7 +70,18 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::hex('#1A6DA6'),
                 'gray' => Color::Slate,
             ])
-            ->font('Tajawal')
+            /*
+             * NO REMOTE FONT. ->font('Tajawal') alone makes Filament link
+             * fonts.bunny.net, which was discovered by a Content-Security-
+             * Policy blocking it — the panel had been reaching a third-party
+             * CDN on every admin page load, disclosing staff activity to a
+             * host nobody chose.
+             *
+             * The public site already self-hosts Tajawal (see app.css). The
+             * panel now uses the same family through the local provider, so
+             * the whole application loads from one origin.
+             */
+            ->font('Tajawal', provider: LocalFontProvider::class)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
