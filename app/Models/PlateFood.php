@@ -56,6 +56,7 @@ class PlateFood extends Model
 
     /** @use HasFactory<PlateFoodFactory> */
     use HasFactory;
+
     use HasTranslations;
 
     /**
