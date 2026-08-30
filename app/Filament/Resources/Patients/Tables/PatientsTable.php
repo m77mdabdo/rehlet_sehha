@@ -25,7 +25,11 @@ class PatientsTable
                     ->searchable()
                     ->sortable(),
 
+                // dir=ltr: the number is its own cell here, so the element can
+                // carry the direction. See AppointmentsTable for the case where
+                // it cannot.
                 TextColumn::make('phone')
+                    ->extraAttributes(['dir' => 'ltr'])
                     ->label('الموبايل')
                     ->formatStateUsing(fn (string $state): string => PhoneNumber::forDisplay($state))
                     /*

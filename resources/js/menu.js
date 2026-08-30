@@ -35,6 +35,22 @@ function initMenu() {
         iconOpen?.classList.toggle('hidden', open);
         iconClose?.classList.toggle('hidden', !open);
 
+        /*
+         * MOVE FOCUS INTO THE PANEL ON OPEN.
+         *
+         * aria-expanded told a screen reader the menu had opened and nothing
+         * moved, so the next Tab continued from the toggle through whatever
+         * follows it in the source — a keyboard user opened a menu they were
+         * not in. Escape already returned focus to the toggle; this is the
+         * other half of that contract.
+         *
+         * The first link rather than the panel itself: focusing a container
+         * announces the container and leaves the user still needing to Tab.
+         */
+        if (open) {
+            panel.querySelector('a, button, [tabindex]:not([tabindex="-1"])')?.focus();
+        }
+
         if (label && labels.close) {
             label.textContent = open ? labels.close : labels.open;
         }
