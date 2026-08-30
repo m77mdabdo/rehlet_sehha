@@ -1,0 +1,32 @@
+# Second line of defence, if the document root is wrong.
+#
+# The domain must point at `public/`. If it points at the project root instead,
+# every file here becomes web-reachable — including `.env`, which holds the
+# database password, the mail password and APP_KEY. APP_KEY decrypts every
+# patient's medical history.
+#
+# This file does not make a wrong document root safe. It denies the two things
+# that would hurt most, so a misconfiguration is embarrassing rather than a
+# disclosure. Fixing the document root is still step 3 of the runbook.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Anything the application serves lives under public/. Send everything
+    # there so a root-mounted domain still runs the app rather than listing
+    # source files.
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Dotfiles: .env, .env.backup, .git/config and friends.
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Never serve these, whatever the rewrite does.
+<FilesMatch "\.(env|log|sqlite|sql|md|lock|json|yml|yaml)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
