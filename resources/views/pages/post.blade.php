@@ -4,6 +4,28 @@
     use App\Support\Photo;
 
     $hasCover = $post->cover_path && Photo::has($post->cover_path);
+
+    /*
+     * The reviewer's name, transliterated on the English page.
+     *
+     * Matched on the doctor ROLE rather than on the spelling of the name:
+     * users.name holds 'د. رنا سالم' while config holds her full legal name,
+     * so a string comparison would silently never match.
+     *
+     * SINGLE-PRACTITIONER ASSUMPTION, stated rather than hidden: config holds
+     * one transliteration, so if the practice ever has two clinicians the
+     * second would wrongly get the first's English name. At that point the
+     * spelling belongs on the user row, not in config. Until then this is one
+     * config key instead of a migration.
+     */
+    $reviewerName = $post->reviewer?->name;
+    $englishName = config('clinic.practitioner.display_name_en');
+
+    if (App\Support\Locales::current() === 'en'
+        && $englishName
+        && $post->reviewer?->hasRole('doctor')) {
+        $reviewerName = $englishName;
+    }
     $url = url()->current();
 @endphp
 
@@ -40,7 +62,19 @@
             become blank.
         --}}
         <p class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
-            <span class="font-medium text-ink">{{ __('articles.reviewed_by', ['name' => $post->reviewer?->name]) }}</span>
+            {{--
+                THE NAME IS TRANSLITERATED ON THE ENGLISH PAGE, not translated.
+                users.name holds one spelling — hers, in Arabic — because a
+                person has one name and the column is deliberately not
+                translatable. Rendering it straight produced "Clinically
+                reviewed by د. رنا سالم" in an otherwise Latin sentence.
+
+                Only the practitioner has a second spelling in config. Any
+                other reviewer falls back to the name on their account, which
+                is the honest answer: we do not have a transliteration for
+                somebody we have not been given one for.
+            --}}
+            <span class="font-medium text-ink">{{ __('articles.reviewed_by', ['name' => $reviewerName]) }}</span>
             <span aria-hidden="true" class="text-line">·</span>
             <span><bdi dir="auto">{{ __('articles.reviewed_on', ['date' => $post->reviewed_at?->translatedFormat('j F Y')]) }}</bdi></span>
             <span aria-hidden="true" class="text-line">·</span>

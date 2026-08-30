@@ -284,6 +284,17 @@ return [
         'name_ar' => 'رنا محمد أحمد سالم',
 
         // Evidence: syndicate licence card.
+        /*
+         * Her name TRANSLITERATED for English pages, not translated — a person
+         * has one name, and users.name is deliberately not a translatable
+         * column for that reason.
+         *
+         * The English article byline was rendering "Clinically reviewed by
+         * د. رنا سالم", an Arabic name mid-sentence in a Latin paragraph. The
+         * fix is a second spelling of the same name, not a second name.
+         */
+        'display_name_en' => 'Dr Rana Salem',
+
         'title_ar' => 'أخصائية تغذية إكلينيكية',
         'title_en' => 'Clinical Nutrition Specialist',
 
