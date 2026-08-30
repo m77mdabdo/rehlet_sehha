@@ -14,6 +14,7 @@ use App\Http\Controllers\PackagesController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\ServicesController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SpecialtyController;
 use App\Support\Locales;
 use Illuminate\Support\Facades\Route;
@@ -35,8 +36,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/'.Locales::DEFAULT);
 
+/*
+ * CONSTRAIN THE LOCALE SEGMENT. Without this, {locale} matches any single
+ * path segment, so every unmatched top-level URL — /sitemap.xml, /robots,
+ * /anything — is routed into the homepage controller and 404s from inside
+ * SetLocale rather than from the router. It also means no route defined after
+ * this group can ever have a single-segment path, which is how the sitemap
+ * came to 404 while appearing correctly in route:list.
+ */
 Route::prefix('{locale}')
     ->middleware('locale')
+    ->where(['locale' => implode('|', Locales::all())])
     ->group(function (): void {
         Route::get('/', [HomeController::class, '__invoke'])->name('home');
 
@@ -115,6 +125,16 @@ Route::prefix('{locale}')
          * Articles. Only the single-post page exists; an index belongs to
          * whichever task owns the blog. The homepage links three cards here.
          */
+        /*
+         * Category and tag indexes come BEFORE articles/{slug}, or the router
+         * reads "category" as an article slug and every category page 404s.
+         */
+        Route::get('articles/category/{slug}', [ArticlesController::class, 'category'])
+            ->name('articles.category');
+
+        Route::get('articles/tag/{slug}', [ArticlesController::class, 'tag'])
+            ->name('articles.tag');
+
         Route::get('articles/{slug}', [PostController::class, 'show'])
             ->name('posts.show');
 
@@ -151,3 +171,12 @@ Route::prefix('{locale}')
             ->middleware('cache.headers:public;max_age=86400;etag')
             ->name('manifest');
     });
+
+/*
+ * The sitemap. Outside the locale group on purpose: there is one sitemap for
+ * the whole site and it lists both languages internally, so /ar/sitemap.xml
+ * and /en/sitemap.xml would be the same file at two addresses.
+ */
+Route::get('sitemap.xml', SitemapController::class)
+    ->middleware('cache.headers:public;max_age=3600;etag')
+    ->name('sitemap');

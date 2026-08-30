@@ -35,4 +35,20 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Pexels
+    |--------------------------------------------------------------------------
+    |
+    | Read by clinic:fetch-pexels, which stages candidate photographs for a
+    | human to inspect. Build-time only: nothing in a request touches it.
+    |
+    | Through config rather than env() at the call site, because env() returns
+    | null once config is cached — and config IS cached in production, which is
+    | exactly where a silent null is hardest to notice.
+    */
+    'pexels' => [
+        'key' => env('PEXELS_API_KEY'),
+    ],
+
 ];

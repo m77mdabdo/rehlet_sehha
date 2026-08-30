@@ -65,4 +65,12 @@ return [
         'title' => 'A question about your own situation?',
         'lead' => 'Articles speak generally. Your situation needs a session.',
     ],
+
+    'tag_lead' => 'Every article tagged :tag.',
+    'filter_all' => 'All articles',
+    'filter_heading' => 'Categories',
+    'in_category' => 'In :category',
+    'tags_heading' => 'Topics in this article',
+    'updated_on' => 'Updated :date',
+
 ];
