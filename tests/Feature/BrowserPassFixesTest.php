@@ -235,3 +235,73 @@ it('marks the direction of a phone number in the admin tables', function () {
         'The patients table no longer marks the phone column LTR.'
     );
 });
+
+/*
+|------------------------------------------------------------------------------
+| The copy button says something when the clipboard refuses
+|------------------------------------------------------------------------------
+*/
+
+it('offers a visible manual fallback when both clipboard paths fail', function () {
+    /*
+     * On the no-email confirmation screen this button is the ONLY copy of a
+     * patient's booking reference: no email, no reminder, no link. When both
+     * clipboard paths failed she previously got nothing at all — no error, no
+     * change, a button that did not work and did not say so.
+     *
+     * Both fail together more often than they look like they would. The async
+     * API needs a secure context, a granted permission AND a focused document;
+     * execCommand is deprecated and already restricted in some browsers. A
+     * locked-down browser or a lapsed certificate knocks out both at once.
+     *
+     * Verified in a real browser, where headless Chrome denies clipboard
+     * permission by default: the reference was selected (window.getSelection()
+     * returned it), the ring appeared, and the button read «انسخيه بنفسك».
+     */
+    $script = file_get_contents(resource_path('js/copy.js'));
+
+    expect(str_contains($script, 'offerManualCopy'))->toBeTrue(
+        'copy.js no longer offers a manual fallback; a failed copy is silent again.'
+    );
+
+    // The old silent return: a bare `if (!copied) { return; }`.
+    expect(preg_match('/if\s*\(!copied\)\s*\{\s*return;\s*\}/', $script))->toBe(
+        0,
+        'copy.js returns silently when the clipboard refuses.'
+    );
+
+    expect(str_contains($script, 'selectNodeContents'))->toBeTrue(
+        'The fallback no longer selects the text for her.'
+    );
+});
+
+it('gives the confirmation screen the markup that fallback needs', function (string $locale) {
+    /*
+     * The JS finds the visible element holding the value by searching within
+     * a [data-copy-scope]. Without the scope it searches the button's
+     * immediate parent and finds nothing, and without the labels it has
+     * nothing to say.
+     */
+    $blade = file_get_contents(resource_path('views/livewire/booking/step-confirmation.blade.php'));
+
+    expect(substr_count($blade, 'data-copy-scope'))->toBeGreaterThanOrEqual(
+        2,
+        'The reference and the manage link each need their own copy scope; '
+        .'they sit in sibling containers, so one scope cannot reach both.'
+    );
+
+    foreach (['data-manual-label', 'data-manual-hint'] as $attribute) {
+        expect(substr_count($blade, $attribute))->toBeGreaterThanOrEqual(
+            2,
+            "Not every copy button carries {$attribute}."
+        );
+    }
+
+    // And the strings resolve in both locales.
+    foreach (['copy_manual', 'copy_manual_hint'] as $key) {
+        $value = __('booking.keepsake.'.$key, [], $locale);
+
+        expect($value)->not->toBe('booking.keepsake.'.$key, "Missing translation: {$key} ({$locale}).");
+        expect(trim((string) $value))->not->toBe('');
+    }
+})->with(['ar', 'en']);

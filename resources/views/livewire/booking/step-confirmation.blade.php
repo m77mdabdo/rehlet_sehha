@@ -167,7 +167,7 @@
                      fails. --}}
                 <div class="mt-5 rounded-lg bg-white p-4 ring-1 ring-line">
                     <p class="text-xs text-muted">{{ __('booking.keepsake.reference_label') }}</p>
-                    <div class="mt-1 flex flex-wrap items-center justify-between gap-3">
+                    <div class="mt-1 flex flex-wrap items-center justify-between gap-3" data-copy-scope>
                         <bdi dir="ltr" class="select-all font-display text-2xl font-semibold tracking-wide text-ink">{{ $appointment->reference }}</bdi>
 
                         <button
@@ -176,6 +176,12 @@
                             data-copy="{{ $appointment->reference }}"
                             data-idle-label="{{ __('booking.keepsake.copy') }}"
                             data-copied-label="{{ __('booking.keepsake.copied') }}"
+                            {{-- Shown when BOTH clipboard paths fail. Without
+                                 these the button changed nothing and said
+                                 nothing, on the one screen where this is the
+                                 patient's only record of her booking. --}}
+                            data-manual-label="{{ __('booking.keepsake.copy_manual') }}"
+                            data-manual-hint="{{ __('booking.keepsake.copy_manual_hint') }}"
                             aria-label="{{ __('booking.keepsake.copy_reference') }}"
                         >
                             <span data-copy-label>{{ __('booking.keepsake.copy') }}</span>
@@ -185,7 +191,7 @@
 
                 {{-- The manage link. The only route back into this booking
                      that does not involve telephoning the clinic. --}}
-                <div class="mt-4 rounded-lg bg-white p-4 ring-1 ring-line">
+                <div class="mt-4 rounded-lg bg-white p-4 ring-1 ring-line" data-copy-scope>
                     <p class="text-xs text-muted">{{ __('booking.keepsake.link_label') }}</p>
 
                     <p class="mt-1 break-all text-xs leading-relaxed text-ink">
@@ -199,6 +205,12 @@
                             data-copy="{{ $manageUrl }}"
                             data-idle-label="{{ __('booking.keepsake.copy') }}"
                             data-copied-label="{{ __('booking.keepsake.copied') }}"
+                            {{-- Shown when BOTH clipboard paths fail. Without
+                                 these the button changed nothing and said
+                                 nothing, on the one screen where this is the
+                                 patient's only record of her booking. --}}
+                            data-manual-label="{{ __('booking.keepsake.copy_manual') }}"
+                            data-manual-hint="{{ __('booking.keepsake.copy_manual_hint') }}"
                             aria-label="{{ __('booking.keepsake.copy_link') }}"
                         >
                             <span data-copy-label>{{ __('booking.keepsake.copy') }}</span>
