@@ -165,10 +165,14 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     {{--
-        JSON-LD. Built from config and the working_hours rows rather than
-        written by hand, so the clinic's opening hours cannot be right on the
-        page and wrong in the structured data — nobody ever reads this block,
-        which is exactly why a hand-maintained copy rots.
+        JSON-LD. Built from config and the working_hours rows, as is the hours
+        line in the footer — see App\Support\OpeningHours.
+
+        This comment used to claim the hours "cannot be right on the page and
+        wrong in the structured data". That was false: only this block was
+        derived, and the footer beside it was a hand-typed sentence which went
+        stale the first time the schedule was edited. Both now read the same
+        rows, which is what the claim always assumed.
     --}}
     @isset($schema)
         <script type="application/ld+json">{!! $schema !!}</script>
@@ -291,9 +295,12 @@
                     {{-- Phone, WhatsApp, email and address, all from config. --}}
                     <x-contact-details class="mt-4" />
 
+                    {{-- Derived from working_hours, not typed. See
+                         App\Support\OpeningHours for why. --}}
                     <ul class="mt-4 space-y-3 text-sm opacity-90">
-                        <li>{{ __('footer.hours') }}</li>
-                        <li>{{ __('footer.friday_closed') }}</li>
+                        @foreach (App\Support\OpeningHours::summary() as $line)
+                            <li>{{ $line }}</li>
+                        @endforeach
                     </ul>
                 </div>
             </div>

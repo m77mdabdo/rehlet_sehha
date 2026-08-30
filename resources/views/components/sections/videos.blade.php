@@ -81,7 +81,14 @@
                 <dialog
                     data-video-dialog
                     aria-labelledby="video-dialog-title"
-                    class="w-full max-w-3xl rounded-lg bg-ink p-0 text-white backdrop:bg-ink/70 sm:rounded-xl"
+                    {{-- m-auto restores the centring Tailwind's preflight
+                         takes away. A <dialog>[open] centres itself through the
+                         UA rule `position: fixed; inset: 0; margin: auto`, and
+                         preflight's blanket `margin: 0` kills the third part —
+                         so the panel pinned itself to the inline-start edge and
+                         the top, which in RTL put it in the top-right corner
+                         over the header. --}}
+                    class="m-auto w-full max-w-3xl rounded-lg bg-ink p-0 text-white backdrop:bg-ink/70 sm:rounded-xl"
                 >
                     <div class="flex items-center justify-between gap-4 p-4">
                         <h3 id="video-dialog-title" data-video-dialog-title class="font-display text-base font-semibold"></h3>

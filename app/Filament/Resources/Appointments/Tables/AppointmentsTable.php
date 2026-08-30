@@ -51,7 +51,21 @@ class AppointmentsTable
                 TextColumn::make('patient.name')
                     ->label('المريضة')
                     ->searchable()
-                    ->description(fn (Appointment $record): string => $record->patient->phone),
+                    /*
+                     * LRM (U+200E) before the number.
+                     *
+                     * The phone is stored as +201004818303, and a string
+                     * starting with "+" inside an RTL paragraph has its sign
+                     * reordered to the far end by the bidi algorithm — the
+                     * table showed "201004818303+". There is no element here
+                     * to put dir="ltr" on: this is a description, rendered as
+                     * plain text inside the patient's cell, and marking the
+                     * whole cell LTR would wreck the Arabic name above it.
+                     *
+                     * A left-to-right mark is the text-level equivalent: it
+                     * gives the run an LTR base direction and nothing else.
+                     */
+                    ->description(fn (Appointment $record): string => "\u{200E}".$record->patient->phone),
 
                 /*
                  * The unreachable badge, same fact the daily schedule email

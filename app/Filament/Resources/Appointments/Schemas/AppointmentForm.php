@@ -59,13 +59,31 @@ class AppointmentForm
                         ->live()
                         ->native(false),
 
+                    /*
+                     * EVERY mode, not just the bookable ones.
+                     *
+                     * This used to offer bookableValues() — the modes a patient
+                     * may choose TODAY, which is ['online'] since the practice
+                     * went online-only. That made every appointment booked
+                     * under the old clinic mode unsaveable: opening one showed
+                     * the raw string "clinic" and refused to save with "The
+                     * selected نوع الاستشارة is invalid", on a field nobody had
+                     * touched. Half the appointments in the table were affected.
+                     *
+                     * AppointmentMode::options() exists for exactly this and
+                     * says so in its own docblock — "includes modes that are no
+                     * longer bookable, because an appointment booked last year
+                     * still has to display". The form simply reached for the
+                     * wrong helper.
+                     *
+                     * The booking wizard still offers bookableOptions(), which
+                     * is where the restriction belongs: a patient cannot choose
+                     * a retired mode, and the clinic can still edit a record
+                     * that used one.
+                     */
                     Select::make('mode')
                         ->label('نوع الاستشارة')
-                        ->options(fn (): array => collect(AppointmentMode::bookableValues())
-                            ->mapWithKeys(fn (string $value): array => [
-                                $value => AppointmentMode::from($value)->label(),
-                            ])
-                            ->all())
+                        ->options(AppointmentMode::options())
                         ->default(AppointmentMode::Online->value)
                         ->required()
                         ->native(false),
