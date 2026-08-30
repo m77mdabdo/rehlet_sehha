@@ -18,17 +18,17 @@
     <x-slot:cta-lead>{{ __('articles.cta.lead') }}</x-slot:cta-lead>
 
     {{--
-        THREE ARTICLES, SO THIS IS A LIST.
+        THE CONTROLS APPEAR WHEN THERE IS SOMETHING TO CONTROL.
 
-        No category filter and no pagination. Filters over three items are
-        scaffolding for content that does not exist, and a dropdown with one
-        item behind it announces the emptiness far more loudly than three
-        honest entries do. This page grows controls when there is something to
-        control.
+        Below ArticlesController::CONTROLS_APPEAR_AT the page is a plain list:
+        a category filter over four articles is scaffolding for content that
+        does not exist, and a dropdown with two entries announces the emptiness
+        far more loudly than the list does.
 
-        The first article is given the larger treatment and its image loads
-        eagerly — it is the only above-fold image on this page, and the only
-        exception the lazy-loading rule allows.
+        At and above it, the filter bar and pagination appear together. The
+        category and tag PAGES exist either way — those are landing pages for
+        somebody arriving from a search, and they are useful from the first
+        article.
     --}}
     <section class="py-16 sm:py-24" aria-labelledby="list-heading">
         <x-container>
@@ -37,80 +37,31 @@
             @if ($posts->isEmpty())
                 <p class="text-muted">{{ __('articles.empty') }}</p>
             @else
-                <ul class="space-y-14 sm:space-y-20">
-                    @foreach ($posts as $index => $post)
-                        @php
-                            $lead = $index === 0;
-                            $hasCover = $post->cover_path && Photo::has($post->cover_path);
-                        @endphp
+                @if ($paginated && $categories->isNotEmpty())
+                    <nav class="mb-12 flex flex-wrap gap-2" aria-label="{{ __('articles.filter_heading') }}">
+                        <span class="rounded-pill bg-ink px-4 py-2 text-sm font-medium text-white">
+                            {{ __('articles.filter_all') }}
+                        </span>
 
-                        <li class="reveal">
-                            <article class="grid items-start gap-6 sm:gap-10 lg:grid-cols-12">
-                                @if ($hasCover)
-                                    <div @class([
-                                        'lg:col-span-7' => $lead,
-                                        'lg:col-span-4' => ! $lead,
-                                    ])>
-                                        <a href="{{ route('posts.show', ['slug' => $post->slug]) }}" class="block overflow-hidden rounded-2xl">
-                                            <x-photo
-                                                :slug="$post->cover_path"
-                                                :alt="__('articles.cover_alt.'.$post->slug)"
-                                                :eager="$lead"
-                                                :sizes="$lead ? '(min-width: 1024px) 55vw, 100vw' : '(min-width: 1024px) 30vw, 100vw'"
-                                                class="ring-1 ring-line transition-shadow hover:shadow-lg"
-                                            />
-                                        </a>
-                                    </div>
-                                @endif
+                        @foreach ($categories as $category)
+                            @continue($category->posts_count === 0)
 
-                                <div @class([
-                                    'lg:col-span-5' => $lead && $hasCover,
-                                    'lg:col-span-8' => ! $lead && $hasCover,
-                                    'lg:col-span-12' => ! $hasCover,
-                                    'lg:mt-6' => $lead,
-                                ])>
-                                    <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
-                                        @if ($post->category)
-                                            <span class="rounded-pill bg-sage px-2.5 py-1 font-medium text-accent-dark">{{ $post->category }}</span>
-                                        @endif
+                            <a
+                                href="{{ route('articles.category', ['slug' => $category->slug]) }}"
+                                class="rounded-pill px-4 py-2 text-sm font-medium text-ink ring-1 ring-line transition hover:bg-sage/60"
+                            >
+                                {{ $category->name }}
+                                <span class="text-muted">({{ $category->posts_count }})</span>
+                            </a>
+                        @endforeach
+                    </nav>
+                @endif
 
-                                        {{-- dir=auto, NOT ltr. A translated date carries an
-                                             Arabic month name, and forcing LTR reclassifies the
-                                             digits beside it (UAX #9 W2) and tears the day away
-                                             from the month. auto follows the content. --}}
-                                        <span><bdi dir="auto">{{ $post->published_at?->translatedFormat('j F Y') }}</bdi></span>
+                <x-article-grid :posts="$posts" />
 
-                                        @if ($post->reading_minutes)
-                                            <span>{{ __('articles.reading_time', ['minutes' => $post->reading_minutes]) }}</span>
-                                        @endif
-                                    </p>
-
-                                    <h3 @class([
-                                        'mt-3 font-display font-semibold text-balance text-ink',
-                                        'text-2xl sm:text-3xl' => $lead,
-                                        'text-xl sm:text-2xl' => ! $lead,
-                                    ])>
-                                        <a href="{{ route('posts.show', ['slug' => $post->slug]) }}" class="hover:text-accent-dark">
-                                            {{ $post->title }}
-                                        </a>
-                                    </h3>
-
-                                    <p class="mt-3 leading-relaxed text-pretty text-muted">{{ $post->excerpt }}</p>
-
-                                    <a
-                                        href="{{ route('posts.show', ['slug' => $post->slug]) }}"
-                                        class="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-accent-dark underline-offset-4 hover:underline"
-                                    >
-                                        {{ __('common.read_more') }}
-                                        <svg class="size-4 rtl:-scale-x-100" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                            <path d="M7 4l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                    </a>
-                                </div>
-                            </article>
-                        </li>
-                    @endforeach
-                </ul>
+                @if ($posts->hasPages())
+                    <div class="mt-14">{{ $posts->links() }}</div>
+                @endif
             @endif
         </x-container>
     </section>

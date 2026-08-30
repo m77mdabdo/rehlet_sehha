@@ -17,31 +17,29 @@ class PostController extends Controller
      * with a future published_at must 404 like any unpublished draft, or the
      * embargo is only as good as nobody guessing the URL.
      *
-     * RELATED POSTS ARE FILTERED IN PHP, NOT IN SQL. category is a translated
-     * JSON column, so `where('category', ...)` would compare against the whole
-     * JSON blob and match nothing. The set is three rows and already cached
-     * for every other page, so filtering it in memory costs nothing and one
-     * query less than doing it properly in SQL would.
+     * RELATED POSTS ARE A REAL QUERY NOW. They used to be filtered in PHP
+     * over the cached "latest posts" list, because `category` was a translated
+     * JSON column that SQL could not match on. Two things were wrong with it:
+     * the list was capped, so an older article in the same category could
+     * never surface, and comparing JSON blobs matched only when two posts had
+     * identical text in BOTH languages. Post::relatedPosts() replaces it.
      */
     public function show(string $slug): View
     {
         /*
-         * The reviewer is eager-loaded because the byline names them on every
-         * article page. Left lazy it is one extra query per article view, for
-         * a relation the template is guaranteed to touch.
+         * Reviewer, category and tags eager-loaded: the byline names the
+         * reviewer, the header shows the category, the footer lists the tags.
+         * All three are certain to be touched.
          */
-        $post = Post::published()->with('reviewer')->where('slug', $slug)->firstOrFail();
-
-        $published = PublicContent::latestPosts(50);
+        $post = Post::published()
+            ->with(['reviewer', 'category', 'tags'])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         return view('pages.post', [
             'post' => $post,
             'footerServices' => PublicContent::services(),
-            'related' => $published
-                ->reject(fn (Post $other): bool => $other->id === $post->id)
-                ->filter(fn (Post $other): bool => $other->category === $post->category)
-                ->take(2)
-                ->values(),
+            'related' => $post->relatedPosts(2),
         ]);
     }
 }

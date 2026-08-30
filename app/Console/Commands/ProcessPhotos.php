@@ -322,11 +322,27 @@ class ProcessPhotos extends Command
                 ];
             }
 
-            $manifest[$slug] = [
+            $manifest[$slug] = array_filter([
                 'topic' => $entry['topic'],
                 'describes' => $entry['describes'],
+
+                /*
+                 * ATTRIBUTION TRAVELS WITH THE IMAGE.
+                 *
+                 * Pexels does not require credit. We record it anyway —
+                 * photographer, source URL, and the date it was downloaded —
+                 * because a licence you cannot evidence is a licence you do
+                 * not have. If anybody ever asks where a photograph on a
+                 * medical site came from, the answer should be a row in a
+                 * file rather than somebody's memory.
+                 *
+                 * Carried into the generated manifest rather than left in
+                 * config alone, so it ships with the thing it describes.
+                 */
+                'attribution' => $entry['attribution'] ?? null,
+
                 'variants' => $variants,
-            ];
+            ], static fn (mixed $value): bool => $value !== null);
         }
 
         /*
@@ -334,10 +350,29 @@ class ProcessPhotos extends Command
          * the same Pint preset as everything else. A generated file that fails
          * the linter trains people to ignore the linter.
          */
+        /*
+         * var_export indents nested arrays two spaces per level; Pint's
+         * array_indentation fixer wants four. The manifest gained a level of
+         * nesting when attribution arrived, which is when the mismatch started
+         * failing the linter — a generated file that fails the linter trains
+         * people to ignore the linter.
+         */
         $export = preg_replace(
             ['/array \(/', '/^(\s*)\)/m', '/=>\s*\n\s*\[/'],
             ['[', '$1]', '=> ['],
             var_export($manifest, true),
+        );
+
+        /*
+         * var_export indents two spaces per level; Pint's array_indentation
+         * fixer wants four. That went unnoticed while the manifest was two
+         * levels deep and started failing the moment attribution added a
+         * third. Doubling the leading run is the whole conversion.
+         */
+        $export = (string) preg_replace_callback(
+            '/^( +)/m',
+            static fn (array $m): string => str_repeat(' ', strlen($m[1]) * 2),
+            (string) $export,
         );
 
         File::put(resource_path('photos-manifest.php'), <<<PHP

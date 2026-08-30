@@ -6,6 +6,7 @@ namespace App\Filament\Resources\Posts\Pages;
 
 use App\Filament\Concerns\EditsTranslations;
 use App\Filament\Resources\Posts\PostResource;
+use App\Models\Post;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
@@ -26,6 +27,30 @@ class EditPost extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            /*
+             * Preview opens the live article page in a new tab. Only offered
+             * once it is published, because an unpublished slug 404s — the
+             * clinical review gate applies to preview exactly as it does to
+             * everything else, and a "preview" that bypassed it would be a
+             * way to read unreviewed clinical content on the public site.
+             */
+            Action::make('preview')
+                ->label('معاينة')
+                ->icon('heroicon-o-arrow-top-right-on-square')
+                ->url(function (): string {
+                    $post = $this->getRecord();
+
+                    return $post instanceof Post
+                        ? route('posts.show', ['locale' => 'ar', 'slug' => $post->slug])
+                        : route('articles', ['locale' => 'ar']);
+                })
+                ->openUrlInNewTab()
+                ->visible(function (): bool {
+                    $post = $this->getRecord();
+
+                    return $post instanceof Post && $post->published_at !== null;
+                }),
+
             DeleteAction::make(),
         ];
     }

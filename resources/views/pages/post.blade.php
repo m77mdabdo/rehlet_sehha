@@ -81,6 +81,13 @@
             <span aria-hidden="true" class="text-line">·</span>
             <span><bdi dir="auto">{{ $post->published_at?->translatedFormat('j F Y') }}</bdi></span>
 
+            @if ($post->content_updated_at && $post->content_updated_at->gt($post->published_at))
+                {{-- Shown only when the CONTENT changed, not when the row was
+                     touched. updated_at moves for a typo fix; this does not. --}}
+                <span aria-hidden="true" class="text-line">·</span>
+                <span><bdi dir="auto">{{ __('articles.updated_on', ['date' => $post->content_updated_at->translatedFormat('j F Y')]) }}</bdi></span>
+            @endif
+
             @if ($post->reading_minutes)
                 <span aria-hidden="true" class="text-line">·</span>
                 <span>{{ __('articles.reading_time', ['minutes' => $post->reading_minutes]) }}</span>
@@ -127,13 +134,61 @@
                 plugin; the spacing is set here on the container so an article
                 reads like prose without every paragraph carrying classes.
             --}}
+            {{--
+                The body.
+
+                TWO CONVENTIONS, NOT HTML. The column is rendered as text so an
+                editor pasting from a word processor cannot inject markup into
+                a medical page. Structure is carried by two prefixes instead:
+
+                  ## A heading      → <h2>
+                  CLINICAL_INPUT: … → an unanswered prompt
+
+                The second can never reach a reader — Post::booted() refuses to
+                publish an article that still contains one — so it is rendered
+                loudly rather than prettily. If it ever appears on a live page,
+                something has gone very wrong and it should look like it.
+
+                prose-* is not used because this project has no typography
+                plugin; the spacing is set on the container so an article reads
+                like prose without every paragraph carrying classes.
+            --}}
             <div class="space-y-5 text-lg leading-relaxed text-pretty text-muted">
-                @foreach (preg_split('/\R{2,}/u', (string) $post->body) as $paragraph)
-                    @if (trim($paragraph) !== '')
-                        <p>{{ trim($paragraph) }}</p>
+                @foreach (preg_split('/\R{2,}/u', (string) $post->body) as $block)
+                    @php($block = trim($block))
+                    @continue($block === '')
+
+                    @if (str_starts_with($block, '## '))
+                        <h2 class="pt-6 font-display text-2xl font-semibold text-balance text-ink sm:text-3xl">
+                            {{ trim(substr($block, 3)) }}
+                        </h2>
+                    @elseif (str_starts_with($block, App\Models\Post::CLINICAL_MARKER))
+                        <p class="rounded-lg border-2 border-dashed border-gold bg-gold/10 p-4 text-base text-ink">
+                            <strong>{{ App\Models\Post::CLINICAL_MARKER }}</strong>
+                            {{ trim(substr($block, strlen(App\Models\Post::CLINICAL_MARKER) + 1)) }}
+                        </p>
+                    @else
+                        <p>{{ $block }}</p>
                     @endif
                 @endforeach
             </div>
+
+            @if ($post->tags->isNotEmpty())
+                <div class="mt-12 border-t border-line pt-6">
+                    <h2 class="text-sm font-semibold text-ink">{{ __('articles.tags_heading') }}</h2>
+
+                    <ul class="mt-3 flex flex-wrap gap-2">
+                        @foreach ($post->tags as $tag)
+                            <li>
+                                <a
+                                    href="{{ route('articles.tag', ['slug' => $tag->slug]) }}"
+                                    class="inline-block rounded-pill px-3 py-1.5 text-sm text-ink ring-1 ring-line transition hover:bg-sage/60"
+                                >{{ $tag->name }}</a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             {{--
                 Sharing, with no third party involved.

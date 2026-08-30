@@ -80,9 +80,22 @@ final class PageSchema
             'description' => (string) $post->excerpt,
             'inLanguage' => Locales::current(),
             'datePublished' => $post->published_at?->toIso8601String(),
-            'dateModified' => $post->updated_at?->toIso8601String(),
             'author' => $reviewer === null ? null : ['@type' => 'Person', 'name' => $reviewer],
             'reviewedBy' => $reviewer === null ? null : ['@type' => 'Person', 'name' => $reviewer],
+
+            /*
+             * dateModified is the CONTENT date, not updated_at. A row touched
+             * to fix a typo is not a revised article, and telling a search
+             * engine otherwise on a medical page is a small lie about how
+             * current the advice is.
+             */
+            'dateModified' => ($post->content_updated_at ?? $post->published_at)?->toIso8601String(),
+
+            'articleSection' => $post->category?->name,
+            'keywords' => $post->tags->isEmpty()
+                ? null
+                : $post->tags->map(fn ($tag): string => (string) $tag->name)->implode(', '),
+
             'publisher' => ['@id' => ClinicSchema::id()],
         ], static fn (mixed $value): bool => $value !== null && $value !== '');
     }

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Category;
 use App\Models\Faq;
 use App\Models\Post;
 use App\Models\Specialty;
@@ -44,7 +45,13 @@ beforeEach(function () {
     Post::factory()->create([
         'slug' => 'a-published-article',
         'title' => ['ar' => 'مقال منشور للاختبار', 'en' => 'A published article'],
-        'category' => ['ar' => 'تغذية', 'en' => 'Nutrition'],
+        // A real category row now, not a free-text column. The factory makes
+        // one if none is given, but naming it keeps the article on a category
+        // page this file can also reach.
+        'category_id' => Category::factory()->create([
+            'slug' => 'test-category',
+            'name' => ['ar' => 'تغذية', 'en' => 'Nutrition'],
+        ])->id,
     ]);
 });
 
@@ -77,9 +84,14 @@ function catalogueFor(string $page, string $locale): array
         );
 
         foreach (Post::published()->get() as $post) {
-            foreach (['title', 'excerpt', 'category'] as $field) {
+            foreach (['title', 'excerpt'] as $field) {
                 $entries[] = (string) $post->getTranslation($field, $locale, false);
             }
+
+            // The category name comes off the relation now, not off a
+            // translated column on the post. It is still a shared record: the
+            // homepage strip and the index both name it, correctly.
+            $entries[] = (string) ($post->category?->getTranslation('name', $locale, false) ?? '');
         }
     }
 
@@ -543,26 +555,40 @@ it('issues a bounded number of queries on every page', function () {
         // services + working_hours
         '/ar/how-it-works' => 2,
         '/ar/about' => 2,
-        // posts + services + working_hours
-        '/ar/articles' => 3,
+        /*
+         * The paginator's count, the page of posts, the eager-loaded
+         * categories and tags, then services and working_hours.
+         *
+         * Raised from 3 when the articles index became a real publication.
+         * The old three were a CACHED list of every post plus the two shared
+         * sets — which worked only because the list was small enough to hold
+         * whole and unfiltered. A paginated, categorised index cannot be
+         * served from one cached array, and the two eager loads are what stop
+         * it becoming N+1 across a page of nine articles.
+         */
+        '/ar/articles' => 6,
         // faqs + services + working_hours
         '/ar/faq' => 3,
         // working_hours + services
         '/ar/contact' => 2,
         /*
-         * The post, its REVIEWER, the cached set for related, services and
-         * working_hours.
+         * The post, its reviewer, its category, its tags, services, the
+         * related-articles query, and working_hours.
          *
-         * Raised from 4 to 5 when the clinical-review byline landed. The extra
-         * query is the reviewer lookup, and it is eager-loaded rather than
-         * lazy so it stays one query rather than one per article.
+         * 4 -> 5 when the clinical-review byline landed; 5 -> 7 when the blog
+         * became a publication.
          *
-         * It is not avoidable by storing the reviewer's name on the post: a
-         * denormalised name is how a byline ends up naming somebody by a title
-         * they no longer hold, on an article about a condition, under a
-         * licence. One join is the cheaper mistake.
+         * Two of the new ones are the category and tag eager loads, which are
+         * what stop the header and the tag list going N+1. The third is
+         * related articles, which used to be a filter over the cached "latest
+         * posts" list — that matched only when two posts had byte-identical
+         * category JSON in BOTH languages, and could never reach an article
+         * older than the cache window.
+         *
+         * None is avoidable by denormalising onto the post. A stored category
+         * name is how an index ends up disagreeing with the article on it.
          */
-        '/ar/articles/'.liveArticle()->slug => 5,
+        '/ar/articles/'.liveArticle()->slug => 7,
     ];
 
     foreach ($bounds as $path => $expected) {

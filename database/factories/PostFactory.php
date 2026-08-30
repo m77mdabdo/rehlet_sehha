@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -39,11 +40,10 @@ class PostFactory extends Factory
                 'en' => 'A habit that lasts does not start with a big decision. It starts with a small step repeated daily until it becomes routine.',
             ],
             'cover_path' => null,
-            'category' => fake()->randomElement([
-                ['ar' => 'تغذية', 'en' => 'Nutrition'],
-                ['ar' => 'صحة عامة', 'en' => 'General health'],
-                ['ar' => 'وصفات', 'en' => 'Recipes'],
-            ]),
+
+            // A category, because an article without one cannot appear on any
+            // index and the relationship is what the whole taxonomy rests on.
+            'category_id' => Category::factory(),
             'reading_minutes' => fake()->numberBetween(2, 12),
             'published_at' => Carbon::now()->subDays(fake()->numberBetween(1, 120)),
 
