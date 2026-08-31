@@ -142,6 +142,8 @@ class QuestionsToAskAboutHormonesAndFood extends ArticleDefinition
 
 الخرافة بتنتشر لأن العلاقة بين المريض والطبيب في ثقافتنا فيها تبجيل، والتبجيل حلو بس مش المفروض يمنع السؤال.
 
+والخرافة التانية اللي جنبها: «الدكتور مش هيبقى معاه وقت». ده أحيانًا صح، وعشان كده الأسئلة تتكتب وتترتب بالأهم. تلات أسئلة مكتوبة بتاخد وقت أقل من عشر أسئلة بتيجي متقطعة، وبتطلع بمعلومات أكتر.
+
 ## في السياق المصري
 
 الكشف عندنا غالبًا قصير، والعيادة مزحومة، والوقت مضغوط. ده واقع مش هيتغير بالتمني، والتعامل معاه هو إن الأسئلة تيجي مكتوبة ومرتبة بالأهم.
@@ -155,6 +157,8 @@ CLINICAL_INPUT: إيه السؤال اللي نفسك المريضة تسأله 
 CLINICAL_INPUT: لما يكون الهدف الخصوبة، إيه اللي بيتغير في أولويات الخطة عندك؟
 
 PRACTITIONER_VOICE: إيه أكتر جملة بتسمعيها من مريضة تكيس مبايض في أول كشف؟
+
+وأخيرًا: اطلبي الخلاصة مكتوبة. سطرين على ورقة الروشتة — التشخيص، والهدف، والخطوة الجاية — بيوفروا نقاش شهر بعدين، وبيبقوا مرجع لأي حد تاني بيشوف الحالة.
 
 ## اللي يستاهل تفتكريه
 
@@ -270,6 +274,8 @@ Second: a plan somebody understands gets followed better than a plan somebody ha
 
 The myth spreads because the relationship between patient and doctor in our culture carries deference, and deference is fine but should not prevent a question.
 
+And the myth beside it: "the doctor will not have time". That is sometimes true, which is exactly why the questions should be written down and ordered. Three written questions take less time than ten arriving piecemeal, and come away with more.
+
 ## In the Egyptian context
 
 Consultations here are usually short, clinics are crowded, and time is compressed. That is a reality that will not change by wishing, and the way to deal with it is to arrive with the questions written down and ordered by importance.
@@ -283,6 +289,8 @@ CLINICAL_INPUT: What is the question you most wish a patient would ask in a firs
 CLINICAL_INPUT: When the goal is fertility, what changes in your ordering of priorities?
 
 PRACTITIONER_VOICE: What is the sentence you hear most often from a PCOS patient at a first consultation?
+
+And finally: ask for the summary in writing. Two lines on the prescription pad — the diagnosis, the goal, the next step — save a month of argument later, and become a reference for anybody else who sees the case.
 
 ## Worth remembering
 
