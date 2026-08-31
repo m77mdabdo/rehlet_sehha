@@ -15,4 +15,5 @@ return [
     'learn_more' => 'Learn more',
     'all_rights' => 'All rights reserved',
     'loading' => 'Loading…',
+    'og_image_alt' => 'Rehlet Sehha — obesity and clinical nutrition clinic, Dr Rana Salem.',
 ];

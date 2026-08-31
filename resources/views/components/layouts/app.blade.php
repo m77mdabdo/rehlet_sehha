@@ -15,6 +15,29 @@
      * A test asserts the token never appears in any of them.
      */
     'indexable' => true,
+    /*
+     * The link-preview card, overridable per page.
+     *
+     * Null falls back to the brand card for this locale. An article passes its
+     * own cover, because a share of one article and a share of another should
+     * not look identical in a WhatsApp thread.
+     *
+     * Absolute URLs only — a relative og:image is ignored by every consumer
+     * that matters.
+     */
+    'ogImage' => null,
+    /*
+     * The custom image's real dimensions and a description of it.
+     *
+     * Both null when ogImage is null, and both are then filled in for the
+     * brand card. When a page passes its OWN image it must pass these too:
+     * announcing 1200x630 for an image that is 1549x1033 is worse than
+     * announcing nothing, because consumers lay out the card from the declared
+     * ratio and then have to reflow when the real file arrives.
+     */
+    'ogImageWidth' => null,
+    'ogImageHeight' => null,
+    'ogImageAlt' => null,
 ])
 
 @php
@@ -58,11 +81,35 @@
     <title>{{ $pageTitle }}</title>
     <meta name="description" content="{{ $pageDescription }}">
 
+    @php
+        /*
+         * THE LINK PREVIEW.
+         *
+         * This site's own share button is a wa.me link, and WhatsApp is how
+         * almost everything here will actually be sent to somebody. A page
+         * with no og:image is sent as a grey rectangle with a URL under it,
+         * which for a clinic reads as a link somebody is not sure about.
+         *
+         * There was no image for most of the build, and the note that used to
+         * sit here was right to refuse to emit the tag: a tag pointing at a
+         * missing file is worse than no tag, because WhatsApp and Facebook
+         * cache the FAILURE and the preview stays broken long after the file
+         * appears. The 1200x630 cards now exist, exported from the design in
+         * docs/og-image.html, one per locale.
+         *
+         * OgImageExistsTest asserts both files are on disk at the right
+         * dimensions, which is the control that keeps that note true.
+         */
+        $ogImageUrl = $ogImage ?? asset('brand/og-'.$locale.'.png');
+
+        // The brand card is a known size; a page-supplied one has to say.
+        $ogWidth = $ogImage === null ? 1200 : $ogImageWidth;
+        $ogHeight = $ogImage === null ? 630 : $ogImageHeight;
+        $ogAlt = $ogImage === null ? __('common.og_image_alt') : $ogImageAlt;
+    @endphp
+
     {{--
-        OpenGraph and Twitter. No og:image yet — the 1200x630 file has not been
-        exported (see docs/og-image.html). A tag pointing at a missing image is
-        worse than no tag: WhatsApp and Facebook cache the failure, and the
-        preview stays broken long after the file appears.
+        OpenGraph and Twitter.
 
         og:locale uses the underscore form these consumers expect, which is not
         the same string as the html lang attribute.
@@ -81,7 +128,24 @@
         @endif
     @endforeach
 
-    <meta name="twitter:card" content="summary">
+    {{--
+        1200x630 is the large-card ratio, so the card type says so. «summary»
+        with a 1.91:1 image gets centre-cropped to a square thumbnail and
+        throws away the brand mark and half the words.
+    --}}
+    <meta property="og:image" content="{{ $ogImageUrl }}">
+
+    @if ($ogWidth && $ogHeight)
+        <meta property="og:image:width" content="{{ $ogWidth }}">
+        <meta property="og:image:height" content="{{ $ogHeight }}">
+    @endif
+
+    @if ($ogAlt)
+        <meta property="og:image:alt" content="{{ $ogAlt }}">
+    @endif
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="{{ $ogImageUrl }}">
     <meta name="twitter:title" content="{{ $pageTitle }}">
     <meta name="twitter:description" content="{{ $pageDescription }}">
 

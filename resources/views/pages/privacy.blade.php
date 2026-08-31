@@ -1,5 +1,21 @@
-{{-- Stub. The consent notice links here, so the route must resolve; the copy
-     is the clinic's to write and is not invented here. --}}
+{{--
+    The privacy notice.
+
+    THIS WAS A STUB AND IS NOT ONE ANY MORE. The comment here used to say the
+    copy was the clinic's to write; it has since been written, and it now
+    states what is stored, why, who can see it, the retention windows the
+    scheduler actually enforces, and that there is no third-party analytics on
+    the site.
+
+    NO SCHEMA AND NO BREADCRUMB, deliberately: this page renders through the
+    layout rather than the page shell, because a policy page is not a step in
+    a journey and a MedicalClinic node on it adds nothing a search engine has
+    not already read on the other thirty-four pages.
+
+    WHAT IT STILL IS NOT is legal advice, and nobody here is qualified to say
+    whether it satisfies Egyptian data protection law. That is a question for a
+    lawyer, and it is listed as one in the launch checklist.
+--}}
 <x-layouts.app :title="__('privacy.title').' — '.__('common.brand')" :description="__('privacy.lead')">
     <section class="py-16 sm:py-20">
         <x-container size="narrow">

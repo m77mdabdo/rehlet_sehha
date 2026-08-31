@@ -262,7 +262,10 @@ it('relates articles by category and by shared tags', function () {
 
     expect($related)->toContain($sameCategory->id);
     expect($related)->toContain($sharedTagOnly->id);
-    expect($related)->not->toContain($subject->id, 'An article is related to itself.');
+    // contains() rather than not->toContain($id, $message): Pest reads the
+    // second argument as another needle, so the message becomes part of the
+    // assertion and never reaches anybody.
+    expect($related->contains($subject->id))->toBeFalse('An article is related to itself.');
 });
 
 it('computes reading time when nobody has set one, and leaves it alone when they have', function () {
