@@ -73,6 +73,55 @@ You only need them to add a new image or change a crop.
 the translation files beside the section the image appears in, because a good
 alt depends on what the surrounding text already says.
 
+## Attribution
+
+Pexels does not require attribution. It is recorded anyway, because **a licence
+you cannot evidence is a licence you do not have** — and in three years nobody
+will remember which of these came from where.
+
+`php artisan clinic:fetch-pexels` writes `public/photos/inbox/candidates.json`
+with the photographer, their profile URL, the source page, the Pexels id, the
+download date and the library's own alt text for every candidate it downloads,
+kept or rejected. That file is the record. Keep it with the originals.
+
+| slug | photographer | Pexels id | downloaded |
+| --- | --- | --- | --- |
+| `postpartum-kitchen-simple-meal` | Klaus Nielsen | 6287482 | 2026-08-31 |
+| `diabetes-home-glucose-kitchen` | Towfiqu barbhuiya | 12326657 | 2026-08-31 |
+
+## Rejections, and why
+
+Every candidate downloaded for the two new articles was opened and looked at.
+The rejections are recorded because the reasons are reusable — the next person
+searching a stock library for "glucometer" will meet the same six pictures.
+
+| candidate | rejected because |
+| --- | --- |
+| `glucose-meter-home-table-17071581` | a **glucose value and a date on the screen**, and a legible label on the strip vial. A numeric readout is the one thing this clinic refuses to put in front of a reader anywhere else on the site |
+| `glucose-meter-home-table-33200683` | legible brand name on the meter casing. Naming a device on a clinic page is an endorsement nobody agreed to |
+| `glucose-meter-home-table-6823479`, `-6823491`, `-6823495`, `-6823496` | an identifiable man. Wrong on the face rule, and wrong for an article specifically about women |
+| `glucose-meter-home-table-17043393` | **the best-composed candidate of all of them**, and rejected anyway: the photographer is a glucose-meter manufacturer. No brand was legible, but an article that spends two sections asking who is selling the claim should not be illustrated with a device maker's marketing photograph |
+| `glucometer-lancet-…-6303708` | the words **WORLD DIABETES DAY** on a letter board. Legible English text — the rule that killed `2.mp4` |
+| `glucometer-lancet-…-6940859`, `-6823670` | pink background with awareness ribbons. "Pink it" is not how this practice talks to women, and the second also had a legible vial label |
+| `glucometer-lancet-…-5342563`, `-5342565`, `-5342566` | saturated green and orange product shots from a device retailer's account; one carries a legible brand |
+| `home-kitchen-…-10432406` | an identifiable face |
+| `home-kitchen-…-398259` | smoked salmon. Imported, aspirational, and **cold-smoked fish is on the list the pregnancy article tells readers to be careful with**. An image that contradicts our own text |
+| `home-kitchen-…-3850924` | styled marble-and-candle flatlay. Reads as a food magazine, not as a kitchen somebody stands in at 2am |
+| `home-kitchen-…-37923421` | dark, reads as a restaurant pass |
+| `home-kitchen-…-936659` | chosen first, then dropped: the patterned tablecloths defeated WebP and **all three variants missed their byte budget** at the quality floor |
+| `home-kitchen-…-89238` | usable, but arrived as a **PNG with a `.jpg` extension** — see the note below |
+
+### Two things the fetch command got wrong
+
+Both are small and both are worth fixing before the next fetch.
+
+1. It saves whatever Pexels returns as `original` under a `.jpg` name without
+   checking. One candidate was a 37 MB PNG called `.jpg`, which made
+   `imagecreatefromjpeg()` fail on it. Sniff the type, or use the extension
+   Pexels gives.
+2. It downloads the `original` size unconditionally. That 37 MB was spent to
+   look at one picture and throw it away.
+
 ## Crops are rules, not taste
 
 Four images are cropped. Three of the crops exist to enforce something:

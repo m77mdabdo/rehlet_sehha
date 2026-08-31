@@ -268,6 +268,48 @@ return [
             ],
         ],
     ],
+    'postpartum-kitchen-simple-meal' => [
+        'topic' => 'food',
+        'describes' => 'A hand lifting pasta from a pan on a hob in a home kitchen, with tomatoes, eggs and vegetables on the counter in front.',
+        'variants' => [
+            'sm' => [
+                'width' => 725,
+                'height' => 483,
+                'bytes' => 24758,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 730,
+                'bytes' => 40610,
+            ],
+            'lg' => [
+                'width' => 1549,
+                'height' => 1033,
+                'bytes' => 65752,
+            ],
+        ],
+    ],
+    'diabetes-home-glucose-kitchen' => [
+        'topic' => 'clinical',
+        'describes' => 'A glucometer with a blank screen on a wooden table, a test strip at its edge and a stethoscope out of focus behind it.',
+        'variants' => [
+            'sm' => [
+                'width' => 725,
+                'height' => 483,
+                'bytes' => 20558,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 730,
+                'bytes' => 33006,
+            ],
+            'lg' => [
+                'width' => 1549,
+                'height' => 1033,
+                'bytes' => 50666,
+            ],
+        ],
+    ],
     'food-fruit-bowl' => [
         'topic' => 'food',
         'describes' => 'Two hands holding a bowl of cut strawberries, kiwi, grapes, pineapple and mango.',

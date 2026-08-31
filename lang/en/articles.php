@@ -31,6 +31,8 @@ return [
      * frame, never the headline — a blind reader already has the headline.
      */
     'cover_alt' => [
+        'postpartum-nutrition' => 'A hand lifting pasta from a pan on a hob in a home kitchen, with tomatoes, eggs and vegetables on the counter in front.',
+        'diabetes-in-women' => 'A glucose meter with a blank screen on a wooden table, a hand placing a drop of blood on the test strip, and a stethoscope out of focus behind it.',
         'building-a-habit-that-lasts' => 'An open cookbook on a table surrounded by radishes, tomatoes, avocado, cucumber and oat crackers.',
         'protein-on-an-egyptian-budget' => 'A kitchen counter with leafy greens, peppers, tomatoes, garlic, a plate of meat and a bowl of chickpeas.',
         'reading-your-lab-results' => 'Beetroot, kiwi and a halved pomegranate laid beside a laptop and a stethoscope on a dark surface.',
