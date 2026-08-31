@@ -18,9 +18,10 @@ declare(strict_types=1);
 | of thing that is only ever discovered by the person it misrepresents, or by a
 | patient checking.
 |
-| ONE THING IS STILL TODO_COPY: the philosophy paragraph. It has to be in her
-| voice, and nobody else can write it. clinic:verify-copy blocks production
-| until she does.
+| THE PHILOSOPHY PARAGRAPH IS HERS, and is now written. It was the last
+| TODO_COPY on the site, and it blocked production until she answered — which
+| is the correct order. A paragraph in a practitioner's voice, on the page
+| about her, is not something anybody else may draft. See the note beside it.
 |
 */
 
@@ -34,9 +35,21 @@ return [
     'page_lead' => 'This page is about the person you will sit with. The qualifications and the registration number are written out so you can check them yourself.',
 
     'philosophy_heading' => 'How she works',
-    'philosophy' => 'TODO_COPY — a short paragraph in the practitioner\'s own voice on how she works: '
-        .'why the plan is built from the food already at home, what she measures progress by, '
-        .'and what she does not do. Forty to sixty words, in the same register as the rest of the site.',
+    /*
+     * HER OWN WORDS, in English. DO NOT EDIT THIS.
+     *
+     * See the note beside the Arabic in lang/ar/about.php. Approved as it
+     * stands.
+     */
+    'philosophy' => <<<'COPY'
+        The first thing most patients tell me is that they want to lose weight and feel better. The second thing — a few weeks into whatever plan they tried before — is that they got tired of it.
+
+        That exhaustion isn't weak willpower. It means the plan was built for someone else: not your kitchen, not your working hours, not your budget. A plan you have to fight is a plan you will eventually put down.
+
+        So I don't start with a sheet of paper. I start with you — your health, your day, the food you actually like. The plan is built from your life, not from a textbook, and it adjusts with you every week until it stops being effort and starts being habit.
+
+        My goal isn't a number on a scale. It's that you feel better — your energy, your sleep, and how you feel in your own skin.
+        COPY,
 
     'credentials_heading' => 'Qualifications and registration',
     'degree_label' => 'Qualification',

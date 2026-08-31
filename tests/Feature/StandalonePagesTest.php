@@ -270,9 +270,12 @@ it('does not restate its homepage section', function (string $locale) {
          * SUPPOSED to appear in both places, so counting them measures the
          * schema working rather than anybody duplicating prose.
          *
-         *   PLACEHOLDERS. The about section and the about page are both still
-         *   largely TODO_COPY. Comparing them measured a 63% overlap of
-         *   identical markers — a real number about nothing.
+         *   PLACEHOLDERS. The about section and the about page were both
+         *   largely TODO_COPY when this was written, and comparing them
+         *   measured a 63% overlap of identical markers — a real number about
+         *   nothing. The strip stays now that the copy is finished, because
+         *   the next section built empty will need it and because a strip that
+         *   matches nothing costs nothing.
          *
          *   SHARED FACTS. A homepage strip listing three articles and an index
          *   listing the same three necessarily share those three titles. So do
@@ -290,12 +293,13 @@ it('does not restate its homepage section', function (string $locale) {
             /*
              * CATALOGUE FIRST, PLACEHOLDERS SECOND. The order is not cosmetic.
              *
-             * The placeholder regex clears one SENTENCE around the marker, and
-             * the philosophy placeholder is two sentences. Running it first
-             * chewed the front off a string that the catalogue was about to
+             * The placeholder regex clears one SENTENCE around the marker,
+             * and the philosophy placeholder was two sentences. Running it
+             * first chewed the front off a string the catalogue was about to
              * remove whole, so the exact match failed and the placeholder's
              * own tail — «من ٤٠ لـ ٦٠ كلمة، بنفس نبرة باقي الموقع» — was
              * counted as prose duplicated between the page and the homepage.
+             * That particular placeholder is gone; the ordering rule is not.
              *
              * Two strips that overlap have to run widest-first or they fight.
              */
@@ -637,17 +641,43 @@ it('does not offer a contact form', function (string $locale) {
     }
 })->with(['ar', 'en']);
 
-it('keeps the practitioner page honest about what it does not know', function () {
+it('carries the practitioner\'s own account of how she works', function (string $locale) {
     /*
-     * ABOUT IS STILL WAITING ON REAL COPY and must stay that way. Credentials,
-     * a university and a registration number are claims about a real person's
-     * qualifications — the structure is ours to design, the facts are not ours
-     * to invent. clinic:verify-copy blocks production until the clinic answers.
+     * THIS TEST USED TO ASSERT THE OPPOSITE, and the inversion is the point.
+     *
+     * It read `expect($html)->toContain('TODO_COPY')` — the about page was
+     * still waiting on real copy, and the test held it there so nobody quietly
+     * invented a biography for a licensed professional. Credentials, a
+     * university and a registration number are claims about a real person; the
+     * structure was ours to design and the facts were not ours to write.
+     *
+     * She has now written the philosophy paragraph, so the assertion that
+     * protected the gap becomes the assertion that protects the answer: her
+     * words are on the page, in both languages, and no placeholder is.
      */
-    $html = $this->get('/ar/about')->assertOk()->getContent();
+    $html = $this->get("/{$locale}/about")->assertOk()->getContent();
 
-    expect($html)->toContain('TODO_COPY');
-});
+    expect(str_contains($html, 'TODO_COPY'))->toBeFalse('A placeholder is back on the about page.');
+
+    $philosophy = (string) __('about.philosophy', [], $locale);
+    $paragraphs = preg_split('/\R{2,}/u', trim($philosophy)) ?: [];
+
+    expect(count($paragraphs))->toBeGreaterThan(
+        1,
+        'The philosophy is a single block again. It is four paragraphs and the breaks are hers.'
+    );
+
+    foreach ($paragraphs as $paragraph) {
+        expect($html)->toContain(e(trim($paragraph)));
+    }
+
+    /*
+     * And rendered AS paragraphs. Concatenating them into one <p> would still
+     * pass the assertion above while producing an unbroken slab of Arabic that
+     * loses every beat the writing was built on.
+     */
+    expect(substr_count($html, '</p>'))->toBeGreaterThanOrEqual(count($paragraphs));
+})->with(['ar', 'en']);
 
 it('lists articles without pretending there are more than there are', function () {
     /*
