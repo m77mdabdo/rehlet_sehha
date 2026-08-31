@@ -14,11 +14,16 @@ class AboutController extends Controller
         /*
          * The practitioner page.
          *
-         * ITS COPY IS STILL TODO_COPY AND MUST STAY THAT WAY. Credentials,
-         * training and registration are claims about a licensed professional;
-         * inventing them would be inventing a person's qualifications. The
-         * structure is built so real copy and a real photograph drop straight
-         * in, and clinic:verify-copy blocks production until they do.
+         * ITS COPY IS THE PRACTITIONER'S OWN, and was the last thing on the
+         * site still marked TODO_COPY. Credentials, training and registration
+         * are claims about a licensed professional, and the philosophy
+         * paragraph is her account of how she works — none of it was ours to
+         * invent, so the structure was built empty and clinic:verify-copy
+         * blocked production until she answered.
+         *
+         * A photograph is still outstanding; the section falls back to the
+         * mark rather than to stock, because a stock portrait on this page
+         * would be a claim about who treats you.
          */
         return view('pages.about', [
             'footerServices' => PublicContent::services(),

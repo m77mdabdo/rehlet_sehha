@@ -92,7 +92,12 @@
                         {{ __('about.philosophy_heading') }}
                     </h3>
 
-                    <p class="mt-4 leading-relaxed text-pretty text-muted">{{ __('about.philosophy') }}</p>
+                    <div class="mt-4">
+                        <x-prose-paragraphs
+                            :text="__('about.philosophy')"
+                            class="leading-relaxed text-pretty text-muted"
+                        />
+                    </div>
                 </div>
             </div>
         </x-container>

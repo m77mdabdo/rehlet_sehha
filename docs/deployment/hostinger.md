@@ -20,10 +20,13 @@ not go in `public_html`.** Step 3 explains why.
 - [ ] `./vendor/bin/pint --test` — passes
 - [ ] `php artisan clinic:verify-copy --strict` — **exit code 0**
 
-  Currently this FAILS: `about.philosophy` is still `TODO_COPY` in both
-  locales. Production refuses to boot cleanly with placeholder copy, and it is
-  the practitioner's own paragraph — nobody else can write it. Get it, or
-  accept the page ships without that section.
+  This passes now. It did not for most of the build: `about.philosophy` was
+  the last `TODO_COPY` on the site, it is the practitioner's own account of how
+  she works, and nobody else could write it. It blocked production until she
+  answered, which was the correct order.
+
+  Keep the check in this list. The next section built ahead of its copy will
+  need it, and a gate is only useful while somebody still runs it.
 
 - [ ] `npm run build`
 - [ ] Note the built filenames from `public/build/manifest.json`. You are
