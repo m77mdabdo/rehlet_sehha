@@ -125,6 +125,19 @@ return [
             'crop' => null,
             'describes' => 'Black and white. Two hands using a lancet device at a table, a glucose meter and test strips beside them.',
         ],
+        /*
+         * DO NOT USE THIS ONE. It is kept only because it is already committed.
+         *
+         * It carries a legible brand name on the casing and a date and time on
+         * the screen — a legible label and a numeric readout, which are two of
+         * the things this library's own rules reject. It is also portrait, so
+         * it cannot serve as an article cover.
+         *
+         * It is unused and has always been unused. It is left here with this
+         * note rather than deleted because removing committed assets is a
+         * decision for whoever owns the library; if nobody wants it, delete the
+         * entry and the original together.
+         */
         'diabetes-glucose-meter' => [
             'source' => 'pexels-artempodrez-6823407.jpg',
             'topic' => 'diabetes',
@@ -213,6 +226,47 @@ return [
             'crop' => null,
             'describes' => 'A kitchen counter with leafy greens, peppers, tomatoes, garlic, a plate of raw meat and a bowl of chickpeas.',
         ],
+        /*
+         * Article 13, postpartum. Chosen for what it SAYS rather than for how
+         * it looks: a pot on the hob in a lived-in kitchen is the article's
+         * central practical advice — cook once, eat several times — for
+         * somebody sleeping three broken hours. The styled marble flatlay in
+         * the same candidate set would have looked better and argued against
+         * the text.
+         *
+         * The first choice was a warmer overhead of two foil trays, and it was
+         * dropped for a boring reason worth recording: the patterned
+         * tablecloths under it defeated WebP, and all three variants missed
+         * their byte budget at the quality floor. A cover that cannot be
+         * served inside the performance budget is not a cover.
+         */
+        'postpartum-kitchen-simple-meal' => [
+            'source' => 'pexels-klaus-nielsen-6287482.jpg',
+            'topic' => 'food',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'A hand lifting pasta from a pan on a hob in a home kitchen, with tomatoes, eggs and vegetables on the counter in front.',
+        ],
+
+        /*
+         * Article 14, diabetes in women. A glucometer with a BLANK SCREEN — a
+         * numeric readout on a clinic page is the thing this practice refuses
+         * to do anywhere else, and it would be no better here.
+         *
+         * The better-composed candidate was rejected for a reason worth
+         * recording: its photographer is a glucose-meter manufacturer. No
+         * brand was legible in it, but a clinic that spends a whole article
+         * asking who is selling the claim should not illustrate that article
+         * with a device maker's marketing photograph. See docs/media/photography.md.
+         */
+        'diabetes-home-glucose-kitchen' => [
+            'source' => 'pexels-towfiqu-barbhuiya-12326657.jpg',
+            'topic' => 'clinical',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'A glucometer with a blank screen on a wooden table, a hand placing a drop of blood on the test strip, and a stethoscope out of focus behind it.',
+        ],
+
         'food-fruit-bowl' => [
             'source' => 'pexels-dalia-al-refai-235376732-17131199.jpg',
             'topic' => 'food',

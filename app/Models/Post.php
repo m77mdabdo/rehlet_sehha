@@ -418,11 +418,23 @@ class Post extends Model
          */
         $text = ArticleBody::plain(strip_tags((string) $this->getTranslation('body', 'ar', false)));
 
-        $words = str_word_count($text, 0, 'أبتثجحخدذرزسشصضطظعغفقكلمنهوىيءآأؤإئة');
-
-        // str_word_count is Latin-centric; for Arabic the whitespace count is
-        // the honest measure.
-        $words = max($words, count(preg_split('/\s+/u', trim($text)) ?: []));
+        /*
+         * WHITESPACE, NOT str_word_count(). THIS USED TO BE WRONG.
+         *
+         * str_word_count() is byte-based and Latin-centric. Handed UTF-8
+         * Arabic it splits multi-byte characters and reports far more "words"
+         * than exist — measured at 1,965 against a true 1,270 on one of these
+         * articles, an inflation of about 55%. The old code took the LARGER of
+         * the two counts, which meant the inflated figure always won and every
+         * Arabic article claimed to take half again as long to read as it does.
+         *
+         * It went unnoticed while the drafts were a few hundred words and the
+         * error was a minute. At 1,200 words it is four.
+         *
+         * A whitespace-delimited count is the honest measure for Arabic, and
+         * this method only ever reads the Arabic body.
+         */
+        $words = count(preg_split('/\s+/u', trim($text)) ?: []);
 
         return max(1, (int) ceil($words / 180));
     }
