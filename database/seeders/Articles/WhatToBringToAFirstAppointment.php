@@ -97,6 +97,8 @@ CLINICAL_INPUT: في مكملات إنتِ بتسألي عنها بالاسم ف
 
 ولو في تشخيص مزمن — سكري، ضغط، غدة، قولون، تكيس مبايض، حساسية قمح — هاتي آخر تقرير عنه.
 
+ولو التحاليل اتعملت في معامل مختلفة، قولي ده كمان. النطاقات المرجعية بتختلف من معمل لمعمل حسب الجهاز والطريقة، فمقارنة رقم من هنا برقم من هناك محتاجة انتباه.
+
 ## تالت حاجة: يوم أكل حقيقي
 
 اكتبي أكل يومين أو تلاتة قبل الميعاد، ساعة بساعة تقريبًا.
@@ -110,6 +112,8 @@ CLINICAL_INPUT: في مكملات إنتِ بتسألي عنها بالاسم ف
 إيه اللي اتجرب، وإيه اللي نفع، وإيه اللي وقف، وليه وقف.
 
 دي المعلومة اللي بتوفر شهور. الخطة اللي شبه حاجة مانفعتش قبل كده هتقف بنفس الطريقة، ومعرفة ليه وقفت بتغيّر التصميم من أول يوم.
+
+ولو في محاولة وقفت بسبب عرض — دوخة، صداع، إمساك، جوع مستمر، انخفاض في الطاقة — ده بالذات يتقال. العرض ده معلومة إكلينيكية، مش شكوى.
 
 ## خامس حاجة: أسئلتك، مكتوبة
 
@@ -231,6 +235,8 @@ A photograph on your phone is fine. The original is not needed.
 
 And if there is a chronic diagnosis — diabetes, blood pressure, thyroid, bowel, polycystic ovary syndrome, coeliac disease — bring the most recent report on it.
 
+And if the tests were done at different laboratories, say so as well. Reference ranges differ between laboratories according to the instrument and the method, so comparing a number from one with a number from another needs care.
+
 ## Third: a real day of eating
 
 Write down two or three days of food before the appointment, roughly hour by hour.
@@ -244,6 +250,8 @@ Write down the things that do not usually get counted as food, too: tea with sug
 What was tried, what worked, what stopped, and why it stopped.
 
 This is the information that saves months. A plan resembling something that did not work before will stop in the same way, and knowing why it stopped changes the design from the first day.
+
+And if an attempt stopped because of a symptom — dizziness, headache, constipation, constant hunger, a drop in energy — that in particular should be said. The symptom is clinical information, not a complaint.
 
 ## Fifth: your questions, written down
 
