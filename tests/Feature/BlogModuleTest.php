@@ -281,6 +281,39 @@ it('computes reading time when nobody has set one, and leaves it alone when they
 |------------------------------------------------------------------------------
 */
 
+it('prints the category name above the title, not the category row', function (string $locale) {
+    /*
+     * THIS SHIPPED BROKEN AND WAS FOUND BY OPENING THE PAGE.
+     *
+     * The eyebrow was `$post->category` — the model, not its name — so every
+     * article rendered a wall of escaped JSON above its own headline: the id,
+     * both languages of every field, the timestamps, all of it.
+     *
+     * It broke when `category` stopped being a free-text string column and
+     * became a relation, and nothing caught it. Every article is a draft, so
+     * no article page existed on the site; and the tests that did render one
+     * asserted the byline, the body, the tags and the schema — every part of
+     * the page except this line.
+     *
+     * The assertion is deliberately about what is ABSENT as well as what is
+     * present: a category name appearing somewhere on the page proves nothing
+     * if the model was dumped beside it.
+     */
+    $post = publishableArticle();
+
+    $html = $this->get(route('posts.show', ['locale' => $locale, 'slug' => $post->slug]))
+        ->assertOk()
+        ->getContent();
+
+    expect($html)->toContain((string) $post->category?->getTranslation('name', $locale));
+
+    foreach (['&quot;id&quot;', '&quot;slug&quot;', '&quot;created_at&quot;', 'meta_description'] as $leak) {
+        expect(str_contains($html, $leak))->toBeFalse(
+            "The article page is printing a model rather than a field: «{$leak}» is in the markup."
+        );
+    }
+})->with(['ar', 'en']);
+
 it('describes the article to a machine, category and tags included', function () {
     $post = publishableArticle();
     $post->tags()->attach(Tag::query()->firstOrFail());
