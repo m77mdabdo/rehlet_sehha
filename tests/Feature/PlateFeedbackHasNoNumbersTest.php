@@ -190,8 +190,7 @@ it('has no quantity column on the plate_foods table', function () {
     ];
 
     foreach ($forbidden as $column) {
-        expect($columns)->not->toContain(
-            $column,
+        expect(in_array($column, $columns, true))->toBeFalse(
             "plate_foods has a `{$column}` column. This feature does not have quantities."
         );
     }

@@ -100,7 +100,10 @@ it('changes an opening time and the site says so on the next request', function 
         ->assertHasNoFormErrors();
 
     expect(PublicContent::openingHours()->firstWhere('day_of_week', 6)->end_time)
-        ->toStartWith('18:00', 'The cached schedule still holds the old closing time.');
+        // toStartWith takes ONE argument and silently discards a second, so
+        // the explanation that used to sit here never reached anybody. The
+        // explanation is: the cached schedule still holds the old closing time.
+        ->toStartWith('18:00');
 
     $content = $this->get('/ar')->assertOk()->getContent();
 
@@ -123,7 +126,8 @@ it('refuses a window that ends before it starts', function () {
         ->call('save')
         ->assertHasFormErrors(['end_time']);
 
-    expect($saturday->fresh()->start_time)->toStartWith('10:00', 'The invalid window was saved anyway.');
+    expect(str_starts_with((string) $saturday->fresh()->start_time, '10:00'))
+        ->toBeTrue('The invalid window was saved anyway.');
 });
 
 it('offers deactivation as well as deletion', function () {

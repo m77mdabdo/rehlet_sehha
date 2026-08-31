@@ -174,7 +174,10 @@ it('shows a schedule change on the next request rather than on a TTL boundary', 
     $saturday->update(['end_time' => '18:00:00']);
 
     expect(PublicContent::openingHours()->firstWhere('day_of_week', 6)->end_time)
-        ->toStartWith('18:00', 'The cached schedule still holds the old closing time.');
+        // toStartWith takes ONE argument and silently discards a second, so
+        // the explanation that used to sit here never reached anybody. The
+        // explanation is: the cached schedule still holds the old closing time.
+        ->toStartWith('18:00');
 
     // str_contains, not toContain: Pest reads a second argument to toContain
     // as ANOTHER NEEDLE, not as a failure message, so the message itself gets

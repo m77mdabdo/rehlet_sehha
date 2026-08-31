@@ -1,17 +1,34 @@
 User-agent: *
 
-# The clinic's own screens and the patient's token URLs.
+# WHAT THIS FILE IS AND IS NOT.
 #
-# Disallow is a request not to FETCH these, and that is all it is: a URL linked
+# Disallow is a request not to FETCH a URL, and that is all it is. A URL linked
 # from anywhere else can still be indexed without ever being crawled, which for
-# /admin would produce a search result for the clinic's login page. The control
-# that actually works is the X-Robots-Tag header both route groups send — see
-# App\Http\Middleware\NoIndexAdminPanel and the token-url middleware. This file
-# is the polite half of the same instruction.
+# /admin would produce a search result for the clinic's login page.
 #
-# Listing /appointment here is deliberate even though the URLs are unguessable:
-# it costs nothing and it means a crawler that somehow obtains one does not
-# fetch it.
+# The control that actually works is the X-Robots-Tag header the admin panel
+# and the token routes send — see App\Http\Middleware\NoIndexAdminPanel and the
+# token-url middleware. This file is the polite half of the same instruction,
+# and it is listed second on purpose.
+
+# The clinic's own screens.
 Disallow: /admin
+
+# The patient's token URLs. Listed even though they are unguessable: it costs
+# nothing, and it means a crawler that somehow obtains one does not fetch it.
+# Every one of these is a credential in a URL — the whole path is the secret.
 Disallow: /ar/appointment/
 Disallow: /en/appointment/
+Disallow: /ar/review/
+Disallow: /en/review/
+
+# The health check. Not secret, and worthless in an index — it is a status page
+# for a monitor and for the front desk. It also does real work on every hit, so
+# there is no reason to invite a crawler to poll it.
+Disallow: /up
+
+# The sitemap is absolute because robots.txt is read per host and this is the
+# only host that serves the live site. A staging copy must be blocked at the
+# host, not here — a staging robots.txt pointing at production's sitemap is
+# worse than no robots.txt at all.
+Sitemap: https://rehletsehha.com/sitemap.xml
