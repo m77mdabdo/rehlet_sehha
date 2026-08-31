@@ -27,12 +27,13 @@ class PostController extends Controller
     public function show(string $slug): View
     {
         /*
-         * Reviewer, category and tags eager-loaded: the byline names the
-         * reviewer, the header shows the category, the footer lists the tags.
-         * All three are certain to be touched.
+         * Reviewer, category, tags and citations eager-loaded: the byline
+         * names the reviewer, the header shows the category, the footer lists
+         * the tags, and the references section lists the citations. All four
+         * are certain to be touched on every article page.
          */
         $post = Post::published()
-            ->with(['reviewer', 'category', 'tags'])
+            ->with(['reviewer', 'category', 'tags', 'citations'])
             ->where('slug', $slug)
             ->firstOrFail();
 

@@ -167,11 +167,76 @@
                             <strong>{{ App\Models\Post::CLINICAL_MARKER }}</strong>
                             {{ trim(substr($block, strlen(App\Models\Post::CLINICAL_MARKER) + 1)) }}
                         </p>
+                    @elseif (str_starts_with($block, App\Models\Post::PRACTITIONER_MARKER))
+                        {{--
+                            A different colour from CLINICAL_INPUT because it is
+                            a different kind of gap. That one is waiting for a
+                            fact; this one is waiting for a sentence only she
+                            can say — see Post::PRACTITIONER_MARKER. Neither can
+                            reach a reader; both are rendered loudly so that if
+                            one ever does, it looks as wrong as it is.
+                        --}}
+                        <p class="rounded-lg border-2 border-dashed border-accent bg-accent/10 p-4 text-base text-ink">
+                            <strong>{{ App\Models\Post::PRACTITIONER_MARKER }}</strong>
+                            {{ trim(substr($block, strlen(App\Models\Post::PRACTITIONER_MARKER) + 1)) }}
+                        </p>
                     @else
-                        <p>{{ $block }}</p>
+                        {{-- Escaped by ArticleBody, which is also the only
+                             thing that may turn text into an anchor here. --}}
+                        <p>{!! App\Support\ArticleBody::render($block) !!}</p>
                     @endif
                 @endforeach
             </div>
+
+            {{--
+                THE REFERENCES.
+
+                Rendered from rows, not from a paragraph somebody typed at the
+                bottom — see the citations migration for why. Every article
+                that reports what the ADA or WHO or NICE recommends ends with
+                the list of what was actually being reported, so a reader who
+                wants to check can, and so the claim is the institution's
+                rather than ours.
+
+                Nothing about confidence appears here. That field describes how
+                the draft was written and is for the person verifying it; a
+                reader seeing "needs confirming" beside a reference would
+                reasonably conclude the clinic is unsure of its own medicine.
+
+                A URL only appears once somebody has opened the document. Until
+                then there is a name, a title and a year, which is enough to
+                find it and impossible to fabricate convincingly.
+            --}}
+            @if ($post->citations->isNotEmpty())
+                <section class="mt-14 border-t border-line pt-8" aria-labelledby="references-heading">
+                    <h2 id="references-heading" class="font-display text-xl font-semibold text-ink">
+                        {{ __('articles.references_heading') }}
+                    </h2>
+
+                    <p class="mt-2 text-sm leading-relaxed text-muted">{{ __('articles.references_note') }}</p>
+
+                    <ol class="mt-5 space-y-3 text-sm leading-relaxed text-muted">
+                        @foreach ($post->citations as $citation)
+                            <li class="flex gap-3">
+                                <span aria-hidden="true" class="text-line">{{ $loop->iteration }}.</span>
+
+                                <span>
+                                    <bdi dir="auto">{{ $citation->reference() }}</bdi>
+
+                                    @if ($citation->url)
+                                        <a
+                                            href="{{ $citation->url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer nofollow"
+                                            class="ms-1 text-accent-dark underline underline-offset-4"
+                                        >{{ __('articles.references_open') }}</a>
+                                    @endif
+                                </span>
+                            </li>
+                        @endforeach
+                    </ol>
+                </section>
+            @endif
 
             @if ($post->tags->isNotEmpty())
                 <div class="mt-12 border-t border-line pt-6">

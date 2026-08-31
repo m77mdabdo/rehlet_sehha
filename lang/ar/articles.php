@@ -70,6 +70,20 @@ return [
     'disclaimer_heading' => 'اقري ده الأول',
     'disclaimer_body' => 'المقال ده للتوعية العامة. مش تشخيص، ومش خطة علاجية، ومش بديل عن إنك تتكلمي مع طبيبك أو مع أخصائي تغذية شاف حالتك وتحاليلك. متغيّريش دوا ولا جرعة بناءً على أي حاجة مكتوبة هنا.',
 
+    /*
+    |--------------------------------------------------------------------------
+    | References
+    |--------------------------------------------------------------------------
+    |
+    | These articles report what named bodies recommend rather than telling the
+    | reader what to do, so the list of what was reported is part of the
+    | article, not an appendix to it. A claim attributed to the ADA that the
+    | reader cannot trace is a claim borrowing the ADA's authority.
+    */
+    'references_heading' => 'المصادر',
+    'references_note' => 'المقال ده بينقل توصيات جهات مسماة بالاسم. دي قايمة اللي اتنقل عنه، عشان تقدري ترجعي له بنفسك.',
+    'references_open' => 'افتحي المصدر',
+
     'back_to_index' => 'كل المقالات',
 
     'related_heading' => 'مقالات في نفس الموضوع',
