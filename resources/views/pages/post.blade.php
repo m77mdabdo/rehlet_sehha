@@ -30,7 +30,22 @@
 @endphp
 
 <x-page-shell
-    :eyebrow="$post->category"
+    {{--
+        THE CATEGORY NAME, NOT THE CATEGORY.
+
+        This said `$post->category` and printed the whole model — a wall of
+        escaped JSON above the headline of every article, ids and timestamps
+        and both languages of every field.
+
+        It broke when `category` stopped being a free-text string column and
+        became a relation, and it survived because the eyebrow was never
+        asserted and no article page had been looked at: every one of them is
+        a draft, so nothing on the live site rendered it, and the tests that do
+        render an article checked the byline and the body and not this line.
+
+        Found by opening the page. There was no other way to find it.
+    --}}
+    :eyebrow="$post->category?->name"
     :title="$post->title"
     :meta-title="$post->title.' — '.__('common.brand')"
     :meta-description="$post->excerpt"
@@ -77,7 +92,7 @@
             <span class="font-medium text-ink">{{ __('articles.reviewed_by', ['name' => $reviewerName]) }}</span>
             <span aria-hidden="true" class="text-line">·</span>
             <span><bdi dir="auto">{{ __('articles.reviewed_on', ['date' => $post->reviewed_at?->translatedFormat('j F Y')]) }}</bdi></span>
-            <span aria-hidden="true" class="text-line">·</span>
+            {{-- One separator. There were two here, side by side. --}}
             <span aria-hidden="true" class="text-line">·</span>
             <span><bdi dir="auto">{{ $post->published_at?->translatedFormat('j F Y') }}</bdi></span>
 

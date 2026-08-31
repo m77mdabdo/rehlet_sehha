@@ -368,3 +368,183 @@ it('estimates reading time from the words a reader actually reads', function () 
         );
     }
 });
+
+/*
+|------------------------------------------------------------------------------
+| The boundary from docs/content/articles.md
+|------------------------------------------------------------------------------
+|
+| That document opens with a table of things no body on this site may contain,
+| and every row of it is there because of what a reader might reasonably do
+| with the sentence. Written down, it is a promise. Asserted, it is a rule.
+|
+| The failure this guards against is not malice. It is the eighteenth edit to
+| an article, by somebody being helpful, adding "roughly 20 grams of protein"
+| because a reader asked — a sentence that is a plan, written by whoever was at
+| the keyboard, for somebody they have never met.
+*/
+
+it('never states a quantity to the reader', function (string $locale) {
+    /*
+     * The same rule the plate builder enforces, for the same clinical reason:
+     * numeric feedback teaches people to measure food, and for anyone with a
+     * disordered relationship to eating a number attached to a food is not
+     * neutral information.
+     *
+     * Every quantity in these fourteen articles is deliberately absent and
+     * left as CLINICAL_INPUT — protein grams per kilogram, the postpartum
+     * screening interval, weekly activity minutes, anaemia thresholds. Those
+     * are the clinician's to give, from the document, to a patient she has
+     * seen.
+     */
+    /*
+     * A DIGIT BESIDE A UNIT, which is what the boundary table actually
+     * forbids: "portion sizes, gram weights, calorie figures".
+     *
+     * Two earlier spellings of this test were wrong in opposite directions and
+     * both are worth recording, because the next person will reach for one of
+     * them.
+     *
+     * A bare substring search fires on ordinary prose — «gram» sits inside
+     * "programme", «جم » sits inside «حجم الدم». A test that fails on the word
+     * "programme" gets deleted within the month, and takes the real rule with
+     * it.
+     *
+     * Anchoring the words fixed that and then caught «very low calorie diets»,
+     * which is not a violation at all: it is the NAME of a class of
+     * intervention, reported as what NICE says about it, and it states no
+     * quantity to anybody. Forbidding the word would mean the article could no
+     * longer report a guideline's own terminology.
+     *
+     * The number is the thing a reader can measure herself against. So the
+     * number is what is forbidden.
+     */
+    $digit = '[0-9\x{0660}-\x{0669}\x{06F0}-\x{06F9}]';
+
+    $units = [
+        '/'.$digit.'\s*(سعرة|سعرات|كالوري|جرام|جرامات|مليجرام|ملليجرام|ميكروجرام|كيلو)/u',
+        '/(سعرة|سعرات|كالوري|جرام|جرامات|مليجرام|ملليجرام|ميكروجرام|كيلو)\s*'.$digit.'/u',
+        '/\d+\s*(calories?|kcal|g|kg|mg|mcg|grams?|milligrams?|micrograms?|ml)\b/iu',
+        '/\b(calories?|kcal|grams?|milligrams?|micrograms?)\s*\d+/iu',
+    ];
+
+    foreach (Post::all() as $post) {
+        $body = ArticleBody::plain((string) $post->getTranslation('body', $locale, false));
+
+        // The markers are the clinician's questions, and a question may name
+        // the unit it is asking about.
+        $body = (string) preg_replace('/^('.implode('|', Post::markers()).'):.*$/mu', '', $body);
+
+        foreach ($units as $pattern) {
+            $hit = [];
+
+            expect(preg_match($pattern, $body, $hit))->toBe(
+                0,
+                "{$post->slug} ({$locale}) states a quantity: «".trim($hit[0] ?? '').'». '
+                .'Quantities belong in CLINICAL_INPUT, answered by somebody who has seen the patient.'
+            );
+        }
+
+        foreach (['%', "\u{066A}"] as $sign) {
+            expect(str_contains($body, $sign))->toBeFalse(
+                "{$post->slug} ({$locale}) shows a percentage. See the note in PlateFeedbackHasNoNumbersTest."
+            );
+        }
+    }
+})->with(['ar', 'en']);
+
+it('never sets the reader a target', function (string $locale) {
+    /*
+     * A target is a number a reader can measure herself against and fail,
+     * set by somebody who has not seen her. It is the specific shape the
+     * boundary table objects to, and it survives having the digits removed —
+     * "should be under" is a target whether or not a figure follows.
+     */
+    $targets = [
+        'لازم يوصل', 'المفروض يوصل', 'لازم تكون أقل من', 'المفروض تكون أقل من', 'خليه تحت',
+        'aim for', 'should be under', 'should be below', 'target of', 'aim to reach',
+    ];
+
+    foreach (Post::all() as $post) {
+        $body = ArticleBody::plain((string) $post->getTranslation('body', $locale, false));
+        $body = (string) preg_replace('/^('.implode('|', Post::markers()).'):.*$/mu', '', $body);
+
+        foreach ($targets as $phrase) {
+            expect(mb_stripos($body, $phrase))->toBeFalse(
+                "{$post->slug} ({$locale}) sets a target: «{$phrase}»."
+            );
+        }
+    }
+})->with(['ar', 'en']);
+
+it('attributes every claim about research to somebody', function (string $locale) {
+    /*
+     * "Studies show", with no study, is the last row of the boundary table and
+     * the easiest one to break — it reads as rigour and costs nothing to type.
+     *
+     * The rule enforced here is narrow and mechanical: an article that appeals
+     * to research at all must carry at least one citation. It cannot check
+     * that the right sentence is attached to the right reference; that is what
+     * citations-to-verify.md is for, and why every citation records the claim
+     * it supports.
+     */
+    $appeals = ['أبحاث', 'دراسات', 'مراجعات منهجية', 'research', 'studies', 'systematic review', 'meta-analys'];
+
+    foreach (Post::all() as $post) {
+        $body = ArticleBody::plain((string) $post->getTranslation('body', $locale, false));
+
+        foreach ($appeals as $appeal) {
+            if (mb_stripos($body, $appeal) === false) {
+                continue;
+            }
+
+            expect($post->citations()->count())->toBeGreaterThan(
+                0,
+                "{$post->slug} ({$locale}) appeals to «{$appeal}» and cites nothing."
+            );
+
+            break;
+        }
+    }
+})->with(['ar', 'en']);
+
+it('names the body behind every reported recommendation', function () {
+    /*
+     * The other half of the same rule, from the citations side: a citation
+     * whose organisation is a description rather than a name — "systematic
+     * reviews of…", "specialist guidance on…" — is a placeholder, and it is
+     * allowed to exist ONLY while the article is a draft.
+     *
+     * Three of them do exist, deliberately, because the draft could not name
+     * the issuing body and would not invent one. Each says so in its note, and
+     * each is marked medium so the publish gate holds the article until
+     * somebody replaces it with a real name.
+     */
+    $placeholders = Post::query()->with('citations')->get()
+        ->flatMap(fn (Post $post) => $post->citations)
+        ->filter(fn ($citation): bool => str_contains(
+            mb_strtolower((string) $citation->getTranslation('organisation', 'en', false)),
+            'research on'
+        ) || str_contains(
+            mb_strtolower((string) $citation->getTranslation('organisation', 'en', false)),
+            'guidance on'
+        ) || str_contains(
+            mb_strtolower((string) $citation->getTranslation('organisation', 'en', false)),
+            'reviews and meta-analyses'
+        ));
+
+    foreach ($placeholders as $citation) {
+        /*
+         * str_contains rather than toContain: Pest reads a second argument to
+         * toContain() as another needle, not as a failure message.
+         */
+        expect(stripos((string) $citation->note, 'name'))->not->toBeFalse(
+            'A citation with an unnamed issuing body must say so in its note: '
+            .$citation->getTranslation('organisation', 'en', false)
+        );
+
+        expect($citation->verified_at)->toBeNull(
+            'A placeholder citation has been marked verified. Replace the organisation with a real name first.'
+        );
+    }
+});

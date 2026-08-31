@@ -1,12 +1,45 @@
-# Article plan — structure only
+# Article plan
 
-**Every body on this list is Dr. Rana's to write or approve. Nothing here is a
-draft, and nothing here should be pasted into `posts.body` by anybody else.**
+> **This document is now the PLAN, not the state.** It records what each piece is
+> for, who it is aimed at and — most importantly — what it must not say. That
+> part has not changed and still governs.
+>
+> What has changed is that the articles are written. There are **fourteen** of
+> them, in `database/seeders/Articles/`, one class per article, 1,200–1,800 words
+> in each language. Read the code for what an article says; read this file for
+> why it exists and where its boundary is.
+>
+> Three companion documents:
+>
+> - [`clinical-prompts.md`](clinical-prompts.md) — the 44 questions left open for
+>   Dr. Rana, generated from the articles
+> - [`citations-to-verify.md`](citations-to-verify.md) — the 63 references, with
+>   the claim each one supports
+> - `docs/media/photography.md` — what was rejected from the imagery and why
 
-What this document contains is the *shape* of each piece: who it is for, what
-question it answers, what its section headings are, and — most importantly —
-what it must not say. It exists so that when Dr. Rana sits down to write, the
-scope of each article is already settled and the boundary is already drawn.
+## What "written" does and does not mean
+
+**Written, and cited:** everything attributable to a published source. What the
+ADA recommends. How insulin resistance develops. What a systematic review found.
+Why a myth spreads and what the evidence says instead. Reporting a named body's
+recommendation is *evidence*, not advice, and it does not need a clinician to
+write it — it needs a citation, and every one of them has one.
+
+**Left open, and gated:** two things, neither of which anybody else may fill in.
+
+`CLINICAL_INPUT` marks a directed recommendation — a quantity, a target, an
+instruction aimed at the reader. `PRACTITIONER_VOICE` marks a first-person
+clinical observation, «في تجربتي»، «اللي بشوفه مع مرضايا», which is a claim about
+what one named clinician has personally seen and cannot honestly be written by
+anybody else.
+
+`Post::booted()` refuses to publish an article containing either, refuses to
+publish one with no named reviewer, and refuses to publish one carrying a
+citation nobody has verified. `scopePublished()` refuses to serve such a row
+even if it reaches the table by some other route.
+
+**Everything in the boundary table below is still absent from every body**, and
+that is asserted rather than assumed.
 
 ---
 
@@ -42,9 +75,11 @@ speak to somebody", the article is doing what it should.
 
 ---
 
-## The twelve
+## The fourteen
 
-Mapped to the specialties that already exist in `specialties`.
+Mapped to the specialties that already exist in `specialties`. The first twelve
+are below in their original planning form; the two the practitioner added later
+are at the end.
 
 ### Medical nutrition — `medical-nutrition`
 
@@ -213,17 +248,48 @@ its own kind of intimidating.
 
 ---
 
-## Two more, if fifteen is wanted
+## The two the practitioner added
 
-**14. ليه العيادة أونلاين، وإيه اللي بيحصل في الجلسة**
+These were her own picks, and both fill gaps the original twelve left.
+
+**13. التغذية بعد الولادة — للأم في أول ستة شهور**
+*Postpartum nutrition — the mother in the first six months* — `postpartum-nutrition`,
+filed under `pregnancy-nutrition`.
+
+Everything written for this period is written about the baby. The gap is the
+mother: a requirement that rises above pregnancy at the point when preparing
+food is hardest, an iron store drawn on twice — through nine months and again at
+delivery — and exhaustion that gets attributed to having a newborn and never
+investigated. Carries the postpartum glucose screening after gestational
+diabetes, which the ADA recommends and which is almost never offered here.
+
+- *Never:* a dose, a supplement recommendation, or a weight target in this period
+
+**14. السكري عند الستات — إيه اللي بيختلف**
+*Diabetes in women — what is different* — `diabetes-in-women`, filed under
+`medical-nutrition` and linking to `pcos-hormonal` as well.
+
+Everything written about diabetes is written for a generic patient, and that
+patient has no menstrual cycle, no pregnancy, no postpartum period and no
+menopause. Genuinely under-covered in Arabic. Maps onto two specialties at once,
+which is why it links to both.
+
+- *Never:* a glucose target, an HbA1c figure, or advice about fasting for an
+  individual — the Ramadan section reports that specialist guidance exists and
+  says the decision is made with the treating doctor
+
+## Two more, if sixteen is wanted
+
+**ليه العيادة أونلاين، وإيه اللي بيحصل في الجلسة**
 *Why the practice is online, and what a session actually is* — service
 explanation rather than clinical content. Zero risk, and it answers the question
 the contact page gets asked most.
 
-**15. إزاي تقري ادعاء عن التغذية على السوشيال ميديا**
-*How to read a nutrition claim on social media* — media literacy. It teaches the
-reader to interrogate exactly the kind of content the other articles refuse to
-produce, which makes it the natural companion piece to the PCOS one.
+**إزاي تقري ادعاء عن التغذية على السوشيال ميديا**
+*How to read a nutrition claim on social media* — media literacy. Partly
+absorbed already: the PCOS article now carries a six-question method for judging
+a claim, and the sports article applies it to supplements. A standalone piece
+would still work.
 
 ---
 
@@ -241,11 +307,16 @@ cannot be written without prescribing.
 
 ## Before any of these publishes
 
-1. Dr. Rana writes or approves the body. Nobody else drafts clinical prose.
-2. Somebody re-reads it against the table at the top of this file.
-3. `reviewed_by` and `reviewed_at` are set in the admin — doctor or admin only.
-4. `published_at` gets a date. The model refuses this step without step 3, so it
-   cannot be done out of order.
+1. **Answer the prompts.** [`clinical-prompts.md`](clinical-prompts.md) — 44
+   questions, each answerable in a sentence or two. Nobody else may write these.
+2. **Verify the citations.** [`citations-to-verify.md`](citations-to-verify.md) —
+   63 references, 41 of them marked as needing a detail confirmed. Start there.
+3. Somebody re-reads the body against the boundary table at the top of this file.
+4. `reviewed_by` and `reviewed_at` are set in the admin — doctor or admin only.
+5. `published_at` gets a date.
+
+Steps 1, 2 and 4 are enforced by the model rather than by this list, so they
+cannot be done out of order and cannot be skipped by anybody in a hurry.
 
 The piece marked **requires a second read** and the two marked **referral line
 required** carry that requirement because of what a reader might do with a wrong
