@@ -50,6 +50,17 @@ return [
     'disclaimer_heading' => 'Read this first',
     'disclaimer_body' => 'This article is general awareness. It is not a diagnosis, it is not a treatment plan, and it is not a substitute for speaking to your doctor or to a dietitian who has seen your case and your lab work. Do not change a medication or a dose based on anything written here.',
 
+    /*
+    |--------------------------------------------------------------------------
+    | References
+    |--------------------------------------------------------------------------
+    |
+    | See the note in lang/ar/articles.php.
+    */
+    'references_heading' => 'References',
+    'references_note' => 'This article reports the recommendations of named bodies. These are the documents it reports, so that you can go and read them yourself.',
+    'references_open' => 'Open source',
+
     'back_to_index' => 'All articles',
 
     'related_heading' => 'More on this topic',
