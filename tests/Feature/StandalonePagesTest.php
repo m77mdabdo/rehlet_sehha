@@ -587,8 +587,13 @@ it('issues a bounded number of queries on every page', function () {
          *
          * None is avoidable by denormalising onto the post. A stored category
          * name is how an index ends up disagreeing with the article on it.
+         *
+         * 7 -> 8 when the references section landed. The eighth is the
+         * citations eager load, and it is the cheap direction of the trade:
+         * one query for every reference on the page instead of one per
+         * reference, on articles carrying up to seven of them.
          */
-        '/ar/articles/'.liveArticle()->slug => 7,
+        '/ar/articles/'.liveArticle()->slug => 8,
     ];
 
     foreach ($bounds as $path => $expected) {

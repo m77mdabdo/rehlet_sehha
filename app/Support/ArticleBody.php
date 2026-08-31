@@ -85,7 +85,14 @@ final class ArticleBody
             $offset = $start + strlen($whole);
 
             $type = $match[1][0];
-            $slug = ($match[2][0] ?? '') === '' ? null : $match[2][0];
+            /*
+             * Group 2 is the optional slug, and it is not the LAST group, so
+             * preg fills it with an empty string when it does not participate
+             * rather than omitting it. `[[booking|…]]` therefore arrives here
+             * as '' rather than as a missing offset — which is why there is no
+             * null coalesce, and why an empty string is what means "no slug".
+             */
+            $slug = $match[2][0] === '' ? null : $match[2][0];
             $label = trim($match[3][0]);
 
             $href = self::resolve($type, $slug);
@@ -145,7 +152,8 @@ final class ArticleBody
 
         return array_map(fn (array $m): array => [
             'type' => $m[1],
-            'slug' => ($m[2] ?? '') === '' ? null : $m[2],
+            // Empty string, not a missing offset — see render().
+            'slug' => $m[2] === '' ? null : $m[2],
             'label' => trim($m[3]),
         ], $matches);
     }
