@@ -150,7 +150,7 @@ class Citation extends Model
         $parts = array_filter([
             (string) $this->getTranslation('organisation', $locale),
             (string) $this->getTranslation('title', $locale),
-            $this->year === null ? null : (string) $this->year,
+            (string) ($this->year ?? ''),
         ], fn (string $part): bool => $part !== '');
 
         return implode('. ', $parts).'.';

@@ -121,12 +121,12 @@ it('never renders a clinical prompt to a reader', function () {
 |------------------------------------------------------------------------------
 */
 
-it('seeds twelve drafts, every one unpublished and every one with a cover', function () {
+it('seeds fourteen drafts, every one unpublished and every one with a cover', function () {
     $this->seed(PostSeeder::class);
 
     $posts = Post::query()->with(['category', 'tags'])->get();
 
-    expect($posts)->toHaveCount(12);
+    expect($posts)->toHaveCount(14);
     expect(Post::published()->count())->toBe(0, 'A draft article is published.');
 
     foreach ($posts as $post) {
@@ -148,7 +148,22 @@ it('seeds twelve drafts, every one unpublished and every one with a cover', func
                 .'which is unlikely for a clinical article, or somebody answered them by guessing.'
             );
 
-            expect(mb_strlen($body))->toBeGreaterThan(900, "{$post->slug} ({$locale}) is too short to be a finished structure.");
+            /*
+             * A LENGTH FLOOR, NOT A LENGTH TARGET.
+             *
+             * These are full articles now rather than structures, and the
+             * range they are actually written to (1,200–1,800 words in each
+             * language) is asserted properly in ArticleStandardTest. What this
+             * checks is the failure this file is for: somebody replacing a
+             * finished article with a stub and the suite still passing.
+             */
+            expect(mb_strlen($body))->toBeGreaterThan(4000, "{$post->slug} ({$locale}) is too short to be a finished article.");
+
+            // Every article says where its claims came from.
+            expect($post->citations()->count())->toBeGreaterThan(
+                0,
+                "{$post->slug} reports guidance and cites nothing."
+            );
         }
     }
 });
