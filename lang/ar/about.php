@@ -18,9 +18,10 @@ declare(strict_types=1);
 | of thing that is only ever discovered by the person it misrepresents, or by a
 | patient checking.
 |
-| ONE THING IS STILL TODO_COPY: the philosophy paragraph. It has to be in her
-| voice, and nobody else can write it. clinic:verify-copy blocks production
-| until she does.
+| THE PHILOSOPHY PARAGRAPH IS HERS, and is now written. It was the last
+| TODO_COPY on the site, and it blocked production until she answered — which
+| is the correct order. A paragraph in a practitioner's voice, on the page
+| about her, is not something anybody else may draft. See the note beside it.
 |
 */
 
@@ -34,9 +35,26 @@ return [
     'page_lead' => 'الصفحة دي عن الشخص اللي هتقعدي معاها. المؤهلات ورقم القيد مكتوبين عشان تقدري تتأكدي منهم بنفسك.',
 
     'philosophy_heading' => 'طريقة الشغل',
-    'philosophy' => 'TODO_COPY — فقرة قصيرة بصوت الدكتورة عن طريقتها في الشغل: '
-        .'ليه بتبني الخطة من أكل البيت، وإيه اللي بتقيس عليه التقدم، وإيه اللي '
-        .'مش بتعمله. من ٤٠ لـ ٦٠ كلمة، بنفس نبرة باقي الموقع.',
+    /*
+     * HER OWN WORDS. DO NOT EDIT THIS.
+     *
+     * Written by Dr. Rana, from her own answers, and approved as it stands.
+     * It is the one paragraph on this site that had to come from her and could
+     * not be drafted by anybody else — the same rule the articles enforce with
+     * PRACTITIONER_VOICE, applied to the page that is about her.
+     *
+     * Four paragraphs separated by a blank line, rendered as four <p> by
+     * <x-prose-paragraphs>. The blank lines are structure, not formatting.
+     */
+    'philosophy' => <<<'COPY'
+        أول جملة بسمعها من أغلب اللي بييجي لي: "محتاجة أخس وأبقى أحسن." والحاجة التانية اللي بسمعها بعد كام أسبوع من أي نظام تاني جربوه: "زهقت."
+
+        والزهق ده مش ضعف إرادة. الزهق ده إن النظام كان مصمم لحد تاني — مش لأكل بيتك، ولا لمواعيد شغلك، ولا لميزانيتك. أي خطة بتحسّي إنك بتحاربيها هتسيبيها، ودي مسألة وقت مش أكتر.
+
+        عشان كده أنا مبدأش بورقة. بدأ بيكِ — بصحتك، وبيومك، وباللي بتحبي تاكليه. الخطة بتتبني من حياتك مش من كتاب، وبتتعدّل معاكِ كل أسبوع لحد ما تبقى عادة مش مجهود.
+
+        هدفي مش رقم على ميزان. هدفي إنك تحسّي إنك أحسن — طاقة، ونوم، وراحة مع نفسك.
+        COPY,
 
     'credentials_heading' => 'المؤهلات والقيد',
     'degree_label' => 'المؤهل',

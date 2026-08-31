@@ -1,17 +1,16 @@
 {{--
     The practitioner.
 
-    THE COPY IN THIS SECTION IS A PLACEHOLDER. Every string that needs a real
-    human answer is marked TODO_COPY in lang/{ar,en}/about.php, and
-    PlaceholderCopyTest fails the build if any of them is still there when
-    APP_ENV is production. The structure is real; the words are not.
+    THE COPY HERE WAS A PLACEHOLDER UNTIL THE PRACTITIONER ANSWERED. Every
+    string that needed a real human answer was marked TODO_COPY, and
+    clinic:verify-copy blocked production until it was gone. It is gone.
 
-    Written this way rather than left out entirely because the shape of the
-    section is a decision — what a clinic should say about its practitioner,
-    and in what order — and that decision is worth reviewing now. Inventing
-    credentials, a registration number or a biography for a real doctor is a
-    different matter: those are claims about a person's qualifications, and
-    getting them wrong is not a copy problem.
+    The shape of the section was built first and reviewed empty, deliberately:
+    what a clinic should say about its practitioner and in what order is a
+    decision worth taking on its own. Inventing credentials, a registration
+    number or a biography for a real doctor is a different matter — those are
+    claims about a person's qualifications, and getting them wrong is not a
+    copy problem.
 
     The registration line is last and quiet on purpose. It is the detail that
     matters most to a regulator and least to a nervous patient, and burying it
@@ -54,9 +53,25 @@
                     :lead="app()->getLocale() === 'ar' ? config('clinic.practitioner.title_ar') : config('clinic.practitioner.title_en')"
                 />
 
-                <p class="mt-6 leading-relaxed text-pretty text-muted">
-                    {{ __('about.philosophy') }}
-                </p>
+                {{--
+                    NO PHILOSOPHY PARAGRAPH HERE, AND THAT IS A DECISION.
+
+                    It used to be in both places, which was invisible while
+                    both were the same TODO_COPY marker and became obvious the
+                    moment real words arrived: the about page restated 88% of
+                    this section, so a visitor who read here and clicked
+                    through re-read almost everything before reaching anything
+                    new. StandalonePagesTest measured it and said so.
+
+                    Her four paragraphs cannot be shortened for this slot —
+                    they are her own words, approved as they stand — so the
+                    only honest resolution was to pick one page. They live on
+                    /about, which is the page about her, under a heading that
+                    announces them.
+
+                    What is left here is what a summary is for: who she is,
+                    what she is qualified as, and a way through to the rest.
+                --}}
 
                 {{--
                     THE CREDENTIALS COME FROM config/clinic.php, not from copy.
