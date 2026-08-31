@@ -154,6 +154,29 @@ curl -sI https://rehletsehha.com/admin | grep -i x-robots-tag
 
 ---
 
+## 7. The one thing on this list nobody here is qualified to sign off
+
+- [ ] **A lawyer reads the privacy notice.**
+
+The page at `/{locale}/privacy` states what is stored, why, who can see it, the
+retention windows the scheduler actually enforces, and that there is no
+third-party analytics on the site. Every one of those statements is true and
+checkable against the code.
+
+That is not the same as it being *sufficient*. This practice stores encrypted
+clinical information about identifiable people in Egypt, and whether the notice
+satisfies Egyptian data protection law — Law 151 of 2020 and its executive
+regulations — is a question for somebody qualified to answer it. Nobody who
+built this site is.
+
+The engineering side of the same question is already done and can be shown to
+them: intake fields are encrypted at rest, access is role-scoped and logged,
+the notification log prunes at ninety days and the activity log at a year, and
+a patient can export or erase her own record from her appointment page. Give
+them that list; it is most of what they will ask for.
+
+---
+
 ## After launch
 
 - [ ] `php artisan schedule:list` shows the queue worker, reminders and daily

@@ -43,10 +43,46 @@
     is worse than neither.
 --}}
 
+@php
+    /*
+     * THE LINK PREVIEW FOR AN ARTICLE IS THE ARTICLE'S OWN COVER.
+     *
+     * WhatsApp is how these get shared, and fourteen articles all previewing
+     * as the same brand card is fourteen identical grey-blue rectangles in a
+     * thread. The cover is already 1200-ish wide and already chosen for the
+     * piece.
+     *
+     * WebP DELIBERATELY, and this is the one place it is a judgement call:
+     * WhatsApp and Facebook both render WebP previews now, and the alternative
+     * would be a second JPEG copy of every cover existing only for this tag.
+     * If a preview ever comes back blank on a real device, this is the line to
+     * suspect first — the brand card beneath it is a PNG and is not affected.
+     */
+    $shellOgImage = null;
+    $shellOgWidth = null;
+    $shellOgHeight = null;
+    $shellOgAlt = null;
+
+    if ($article?->cover_path && \App\Support\Photo::has((string) $article->cover_path)) {
+        $slug = (string) $article->cover_path;
+        $variant = \App\Support\Photo::largest($slug);
+        $size = \App\Support\Photo::get($slug)['variants'][$variant];
+
+        $shellOgImage = asset(\App\Support\Photo::url($slug, $variant));
+        $shellOgWidth = $size['width'];
+        $shellOgHeight = $size['height'];
+        $shellOgAlt = __('articles.cover_alt.'.$article->slug);
+    }
+@endphp
+
 <x-layouts.app
     :title="$metaTitle"
     :description="$metaDescription"
     :footer-services="$footerServices"
+    :og-image="$shellOgImage"
+    :og-image-width="$shellOgWidth"
+    :og-image-height="$shellOgHeight"
+    :og-image-alt="$shellOgAlt"
     :schema="\App\Support\PageSchema::toJson($trail, $article)"
 >
     <header class="border-b border-line bg-linear-to-b from-sage to-paper pt-10 pb-16 sm:pt-14 sm:pb-24">
