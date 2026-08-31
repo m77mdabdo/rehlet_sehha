@@ -92,6 +92,15 @@ class PostSeeder extends Seeder
                 'is_featured' => $article['featured'] ?? false,
 
                 /*
+                 * Recomputed, not preserved. The body has just been replaced,
+                 * so any stored reading time describes the previous draft —
+                 * and Post::booted() only fills this when it is null. Leaving
+                 * it alone is how twelve articles kept a two-minute estimate
+                 * from when they were outlines.
+                 */
+                'reading_minutes' => null,
+
+                /*
                  * Draft, and re-drafted on every run.
                  *
                  * Deliberately destructive: if a seeded article has been
