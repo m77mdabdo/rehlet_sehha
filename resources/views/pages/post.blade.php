@@ -159,6 +159,7 @@
                 a medical page. Structure is carried by two prefixes instead:
 
                   ## A heading      → <h2>
+                  > A callout       → a bordered block, set apart
                   CLINICAL_INPUT: … → an unanswered prompt
 
                 The second can never reach a reader — Post::booted() refuses to
@@ -179,6 +180,37 @@
                         <h2 class="pt-6 font-display text-2xl font-semibold text-balance text-ink sm:text-3xl">
                             {{ trim(substr($block, 3)) }}
                         </h2>
+                    @elseif (App\Support\ArticleBody::isCallout($block))
+                        {{--
+                            A callout. Not decoration: it is for the paragraph
+                            that is a TOOL rather than an argument — something
+                            the reader is meant to carry out of the article and
+                            use on the next claim she meets. See
+                            ArticleBody::isCallout().
+
+                            Logical borders (border-s) so the accent edge is on
+                            the right in Arabic and the left in English without
+                            a second rule.
+                        --}}
+                        <div class="rounded-2xl border border-line border-s-4 border-s-accent bg-sage/40 p-6 sm:p-8">
+                            @foreach (App\Support\ArticleBody::callout($block) as $piece)
+                                @if ($piece['type'] === 'list')
+                                    <ul class="mt-4 space-y-3 first:mt-0">
+                                        @foreach ($piece['items'] as $item)
+                                            <li class="flex gap-3 text-ink">
+                                                {{-- Decorative: the list is
+                                                     already a list to a screen
+                                                     reader. --}}
+                                                <span aria-hidden="true" class="mt-3 size-1.5 shrink-0 rounded-full bg-accent"></span>
+                                                <span class="font-medium">{!! App\Support\ArticleBody::render($item) !!}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <p class="mt-4 text-ink first:mt-0">{!! App\Support\ArticleBody::render($piece['text']) !!}</p>
+                                @endif
+                            @endforeach
+                        </div>
                     @elseif (str_starts_with($block, App\Models\Post::CLINICAL_MARKER))
                         <p class="rounded-lg border-2 border-dashed border-gold bg-gold/10 p-4 text-base text-ink">
                             <strong>{{ App\Models\Post::CLINICAL_MARKER }}</strong>
