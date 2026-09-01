@@ -4,8 +4,8 @@
 > `database/seeders/Articles/`, not this document — anything typed here is
 > overwritten on the next run.
 
-31 questions across 14 articles: **21 CLINICAL_INPUT** and
-**10 PRACTITIONER_VOICE**. Every one is a gap left open deliberately, and no
+29 questions across 14 articles: **20 CLINICAL_INPUT** and
+**9 PRACTITIONER_VOICE**. Every one is a gap left open deliberately, and no
 article can be published while any of its own remain.
 
 ## The two kinds, and why they are not the same
@@ -39,45 +39,6 @@ the article.
 
 Where a question does not apply, say so. "I would not give a number here" is an
 answer, and a useful one.
-
----
-
-## إيه اللي تجيبيه معاكي في أول زيارة؟
-
-`what-to-bring-to-a-first-appointment` · قراءة التحاليل
-
-> نص الكشف الأول بيروح في تجميع معلومات كانت ممكن تيجي جاهزة. القايمة دي بتوفّر الوقت ده لحاجة أهم.
-
-### CLINICAL_INPUT
-
-**في قسم:** المكملات ممكن تغيّر نتيجة التحليل — مثال حقيقي
-
-**السؤال:** في مكملات إنتِ بتسألي عنها بالاسم في أول كشف لأنها بتأثر على التحاليل أو على الخطة؟
-
-*In English:* Are there supplements you ask about by name in a first consultation because of their effect on tests or on the plan?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-مش المطلوب إن حد يقلق من مكملاته. المطلوب إنها تتقال، عشان اللي بيقرا النتيجة يبقى عارف.
-
-</details>
-
-### PRACTITIONER_VOICE — **بصوتك إنتِ**
-
-**في قسم:** في السياق المصري
-
-**السؤال:** إيه أكتر حاجة نفسك المرضى يجيبوها معاهم وبيجوا من غيرها؟
-
-*In English:* What is the thing you most wish patients brought with them, and most often arrive without?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-ولو الميعاد في رمضان أو قريب منه، قولي. شكل اليوم بيتغير كليًا، والخطة اللي اتكتبت لشكل يوم تاني مش هتنفع.
-
-</details>
-
 
 ---
 
