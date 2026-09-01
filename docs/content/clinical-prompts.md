@@ -4,8 +4,8 @@
 > `database/seeders/Articles/`, not this document — anything typed here is
 > overwritten on the next run.
 
-34 questions across 14 articles: **23 CLINICAL_INPUT** and
-**11 PRACTITIONER_VOICE**. Every one is a gap left open deliberately, and no
+31 questions across 14 articles: **21 CLINICAL_INPUT** and
+**10 PRACTITIONER_VOICE**. Every one is a gap left open deliberately, and no
 article can be published while any of its own remain.
 
 ## The two kinds, and why they are not the same
@@ -39,60 +39,6 @@ the article.
 
 Where a question does not apply, say so. "I would not give a number here" is an
 answer, and a useful one.
-
----
-
-## التحاليل سليمة وأنا لسه تعبانة — إيه اللي بيحصل؟
-
-`normal-results-still-tired` · قراءة التحاليل
-
-> كلمة «طبيعي» في ورقة التحليل ليها معنى إحصائي محدد، ومش دايمًا هي نفس معنى «تمام بالنسبالك».
-
-### CLINICAL_INPUT
-
-**في قسم:** الأنيميا مش بس رقم الهيموجلوبين
-
-**السؤال:** في حالة تعب مستمر مع هيموجلوبين جوه النطاق — إيه اللي بيخليكي تفكري في تقييم أوسع للحديد؟ من غير أرقام.
-
-*In English:* With persistent fatigue and a haemoglobin inside the range, what makes you consider a broader assessment of iron? No figures.
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-وفي تعقيد إضافي: الفيريتين بيرتفع مع الالتهاب، فقراية عالية مش دايمًا معناها مخزون كويس، وده سبب إن التفسير محتاج حد شايف الصورة كلها.
-
-</details>
-
-### CLINICAL_INPUT
-
-**في قسم:** في السياق المصري
-
-**السؤال:** إيه أول حاجة بتسألي عنها لما مريضة تيجي بتحاليل «سليمة» وتعب مستمر؟
-
-*In English:* What is the first thing you ask about when a patient arrives with "normal" results and persistent exhaustion?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-وفيتامين د حالة غريبة هنا: بلد شمسه قوية طول السنة، والنقص موجود. السبب مش الشمس — السبب التعرض. الشغل جوه المباني، والخروج في وقت مش وقت ذروة الأشعة، واللبس اللي بيغطي الجلد، كلها بتقلل التصنيع في الجلد بغض النظر عن الطقس بره.
-
-</details>
-
-### PRACTITIONER_VOICE — **بصوتك إنتِ**
-
-**في قسم:** الأسئلة اللي تسأليها لما تسمعي «التحاليل سليمة»
-
-**السؤال:** إيه أكتر حاجة بتلاقيها لما تراجعي تحاليل مريضة اتقالها «كله تمام» وهي لسه تعبانة؟
-
-*In English:* What do you most often find when you review the results of a patient who was told everything was fine and is still exhausted?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-واحتفظي بالورق. النتايج القديمة بتوري اتجاه، والاتجاه بيقول حاجات النتيجة الواحدة مش بتقولها. في مقال عن تجهيز ده كله: [[article:what-to-bring-to-a-first-appointment|إيه اللي تجيبيه معاكي في أول زيارة]].
-
-</details>
-
 
 ---
 
