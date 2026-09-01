@@ -10,14 +10,16 @@ use App\Models\Post;
 use App\Models\Tag;
 use Closure;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use Illuminate\Support\HtmlString;
 
 /**
  * Arabic and English side by side, both required. See App\Filament\Support\Bilingual
@@ -28,12 +30,93 @@ class PostForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
+            /*
+            |------------------------------------------------------------------
+            | What is still standing between this article and the site
+            |------------------------------------------------------------------
+            |
+            | THE SAME SENTENCES THE LIST SHOWS, on the screen where she can act
+            | on them. Both read Post::publishBlockers(), so there is one place
+            | that knows the rules and no way for the two screens to disagree.
+            |
+            | Only on an existing record: a brand-new article has no citations
+            | and no reviewer by definition, and opening a blank form under a
+            | red panel listing six failures teaches her to ignore the panel.
+            */
+            Section::make('جاهزية النشر')
+                ->visible(fn (?Post $record): bool => $record !== null)
+                ->schema([
+                    Placeholder::make('blockers')
+                        ->hiddenLabel()
+                        ->content(function (?Post $record) {
+                            if ($record === null) {
+                                return '';
+                            }
+
+                            $blockers = $record->publishBlockers();
+
+                            if ($blockers === []) {
+                                return new HtmlString(
+                                    '<p class="text-success-600 dark:text-success-400 font-medium">'
+                                    .'المقال جاهز للنشر. كل المراجعات اتعملت ومفيش حاجة ناقصة.</p>'
+                                );
+                            }
+
+                            $items = collect($blockers)
+                                ->map(fn (string $b): string => '<li>'.e($b).'</li>')
+                                ->implode('');
+
+                            return new HtmlString(
+                                '<p class="mb-2 font-medium text-danger-600 dark:text-danger-400">'
+                                .'المقال ده مش هينشر لحد ما الحاجات دي تتظبط:</p>'
+                                .'<ul class="list-disc space-y-1 ps-5 text-sm">'.$items.'</ul>'
+                            );
+                        }),
+                ])
+                ->collapsible(),
+
             Section::make('المقال')
                 ->schema([
                     Bilingual::text('title', 'العنوان'),
-                    Bilingual::text('category', 'التصنيف'),
+                    /*
+                     * NO `category` FIELD HERE, and there was one until now.
+                     *
+                     * It was a pair of REQUIRED bilingual text inputs bound to
+                     * `posts.category` — a free-text column dropped months ago
+                     * when categories became a relation. The migration removed
+                     * the column and nobody removed the field, so the edit form
+                     * has been rendering two mandatory boxes for an attribute
+                     * that does not exist.
+                     *
+                     * The real category is the `category_id` select below, and
+                     * it has been there the whole time; these were a second,
+                     * broken way to answer the same question.
+                     *
+                     * Found by opening the form. Nothing else would have: no
+                     * test rendered the Filament form, and PHPStan cannot know
+                     * which strings are column names.
+                     */
                     Bilingual::textarea('excerpt', 'المقدمة', rows: 3),
                     Bilingual::rich('body', 'النص'),
+                ]),
+
+            /*
+            |------------------------------------------------------------------
+            | The search snippet
+            |------------------------------------------------------------------
+            |
+            | Optional, and separate from the excerpt on purpose. The excerpt
+            | sits under a headline on the index and can run as long as it
+            | reads; a meta description is cut at roughly 155 characters
+            | mid-word. Leaving both blank keeps the previous behaviour exactly
+            | — the title and the excerpt are used.
+            */
+            Section::make('العنوان والوصف في نتايج البحث')
+                ->description('اختياري. سيبيهم فاضيين والموقع هيستخدم العنوان والمقدمة زي ما هما.')
+                ->collapsed()
+                ->schema([
+                    Bilingual::text('meta_title', 'عنوان البحث', required: false),
+                    Bilingual::textarea('meta_description', 'وصف البحث', required: false, rows: 2),
                 ]),
 
             Section::make('التصنيف والوسوم')
@@ -55,22 +138,23 @@ class PostForm
                         ->preload()
                         ->helperText('اختياري. الوسم بيجمع مقالات من تصنيفات مختلفة بتتكلم عن نفس الموضوع.'),
 
-                    Select::make('cover_path')
-                        ->label('الصورة')
-                        ->options(function (): array {
-                            /** @var array<string, array{describes: string}> $manifest */
-                            $manifest = require resource_path('photos-manifest.php');
-
-                            $options = [];
-
-                            foreach ($manifest as $slug => $entry) {
-                                $options[$slug] = $slug.' — '.Str::limit($entry['describes'], 60);
-                            }
-
-                            return $options;
-                        })
-                        ->searchable()
-                        ->helperText('من مكتبة الصور المعالجة. الوصف بيساعدك تختاري صورة تخص المقال فعلاً.'),
+                    /*
+                     * A PICTURE PICKER, NOT A FILENAME DROPDOWN.
+                     *
+                     * This was a searchable Select over the manifest slugs.
+                     * «food-fruit-bowl» and «food-vegetables-overhead» are
+                     * indistinguishable in a list, so choosing a photograph
+                     * meant opening config/photos.php, reading `describes` and
+                     * guessing — which is exactly how twelve articles ended up
+                     * sharing generic covers chosen for other pieces.
+                     *
+                     * See resources/views/filament/forms/photo-picker.blade.php.
+                     */
+                    ViewField::make('cover_path')
+                        ->label('صورة المقال')
+                        ->view('filament.forms.photo-picker')
+                        ->columnSpanFull()
+                        ->helperText('الصورة اللي بتظهر فوق المقال وفي لينك المشاركة على واتساب.'),
                 ])
                 ->columns(2),
 

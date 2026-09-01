@@ -47,8 +47,10 @@
     --}}
     :eyebrow="$post->category?->name"
     :title="$post->title"
-    :meta-title="$post->title.' — '.__('common.brand')"
-    :meta-description="$post->excerpt"
+    {{-- The search snippet, which falls back to the copy on the page when
+         nothing overrides it. See Post::metaDescription(). --}}
+    :meta-title="$post->metaTitle().' — '.__('common.brand')"
+    :meta-description="$post->metaDescription()"
     :footer-services="$footerServices"
     :article="$post"
     :trail="[
