@@ -45,6 +45,10 @@ class WhatToBringToAFirstAppointment extends ArticleDefinition
 
 المقال ده قايمة عملية، وورا كل بند فيها سبب.
 
+وأول حاجة بتقولها د. رنا لأي مريضة جاية أول مرة: «متقلقيش، إنتِ مش جاية امتحان ومش مطلوب منك تحضّري ملف كامل قبل ما تيجي. بس في شوية حاجات لو موجودة معاكي هتساعدني أفهم حالتك أسرع وأدق».
+
+وده المبدأ اللي القايمة دي كلها ماشية عليه: أنا محتاجة معلومات حقيقية، مش إجابات مثالية.
+
 ## اللي بيحصل فعلًا في أول كشف
 
 التقييم الغذائي الجدي مش سؤال «بتاكلي إيه؟». هو تجميع صورة: التاريخ المرضي، الأدوية، نتايج التحاليل لو موجودة، شكل اليوم، تاريخ المحاولات السابقة، والتفضيلات والميزانية.
@@ -73,7 +77,7 @@ class WhatToBringToAFirstAppointment extends ArticleDefinition
 
 مش المطلوب إن حد يقلق من مكملاته. المطلوب إنها تتقال، عشان اللي بيقرا النتيجة يبقى عارف.
 
-CLINICAL_INPUT: في مكملات إنتِ بتسألي عنها بالاسم في أول كشف لأنها بتأثر على التحاليل أو على الخطة؟
+وطلبها هنا محدد: «لو بتاخدي أدوية أو مكملات غذائية، مهم أعرف أسماءها والجرعات اللي بتاخديها».
 
 ## وليه المكمل مش «حاجة بسيطة»
 
@@ -101,6 +105,24 @@ CLINICAL_INPUT: في مكملات إنتِ بتسألي عنها بالاسم ف
 
 ## تالت حاجة: يوم أكل حقيقي
 
+د. رنا بتقول إن ده أحيانًا بيفيد أكتر من ورق كتير: «إنك تكوني فاكرة أكلك الحقيقي عامل إزاي. مش اليوم المثالي اللي بتحاولي تاكلي فيه صحي — أنا عايزة أعرف يومك العادي».
+
+والأسئلة اللي بتسألها:
+
+بتفطري ولا لأ؟ وأول وجبة إمتى؟
+
+بتاكلي إيه في الشغل؟
+
+بتجوعي إمتى؟
+
+بتشربي قد إيه؟
+
+بتطلبي أكل من بره كام مرة؟
+
+وإيه اللي بيحصل آخر اليوم؟
+
+«ولو تقدري قبل الجلسة بيومين أو تلاتة تسجلي بشكل بسيط أكلتي وشربتي إيه ومواعيدهم، ده ممكن يساعدنا جدًا. ومش محتاجة تغيري أكلك عشان (يبان كويس) قدامي؛ أنا محتاجة أشوف الطبيعي عشان أعرف أساعدك».
+
 اكتبي أكل يومين أو تلاتة قبل الميعاد، ساعة بساعة تقريبًا.
 
 وأهم شرط: يوم عادي، مش يوم مثالي. اليوم المثالي بيدي خطة لشخص مش موجود.
@@ -121,18 +143,6 @@ CLINICAL_INPUT: في مكملات إنتِ بتسألي عنها بالاسم ف
 
 ولو الجملة اللي جابتك هي «ظبّطي أكلك» من غير تفاصيل، في مقال عن معناها: [[article:what-fix-your-diet-actually-means|«ظبّطي أكلك» معناها إيه بالظبط]].
 
-## اللي مش محتاج تجيبيه
-
-عشان القايمة متبقاش عبء:
-
-مش محتاجة تعملي تحاليل جديدة قبل الزيارة. اللي هيتطلب هيتحدد بعد الكشف، والتحليل اللي بيتعمل من غير سبب بيكلف فلوس وبيدي أرقام محدش هيستخدمها.
-
-ومش محتاجة تيجي صايمة إلا لو حد قالك كده تحديدًا.
-
-ومش محتاجة تظبطي أكلك الأسبوع اللي قبل الميعاد. ده أكتر حاجة بتحصل، وهي بتضر: اليوم اللي هيتوصف مش هيبقى اليوم الحقيقي، والخطة هتتبني على معلومة غلط. الأسبوع العادي بالظبط هو المطلوب.
-
-ومش محتاجة تحفظي حاجة. لو مش فاكرة اسم دوا، صوّري العلبة.
-
 ## سادس حاجة: الظروف اللي بتحدد شكل يومك
 
 الحاجات دي بتبان تفاصيل شخصية، وهي في الحقيقة اللي بتقرر الخطة تنفع ولا لأ.
@@ -146,6 +156,26 @@ CLINICAL_INPUT: في مكملات إنتِ بتسألي عنها بالاسم ف
 في حد تاني في البيت بحالة مزمنة أو نظام معيّن؟ الأكل الواحد للعيلة كلها معناه إن الخطة لازم تشتغل جوه الحلة الموجودة.
 
 وهل في سفر أو مناسبات قريبة؟ رمضان، عيد، فرح، امتحانات، سفر شغل. الأسابيع دي بتيجي مهما حصل، والخطة اللي عارفة إنها جاية أحسن من الخطة اللي بتتفاجئ بيها.
+
+دي القايمة كلها. لو الحاجات دي موجودة معاكي، [[booking|تقدري تحجزي موعد]] دلوقتي وتيجي بيها.
+
+## اللي مش محتاج تجيبيه
+
+عشان القايمة متبقاش عبء:
+
+مش محتاجة تعملي تحاليل جديدة قبل الزيارة. اللي هيتطلب هيتحدد بعد الكشف، والتحليل اللي بيتعمل من غير سبب بيكلف فلوس وبيدي أرقام محدش هيستخدمها.
+
+ومش محتاجة تيجي صايمة إلا لو حد قالك كده تحديدًا.
+
+ومش محتاجة تظبطي أكلك الأسبوع اللي قبل الميعاد. ده أكتر حاجة بتحصل، وهي بتضر: اليوم اللي هيتوصف مش هيبقى اليوم الحقيقي، والخطة هتتبني على معلومة غلط. الأسبوع العادي بالظبط هو المطلوب.
+
+ومش محتاجة تحفظي حاجة. لو مش فاكرة اسم دوا، صوّري العلبة.
+
+وبكلامها هي: «مش محتاجة تعملي مجموعة تحاليل كبيرة من نفسك لمجرد إن عندك جلسة تغذية. ومش محتاجة تجيبي كل نظام دايت جربتيه في حياتك، ولا صور كل وجبة أكلتيها خلال آخر شهر.
+
+ولو عندك تحاليل قديمة جدًا، ممكن نراجعها لو ليها علاقة بتاريخك الصحي، لكن مش هنبني قرار حالي على أرقام قديمة من غير ما نشوف هل ما زالت مفيدة للحالة ولا لأ».
+
+وحاجة أخيرة، وهي الأهم في القايمة دي كلها: «متجيبيش معاكي إحساس إنك محتاجة تثبتيلي إنك كنتِ (ملتزمة) أو تبرري ليه وزنك زاد».
 
 ## خرافة: «هو هيعرف كل حاجة من الكشف»
 
@@ -165,7 +195,13 @@ CLINICAL_INPUT: في مكملات إنتِ بتسألي عنها بالاسم ف
 
 ولو الميعاد في رمضان أو قريب منه، قولي. شكل اليوم بيتغير كليًا، والخطة اللي اتكتبت لشكل يوم تاني مش هتنفع.
 
-PRACTITIONER_VOICE: إيه أكتر حاجة نفسك المرضى يجيبوها معاهم وبيجوا من غيرها؟
+## طب لو جيتي من غير أي حاجة خالص؟
+
+«هنعمل الجلسة عادي جدًا. هنبدأ بالكلام، وهسألك عن تاريخك الصحي، أكلك، نومك، نشاطك، روتين يومك، محاولاتك السابقة، وإيه الهدف اللي عايزة توصلي له.
+
+ولو أثناء التقييم ظهر إن في تحليل أو معلومة طبية محتاجينها، ساعتها بنحدد المطلوب بشكل واضح، ونتعامل معاه بالطريقة المناسبة بدل ما تعملي تحاليل عشوائية قبل الجلسة.
+
+فلو عندك أوراق مهمة هاتيها، ولو معندكيش متأجليش الجلسة بسبب كده».
 
 وحاجة أخيرة عملية: لو ينفع، خلي حد معاكي أو سجلي الكلام لو الطرف التاني موافق. الكشف فيه معلومات كتير بتتقال بسرعة، والذاكرة بعد الكشف مش بتكون في أحسن حالاتها — خصوصًا لو الموضوع فيه قلق.
 
@@ -176,12 +212,20 @@ PRACTITIONER_VOICE: إيه أكتر حاجة نفسك المرضى يجيبوه�
 الأدوية والمكملات كلها، الورق كله، يومين أكل حقيقيين، تاريخ المحاولات، والأسئلة. خمس حاجات، وكلها موجودة عندك أصلًا.
 
 لو جاهزة، تقدري [[booking|تحجزي موعد]]. ولو عندك ورق تحاليل مش متأكدة منه، ده بالظبط اللي بتعمله [[specialty:lab-review|مراجعة التحاليل]].
+
+ولو لسه بتفكري: في مقال عن معنى الجملة اللي غالبًا جابتك هنا — [[article:what-fix-your-diet-actually-means|«ظبّطي أكلك» معناها إيه بالظبط]] — وواحد تاني عن الفرق بين الجدول الجاهز والمتابعة الحقيقية: [[article:dietitian-versus-downloadable-plan|النظام الجاهز والخطة الفردية]].
+
+والجملة اللي تستاهل تفضل معاكي: أهم حاجة تجيبيها معاكي في أول جلسة هي صورة حقيقية عن حياتك. لأن أول جلسة مش هدفها إني أطلعلك أسرع ورقة دايت — هدفها إني أفهمك الأول، وبعدها نعرف إيه الخطة اللي فعلًا تنفع معاكي.
 AR,
 
                 'en' => <<<'EN'
 Something recurring happens in a first consultation: half the time goes into assembling information that could have arrived ready. A test done six months ago sitting in a drawer at home, a medication whose name is not quite remembered, and a supplement taken daily that nobody counted as a medicine.
 
 This article is a practical list, and there is a reason behind every item on it.
+
+The first thing Dr Rana says to anybody coming for the first time: "Don't worry. You are not sitting an exam, and nobody is asking you to put together a whole file before you come. But there are a few things that, if you have them, will help me understand your case faster and more accurately."
+
+And that is the principle the whole list runs on: I need real information, not perfect answers.
 
 ## What actually happens in a first consultation
 
@@ -211,7 +255,7 @@ And this supplement in particular is not thought of as a medicine by anybody. It
 
 The point is not that anybody should be alarmed about her supplements. The point is that they should be mentioned, so that whoever reads the result knows.
 
-CLINICAL_INPUT: Are there supplements you ask about by name in a first consultation because of their effect on tests or on the plan?
+Her request here is specific: "If you are taking any medication or supplements, I need to know their names and the doses you are taking." 
 
 ## And why a supplement is not "a small thing"
 
@@ -239,6 +283,24 @@ And if the tests were done at different laboratories, say so as well. Reference 
 
 ## Third: a real day of eating
 
+Dr Rana says this is sometimes worth more than a great deal of paper: "That you can remember what your eating is actually like. Not the ideal day where you try to eat well — I want to know your ordinary day."
+
+The questions she asks:
+
+Do you have breakfast or not? And when is your first meal?
+
+What do you eat at work?
+
+When do you get hungry?
+
+How much are you drinking?
+
+How often do you order food in?
+
+And what happens at the end of the day?
+
+"And if you can write down simply, two or three days before the session, what you ate and drank and when, that helps a great deal. And you don't need to change your eating so it looks good in front of me — I need to see the normal in order to be able to help you." 
+
 Write down two or three days of food before the appointment, roughly hour by hour.
 
 And the essential condition: an ordinary day, not an ideal one. An ideal day produces a plan for a person who does not exist.
@@ -259,18 +321,6 @@ Questions get forgotten in a consultation. Put them on paper or in your phone.
 
 And if the sentence that brought you here was "sort your diet out" with no detail, there is an article on what it means: [[article:what-fix-your-diet-actually-means|what that sentence actually means]].
 
-## What you do not need to bring
-
-So that the list does not become a burden:
-
-You do not need to have new tests done before the visit. What is needed will be decided after the consultation, and a test done without a reason costs money and produces numbers nobody will use.
-
-You do not need to come fasting unless somebody has specifically told you to.
-
-You do not need to tidy up your eating in the week before the appointment. This is the most common thing people do, and it is counterproductive: the day described will not be the real day, and the plan will be built on wrong information. An ordinary week is exactly what is wanted.
-
-And you do not need to memorise anything. If you cannot remember the name of a medicine, photograph the box.
-
 ## Sixth: the circumstances that shape your day
 
 These look like personal details and are in fact what decides whether a plan works.
@@ -284,6 +334,26 @@ Budget, honestly. A plan that assumes money that is not there will stop within a
 Is there somebody else in the house with a chronic condition or a particular diet? One meal for the whole family means the plan has to work inside the pot that already exists.
 
 And is there travel or an occasion coming? Ramadan, a feast, a wedding, exams, a work trip. Those weeks arrive regardless, and a plan that knows they are coming is better than one taken by surprise.
+
+That is the whole list. If you have those things, you can [[booking|book an appointment]] now and bring them with you.
+
+## What you do not need to bring
+
+So that the list does not become a burden:
+
+You do not need to have new tests done before the visit. What is needed will be decided after the consultation, and a test done without a reason costs money and produces numbers nobody will use.
+
+You do not need to come fasting unless somebody has specifically told you to.
+
+You do not need to tidy up your eating in the week before the appointment. This is the most common thing people do, and it is counterproductive: the day described will not be the real day, and the plan will be built on wrong information. An ordinary week is exactly what is wanted.
+
+And you do not need to memorise anything. If you cannot remember the name of a medicine, photograph the box.
+
+In her own words: "You don't need to go and order a big panel of tests yourself just because you have a nutrition appointment. And you don't need to bring every diet you have ever tried, or photographs of every meal you have eaten in the past month.
+
+And if you have very old results, we can look at them if they relate to your medical history — but we are not going to build a current decision on old numbers without first seeing whether they are still useful for the case."
+
+And one last thing, the most important on this list: "Don't bring with you the feeling that you have to prove to me that you were 'good', or explain why your weight went up." 
 
 ## The myth: "they will work it all out from the examination"
 
@@ -303,7 +373,13 @@ Family is part of the picture. Who cooks, the budget, one meal for everybody, an
 
 And if the appointment falls in Ramadan or near it, say so. The shape of the day changes completely, and a plan written for a different shape of day will not work.
 
-PRACTITIONER_VOICE: What is the thing you most wish patients brought with them, and most often arrive without?
+## And if you arrive with nothing at all?
+
+"We have the session exactly as normal. We start by talking, and I ask you about your medical history, your eating, your sleep, your activity, your daily routine, what you have tried before, and what you are hoping to reach.
+
+And if it turns out during the assessment that there is a test or a piece of medical information we need, then we decide exactly what is required and deal with it properly — rather than you doing random tests before the session.
+
+So if you have important paperwork, bring it. And if you don't, don't put off the appointment because of it." 
 
 One last practical thing: if you can, bring somebody with you, or record the conversation if the other party agrees. A consultation carries a lot of information said quickly, and memory afterwards is not at its best — particularly when the subject is one you are anxious about.
 
@@ -314,6 +390,10 @@ A first consultation builds a plan on the information available inside it. Infor
 All the medications and supplements, all the paper, two real days of eating, the history of attempts, and your questions. Five things, and you already have all of them.
 
 If you are ready, you can [[booking|book an appointment]]. And if you have results you are unsure about, that is exactly what a [[specialty:lab-review|lab review]] is for.
+
+And if you are still deciding: there is an article on the sentence that probably brought you here — [[article:what-fix-your-diet-actually-means|what "sort your diet out" actually means]] — and another on the difference between a ready-made table and actually being followed: [[article:dietitian-versus-downloadable-plan|a downloadable plan and an individual one]].
+
+And the sentence worth keeping: the most important thing to bring to a first session is an honest picture of your life. Because the point of a first session is not for me to produce the fastest possible diet sheet — it is for me to understand you first, and then we work out which plan will actually work for you.
 EN,
             ],
 
