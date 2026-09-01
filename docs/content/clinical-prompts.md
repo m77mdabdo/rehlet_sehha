@@ -4,8 +4,8 @@
 > `database/seeders/Articles/`, not this document — anything typed here is
 > overwritten on the next run.
 
-44 questions across 14 articles: **29 CLINICAL_INPUT** and
-**15 PRACTITIONER_VOICE**. Every one is a gap left open deliberately, and no
+38 questions across 14 articles: **25 CLINICAL_INPUT** and
+**13 PRACTITIONER_VOICE**. Every one is a gap left open deliberately, and no
 article can be published while any of its own remain.
 
 ## The two kinds, and why they are not the same
@@ -39,114 +39,6 @@ the article.
 
 Where a question does not apply, say so. "I would not give a number here" is an
 answer, and a useful one.
-
----
-
-## ليه بنسيب النظام في الأسبوع التالت؟
-
-`why-we-quit-in-week-three` · إدارة الوزن
-
-> «زهقت» مش كسل، ودي مش كلمة نهاية. الأسبوع التالت له شكل معروف — فسيولوجي ونفسي — وفهمه بيغيّر رد الفعل.
-
-### PRACTITIONER_VOICE — **بصوتك إنتِ**
-
-**في قسم:** الفرق بين إنك تقفي وإنك تعدّلي
-
-**السؤال:** لما مريضة توصل للأسبوع التالت وتقولك «زهقت» — إنتِ بتقوليلها إيه بالظبط؟ الجملة اللي بتستخدميها فعلًا، مش الكلام النظري.
-
-*In English:* When a patient reaches week three and tells you she is bored, what do you actually say? The sentence you really use, not the theory.
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-وبين الوقوف والتعديل مسافة كبيرة. الخطة اللي بتتعدل في الأسبوع التالت بتفضل شغالة؛ الخطة اللي بتتساب بترجع من الأول بعد شهرين، ومعاها الإحساس إن المحاولة دي كمان فشلت — وده الجزء اللي بيتراكم.
-
-</details>
-
-### CLINICAL_INPUT
-
-**في قسم:** إيه اللي بيتغيّر في المتابعة
-
-**السؤال:** أول حاجة بتغيّريها في الخطة لما حد يوصل للنقطة دي إيه؟ لو في تعديل محدد بتبدأي بيه — اكتبيه.
-
-*In English:* What is the first thing you change in a plan when somebody reaches this point? If there is a specific adjustment you start with, write it.
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-وده كمان اللي بيخلي التعديل ممكن. الشخص اللي بيتابع لوحده بيبقى قدامه خيارين: يكمّل زي ما هو، أو يبطل. الشخص اللي بيتابع مع حد شايف حالته بيبقى قدامه خيار تالت.
-
-</details>
-
-### CLINICAL_INPUT
-
-**في قسم:** إيه اللي بيتغيّر في المتابعة
-
-**السؤال:** في حاجة بتنصحي بيها قبل ما الأسبوع التالت يوصل، يعني من الأسبوع الأول، عشان اللحظة دي تبقى أسهل؟
-
-*In English:* Is there something you advise before week three arrives — from week one — to make this moment easier?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-وده كمان اللي بيخلي التعديل ممكن. الشخص اللي بيتابع لوحده بيبقى قدامه خيارين: يكمّل زي ما هو، أو يبطل. الشخص اللي بيتابع مع حد شايف حالته بيبقى قدامه خيار تالت.
-
-</details>
-
-
----
-
-## الميزان بيقول إيه — والحاجات اللي مش بيقولها
-
-`what-the-scale-does-not-say` · إدارة الوزن
-
-> قراية واحدة على الميزان فيها حاجات كتير غير اللي بتحاولي تقيسيها. وفي حاجات أهم منها بتتقاس بطريقة تانية.
-
-### CLINICAL_INPUT
-
-**في قسم:** هل الوزن اليومي فكرة وحشة؟
-
-**السؤال:** إنتِ بتنصحي بالقياس كل قد إيه؟ وفي حالات بتنصحي فيها حد إنه يبطل يقيس خالص — إيه هي؟
-
-*In English:* How often do you advise weighing? And are there cases where you advise somebody to stop weighing altogether — which ones?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-يعني السؤال مش «كل قد إيه». السؤال هو: الرقم بيعمل إيه فيكي لما تشوفيه؟
-
-</details>
-
-### CLINICAL_INPUT
-
-**في قسم:** اللي العيادة بتتابعه غير الرقم
-
-**السؤال:** إيه الحاجات اللي إنتِ بتتابعيها فعليًا مع المريضة جنب الوزن؟ اذكري اللي بتستخدميه في العيادة.
-
-*In English:* What do you actually track alongside weight with a patient? Name what you use in clinic.
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-الحاجات دي مع بعض بتوصف الحالة بشكل أقرب للحقيقة بكتير من رقم واحد، وأهم من كده: بتدي حاجة تتعدل. رقم واقف مش بيقول لحد يعمل إيه بعده.
-
-</details>
-
-### PRACTITIONER_VOICE — **بصوتك إنتِ**
-
-**في قسم:** اللي العيادة بتتابعه غير الرقم
-
-**السؤال:** إيه أكتر موقف بيتكرر قدامك لمريضة اتفزعت من قراية ميزان، وطلع السبب حاجة زي دي؟
-
-*In English:* What is the situation you see most often where a patient was alarmed by a reading, and the cause turned out to be something like this?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-الحاجات دي مع بعض بتوصف الحالة بشكل أقرب للحقيقة بكتير من رقم واحد، وأهم من كده: بتدي حاجة تتعدل. رقم واقف مش بيقول لحد يعمل إيه بعده.
-
-</details>
-
 
 ---
 

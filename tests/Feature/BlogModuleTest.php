@@ -142,10 +142,25 @@ it('seeds fourteen drafts, every one unpublished and every one with a cover', fu
             $body = (string) $post->getTranslation('body', $locale, false);
 
             expect(str_contains($body, '## '))->toBeTrue("{$post->slug} ({$locale}) has no section headings.");
-            expect(substr_count($body, Post::CLINICAL_MARKER))->toBeGreaterThan(
-                0,
-                "{$post->slug} ({$locale}) has no clinical prompts — either it needs none, "
-                .'which is unlikely for a clinical article, or somebody answered them by guessing.'
+
+            /*
+             * PROMPTS, OR THE ANSWERS THAT REPLACED THEM.
+             *
+             * This asserted that every article carries at least one
+             * CLINICAL_INPUT, which was true while all fourteen were drafts
+             * and stopped being true the moment the practitioner answered
+             * one — a test that fails because the project succeeded.
+             *
+             * What holds permanently is that an article is in exactly one of
+             * two states: still asking, or finished. Neither state is a
+             * shorter article, which is what the length floor below catches.
+             */
+            expect(
+                substr_count($body, Post::CLINICAL_MARKER) > 0
+                || array_sum($post->unansweredMarkers()) === 0
+            )->toBeTrue(
+                "{$post->slug} ({$locale}) has no clinical prompts and is not finished either — "
+                .'somebody answered them in one language and not the other.'
             );
 
             /*
