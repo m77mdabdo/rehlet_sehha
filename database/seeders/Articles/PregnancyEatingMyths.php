@@ -25,7 +25,7 @@ class PregnancyEatingMyths extends ArticleDefinition
             'slug' => 'pregnancy-eating-myths',
             'category' => 'pregnancy-nutrition',
             'tags' => ['myths', 'family'],
-            'cover' => 'pregnancy-bump',
+            'cover' => 'eggs-cheese-bread-plate',
 
             'title' => [
                 'ar' => 'خرافات الأكل في الحمل — والكلام اللي ليه مصدر',

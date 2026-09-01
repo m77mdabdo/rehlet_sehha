@@ -27,7 +27,7 @@ class PcosAndFoodJudgingAClaim extends ArticleDefinition
             'slug' => 'pcos-and-food-judging-a-claim',
             'category' => 'pcos-hormonal',
             'tags' => ['myths', 'questions-to-ask'],
-            'cover' => 'food-vegetables-overhead',
+            'cover' => 'cinnamon-bowl-dark',
 
             'title' => [
                 'ar' => 'تكيس المبايض والأكل — إزاي تحكمي على أي كلام تسمعيه',

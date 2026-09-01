@@ -23,7 +23,7 @@ class DietitianVersusDownloadablePlan extends ArticleDefinition
             'slug' => 'dietitian-versus-downloadable-plan',
             'category' => 'medical-nutrition',
             'tags' => ['first-visit'],
-            'cover' => 'consultation-meal-plan',
+            'cover' => 'phone-blank-screen-breakfast',
 
             'title' => [
                 'ar' => 'النظام الجاهز والخطة الفردية — الفرق فين بالظبط؟',

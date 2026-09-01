@@ -29,7 +29,7 @@ class NormalResultsStillTired extends ArticleDefinition
             'slug' => 'normal-results-still-tired',
             'category' => 'lab-review',
             'tags' => ['lab-results', 'questions-to-ask'],
-            'cover' => 'food-clinical-flatlay',
+            'cover' => 'blood-tubes-rack',
 
             'title' => [
                 'ar' => 'التحاليل سليمة وأنا لسه تعبانة — إيه اللي بيحصل؟',

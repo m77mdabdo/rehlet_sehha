@@ -26,7 +26,7 @@ class FeedingAndEatingRecurringQuestions extends ArticleDefinition
             'slug' => 'feeding-and-eating-recurring-questions',
             'category' => 'pregnancy-nutrition',
             'tags' => ['questions-to-ask', 'family'],
-            'cover' => 'infant-feeding-hands',
+            'cover' => 'vegetable-puree-small-bowls',
 
             'title' => [
                 'ar' => 'أسئلة بتتكرر عن الرضاعة وأكل الطفل',

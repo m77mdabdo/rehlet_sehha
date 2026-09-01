@@ -21,7 +21,7 @@ class WhatFixYourDietActuallyMeans extends ArticleDefinition
             'slug' => 'what-fix-your-diet-actually-means',
             'category' => 'medical-nutrition',
             'tags' => ['first-visit', 'questions-to-ask'],
-            'cover' => 'consultation-desk-wide',
+            'cover' => 'hands-slicing-tomato-board',
 
             'title' => [
                 'ar' => '«ظبّطي أكلك» — الجملة دي معناها إيه بالظبط؟',

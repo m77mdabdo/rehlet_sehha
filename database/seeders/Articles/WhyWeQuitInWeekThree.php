@@ -23,7 +23,7 @@ class WhyWeQuitInWeekThree extends ArticleDefinition
             'category' => 'weight-management',
             'tags' => ['adherence'],
             'featured' => true,
-            'cover' => 'kitchen-hands-herbs',
+            'cover' => 'pantry-staples-overhead',
 
             'title' => [
                 'ar' => 'ليه بنسيب النظام في الأسبوع التالت؟',

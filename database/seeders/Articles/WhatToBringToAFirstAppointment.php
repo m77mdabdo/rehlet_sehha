@@ -27,7 +27,7 @@ class WhatToBringToAFirstAppointment extends ArticleDefinition
             'slug' => 'what-to-bring-to-a-first-appointment',
             'category' => 'lab-review',
             'tags' => ['first-visit', 'questions-to-ask'],
-            'cover' => 'food-cookbook-overhead',
+            'cover' => 'packing-papers-into-bag',
 
             'title' => [
                 'ar' => 'إيه اللي تجيبيه معاكي في أول زيارة؟',
