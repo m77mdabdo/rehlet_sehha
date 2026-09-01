@@ -159,6 +159,77 @@ final class ArticleBody
     }
 
     /**
+     * A block that is a callout rather than a paragraph.
+     *
+     * THE THIRD AND LAST CONVENTION. The body column is plain text and stays
+     * that way — see the note at the top of this file — so a block that needs
+     * to be set apart from the prose around it says so with a prefix, exactly
+     * as a heading does with `## `.
+     *
+     *     > Every time you hear advice about PCOS, ask three questions:
+     *     > - Is there evidence behind this?
+     *     > - Does it apply to my case?
+     *     > - Can I keep it up healthily?
+     *     > If the answer is not clear, the advice needs review first.
+     *
+     * It exists because some paragraphs are a TOOL rather than an argument.
+     * The three questions above are meant to be carried out of the article and
+     * used on the next claim the reader meets; a tool set in the same type as
+     * the paragraph before it is a tool nobody notices they were handed.
+     *
+     * There is deliberately no way to nest one, no way to choose a colour, and
+     * no way to put a heading inside one. An editor gets a box, not a layout.
+     */
+    public static function isCallout(string $block): bool
+    {
+        return str_starts_with(ltrim($block), '>');
+    }
+
+    /**
+     * One callout, as the pieces a view renders: paragraphs and one run of
+     * list items per group of adjacent `- ` lines.
+     *
+     * The grouping lives here rather than in the Blade file because it is
+     * parsing, and a template that has to track whether it is currently inside
+     * a list is a template nobody will edit safely later.
+     *
+     * @return list<array{type: string, text?: string, items?: list<string>}>
+     */
+    public static function callout(string $block): array
+    {
+        $pieces = [];
+
+        foreach (preg_split('/\R/u', $block) ?: [] as $line) {
+            // Tolerate `>`, `> ` and a stray indent, because all three are
+            // things a person types.
+            $line = trim(ltrim(trim($line), '>'));
+
+            if ($line === '') {
+                continue;
+            }
+
+            if (str_starts_with($line, '- ')) {
+                $item = trim(substr($line, 2));
+                $last = array_key_last($pieces);
+
+                if ($last !== null && $pieces[$last]['type'] === 'list') {
+                    $pieces[$last]['items'][] = $item;
+
+                    continue;
+                }
+
+                $pieces[] = ['type' => 'list', 'items' => [$item]];
+
+                continue;
+            }
+
+            $pieces[] = ['type' => 'text', 'text' => $line];
+        }
+
+        return $pieces;
+    }
+
+    /**
      * Body text with the link syntax removed, leaving only the words.
      *
      * For anywhere the brackets would be noise rather than structure: an
