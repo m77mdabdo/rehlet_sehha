@@ -4,8 +4,8 @@
 > `database/seeders/Articles/`, not this document — anything typed here is
 > overwritten on the next run.
 
-29 questions across 14 articles: **20 CLINICAL_INPUT** and
-**9 PRACTITIONER_VOICE**. Every one is a gap left open deliberately, and no
+25 questions across 14 articles: **17 CLINICAL_INPUT** and
+**8 PRACTITIONER_VOICE**. Every one is a gap left open deliberately, and no
 article can be published while any of its own remain.
 
 ## The two kinds, and why they are not the same
@@ -39,75 +39,6 @@ the article.
 
 Where a question does not apply, say so. "I would not give a number here" is an
 answer, and a useful one.
-
----
-
-## تكيس المبايض والأكل — إزاي تحكمي على أي كلام تسمعيه
-
-`pcos-and-food-judging-a-claim` · تكيس المبايض والهرمونات
-
-> كل أسبوع في «أكلة بتعالج التكيس». المقال ده مش قايمة ردود — هو طريقة تحكمي بيها على اللي جاي كمان.
-
-### CLINICAL_INPUT
-
-**في قسم:** وحاجة تانية الدليل بيقولها وبتتنسى: الحركة
-
-**السؤال:** لما تتكلمي عن الحركة مع مريضة تكيس مبايض، إنتِ بتقترحي إيه فعلًا؟
-
-*In English:* When you talk about activity with a PCOS patient, what do you actually suggest?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-يعني اللي بيدور على الأكل بس بيسيب نص التوصية. ومش الكلام عن جيم ولا برنامج — الكلام عن نشاط منتظم بشكل ما.
-
-</details>
-
-### CLINICAL_INPUT
-
-**في قسم:** في المطبخ المصري
-
-**السؤال:** أكتر ادعاء بيوصلك من مريضات التكيس وإنتِ بتردي عليه إزاي؟
-
-*In English:* What is the claim you hear most often from PCOS patients, and how do you answer it?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-والخطة اللي بتتنفذ في بيت مصري هي اللي بتشتغل جوه الحلة اللي بتتطبخ للعيلة كلها، مش اللي بتطلب مطبخ منفصل.
-
-</details>
-
-### CLINICAL_INPUT
-
-**في قسم:** في المطبخ المصري
-
-**السؤال:** في حاجة في الأكل بتبدأي بيها فعلًا مع حالة تكيس مبايض جديدة؟ المبدأ، من غير خطة.
-
-*In English:* Is there something in eating you actually start with in a new case of PCOS? The principle, not a plan.
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-والخطة اللي بتتنفذ في بيت مصري هي اللي بتشتغل جوه الحلة اللي بتتطبخ للعيلة كلها، مش اللي بتطلب مطبخ منفصل.
-
-</details>
-
-### PRACTITIONER_VOICE — **بصوتك إنتِ**
-
-**في قسم:** والحاجة اللي مش بتتقال كفاية
-
-**السؤال:** إيه أكتر حاجة نفسك المرضى يعرفوها عن تكيس المبايض من أول يوم؟
-
-*In English:* What do you most wish patients knew about PCOS from the first day?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-الوعد بالحل السريع مش بس مش صحيح — هو بيسرق الوقت من حاجة كانت هتشتغل. الشخص اللي قضى ستة شهور على مكمل بيرجع للنقطة صفر ومعاه إحباط إضافي.
-
-</details>
-
 
 ---
 
