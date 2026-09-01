@@ -226,6 +226,132 @@ return [
             'crop' => null,
             'describes' => 'A kitchen counter with leafy greens, peppers, tomatoes, garlic, a plate of raw meat and a bowl of chickpeas.',
         ],
+        // ---- Article covers -------------------------------------------------
+        //
+        // ONE IMAGE PER ARTICLE, MATCHED TO THAT ARTICLE'S ARGUMENT rather than
+        // to its mood. The staples bowls belong to the piece that says a plan
+        // has to be built from the food already in the house; the jug of water
+        // belongs to the piece that says most of a short-term scale reading is
+        // water; the cinnamon belongs to the piece that uses cinnamon as its
+        // worked example of a mechanism that is not a demonstrated outcome.
+        //
+        // Every candidate was opened before any of these entered this file.
+        // The rejections are recorded in docs/media/photography.md, because the
+        // reasons are reusable: the next person searching a stock library for
+        // "glucometer" will meet the same six pictures.
+
+        'pantry-staples-overhead' => [
+            'source' => 'pexels-silviu-din-17236198.jpg',
+            'topic' => 'food',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'Bowls of dry pasta, flour, polenta, red lentils and rice with sliced bread, laid out on grey.',
+        ],
+
+        'water-jug-morning-table' => [
+            'source' => 'pexels-diego-gonzalez-14545871.jpg',
+            'topic' => 'food',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'A glass jug of water and tumblers on a wooden table beside a kitchen window in warm light.',
+        ],
+
+        'hands-slicing-tomato-board' => [
+            'source' => 'pexels-arina-krasnikova-6653638.jpg',
+            'topic' => 'food',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'Hands slicing a tomato on a wooden board, a colander of lettuce and vegetables beside it.',
+        ],
+
+        'phone-blank-screen-breakfast' => [
+            'source' => 'pexels-marcus-aurelius-9788841.jpg',
+            'topic' => 'food',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'Overhead: hands holding a phone with a blank screen beside a bowl of cereal, juice and fruit.',
+        ],
+
+        'blood-tubes-rack' => [
+            'source' => 'pexels-pavel-danilyuk-8442021.jpg',
+            'topic' => 'clinical',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'A rack of unlabelled blood collection tubes with orange caps beside a centrifuge rotor.',
+        ],
+
+        'packing-papers-into-bag' => [
+            'source' => 'pexels-daniel-hannah-snipes-29359845.jpg',
+            'topic' => 'clinic',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'Hands putting a folder and papers into an open shoulder bag. No faces in frame.',
+        ],
+
+        'cinnamon-bowl-dark' => [
+            'source' => 'pexels-eva-bronzini-5740404.jpg',
+            'topic' => 'food',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'Cinnamon sticks and ground cinnamon in a blue bowl on dark slate, with nutmeg and peppercorns.',
+        ],
+
+        'two-hands-blank-page' => [
+            'source' => 'pexels-artem-podrez-6787057.jpg',
+            'topic' => 'clinic',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'Two people\'s hands across a white table with a blank open page and closed notebooks. No faces.',
+        ],
+
+        /*
+         * THE SECOND CHOICE, AND THE FIRST IS WORTH RECORDING.
+         *
+         * A plate of grilled halloumi, halved boiled eggs, tomato and olives
+         * said the article's message better — every item on the safe side of
+         * its own list, and unmistakably eastern Mediterranean. It could not be
+         * served: the patterned ceramic and the two neighbouring plates put so
+         * much high-frequency detail in frame that WebP missed the small
+         * variant's byte budget at the quality floor, and two successive crops
+         * did not recover it. A cover that cannot be served inside the
+         * performance budget is not a cover.
+         *
+         * This one carries the same argument with fewer objects — hard cheese,
+         * bread, walnuts, olives and an intact egg, none of which appears on
+         * the article's caution list — against a flat ground that compresses.
+         */
+        'eggs-cheese-bread-plate' => [
+            'source' => 'pexels-nataliya-vaitkevich-5605634.jpg',
+            'topic' => 'food',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'A white plate of sliced hard cheese, bread, walnuts and black olives on a green ground, with a whole egg beside it.',
+        ],
+
+        'vegetable-puree-small-bowls' => [
+            'source' => 'pexels-katrin-bolovtsova-5662126.jpg',
+            'topic' => 'child-nutrition',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'Two small bowls of butternut puree on grey boards with squash, spoons and seeds around them.',
+        ],
+
+        'child-hands-untouched-plate' => [
+            'source' => 'pexels-cottonbro-studio-6969724.jpg',
+            'topic' => 'child-nutrition',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'A child\'s hands flat on a tablecloth beside an untouched plate of carrot, asparagus and cauliflower.',
+        ],
+
+        'tuna-eggs-chickpea-bowl' => [
+            'source' => 'pexels-alesia-kozik-6632285.jpg',
+            'topic' => 'food',
+            'faces' => false,
+            'crop' => null,
+            'describes' => 'A bowl of tuna, halved boiled eggs, chickpeas, red cabbage, lettuce, pickles and red onion.',
+        ],
+
         /*
          * Article 13, postpartum. Chosen for what it SAYS rather than for how
          * it looks: a pot on the hob in a lived-in kitchen is the article's

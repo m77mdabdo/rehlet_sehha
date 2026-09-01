@@ -268,6 +268,258 @@ return [
             ],
         ],
     ],
+    'pantry-staples-overhead' => [
+        'topic' => 'food',
+        'describes' => 'Bowls of dry pasta, flour, polenta, red lentils and rice with sliced bread, laid out on grey.',
+        'variants' => [
+            'sm' => [
+                'width' => 725,
+                'height' => 483,
+                'bytes' => 26404,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 730,
+                'bytes' => 51742,
+            ],
+            'lg' => [
+                'width' => 1549,
+                'height' => 1033,
+                'bytes' => 88210,
+            ],
+        ],
+    ],
+    'water-jug-morning-table' => [
+        'topic' => 'food',
+        'describes' => 'A glass jug of water and tumblers on a wooden table beside a kitchen window in warm light.',
+        'variants' => [
+            'sm' => [
+                'width' => 789,
+                'height' => 444,
+                'bytes' => 26866,
+            ],
+            'md' => [
+                'width' => 1193,
+                'height' => 671,
+                'bytes' => 50380,
+            ],
+            'lg' => [
+                'width' => 1687,
+                'height' => 949,
+                'bytes' => 82890,
+            ],
+        ],
+    ],
+    'hands-slicing-tomato-board' => [
+        'topic' => 'food',
+        'describes' => 'Hands slicing a tomato on a wooden board, a colander of lettuce and vegetables beside it.',
+        'variants' => [
+            'sm' => [
+                'width' => 724,
+                'height' => 483,
+                'bytes' => 27892,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 731,
+                'bytes' => 51916,
+            ],
+            'lg' => [
+                'width' => 1548,
+                'height' => 1033,
+                'bytes' => 87688,
+            ],
+        ],
+    ],
+    'phone-blank-screen-breakfast' => [
+        'topic' => 'food',
+        'describes' => 'Overhead: hands holding a phone with a blank screen beside a bowl of cereal, juice and fruit.',
+        'variants' => [
+            'sm' => [
+                'width' => 725,
+                'height' => 483,
+                'bytes' => 31240,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 730,
+                'bytes' => 55392,
+            ],
+            'lg' => [
+                'width' => 1549,
+                'height' => 1033,
+                'bytes' => 89892,
+            ],
+        ],
+    ],
+    'blood-tubes-rack' => [
+        'topic' => 'clinical',
+        'describes' => 'A rack of unlabelled blood collection tubes with orange caps beside a centrifuge rotor.',
+        'variants' => [
+            'sm' => [
+                'width' => 724,
+                'height' => 483,
+                'bytes' => 30048,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 731,
+                'bytes' => 51190,
+            ],
+            'lg' => [
+                'width' => 1548,
+                'height' => 1034,
+                'bytes' => 79178,
+            ],
+        ],
+    ],
+    'packing-papers-into-bag' => [
+        'topic' => 'clinic',
+        'describes' => 'Hands putting a folder and papers into an open shoulder bag. No faces in frame.',
+        'variants' => [
+            'sm' => [
+                'width' => 725,
+                'height' => 483,
+                'bytes' => 28914,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 730,
+                'bytes' => 56896,
+            ],
+            'lg' => [
+                'width' => 1549,
+                'height' => 1033,
+                'bytes' => 140252,
+            ],
+        ],
+    ],
+    'cinnamon-bowl-dark' => [
+        'topic' => 'food',
+        'describes' => 'Cinnamon sticks and ground cinnamon in a blue bowl on dark slate, with nutmeg and peppercorns.',
+        'variants' => [
+            'sm' => [
+                'width' => 725,
+                'height' => 483,
+                'bytes' => 23160,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 730,
+                'bytes' => 43400,
+            ],
+            'lg' => [
+                'width' => 1549,
+                'height' => 1033,
+                'bytes' => 74562,
+            ],
+        ],
+    ],
+    'two-hands-blank-page' => [
+        'topic' => 'clinic',
+        'describes' => 'Two people\'s hands across a white table with a blank open page and closed notebooks. No faces.',
+        'variants' => [
+            'sm' => [
+                'width' => 789,
+                'height' => 444,
+                'bytes' => 5572,
+            ],
+            'md' => [
+                'width' => 1192,
+                'height' => 671,
+                'bytes' => 10220,
+            ],
+            'lg' => [
+                'width' => 1686,
+                'height' => 949,
+                'bytes' => 17656,
+            ],
+        ],
+    ],
+    'eggs-cheese-bread-plate' => [
+        'topic' => 'food',
+        'describes' => 'A white plate of sliced hard cheese, bread, walnuts and black olives on a green ground, with a whole egg beside it.',
+        'variants' => [
+            'sm' => [
+                'width' => 725,
+                'height' => 483,
+                'bytes' => 24658,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 730,
+                'bytes' => 47032,
+            ],
+            'lg' => [
+                'width' => 1549,
+                'height' => 1033,
+                'bytes' => 90182,
+            ],
+        ],
+    ],
+    'vegetable-puree-small-bowls' => [
+        'topic' => 'child-nutrition',
+        'describes' => 'Two small bowls of butternut puree on grey boards with squash, spoons and seeds around them.',
+        'variants' => [
+            'sm' => [
+                'width' => 725,
+                'height' => 483,
+                'bytes' => 45710,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 730,
+                'bytes' => 82788,
+            ],
+            'lg' => [
+                'width' => 1549,
+                'height' => 1033,
+                'bytes' => 151652,
+            ],
+        ],
+    ],
+    'child-hands-untouched-plate' => [
+        'topic' => 'child-nutrition',
+        'describes' => 'A child\'s hands flat on a tablecloth beside an untouched plate of carrot, asparagus and cauliflower.',
+        'variants' => [
+            'sm' => [
+                'width' => 725,
+                'height' => 483,
+                'bytes' => 23434,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 730,
+                'bytes' => 41692,
+            ],
+            'lg' => [
+                'width' => 1549,
+                'height' => 1033,
+                'bytes' => 75424,
+            ],
+        ],
+    ],
+    'tuna-eggs-chickpea-bowl' => [
+        'topic' => 'food',
+        'describes' => 'A bowl of tuna, halved boiled eggs, chickpeas, red cabbage, lettuce, pickles and red onion.',
+        'variants' => [
+            'sm' => [
+                'width' => 725,
+                'height' => 483,
+                'bytes' => 46070,
+            ],
+            'md' => [
+                'width' => 1095,
+                'height' => 730,
+                'bytes' => 84382,
+            ],
+            'lg' => [
+                'width' => 1549,
+                'height' => 1033,
+                'bytes' => 130960,
+            ],
+        ],
+    ],
     'postpartum-kitchen-simple-meal' => [
         'topic' => 'food',
         'describes' => 'A hand lifting pasta from a pan on a hob in a home kitchen, with tomatoes, eggs and vegetables on the counter in front.',
@@ -291,7 +543,7 @@ return [
     ],
     'diabetes-home-glucose-kitchen' => [
         'topic' => 'clinical',
-        'describes' => 'A glucometer with a blank screen on a wooden table, a test strip at its edge and a stethoscope out of focus behind it.',
+        'describes' => 'A glucometer with a blank screen on a wooden table, a hand placing a drop of blood on the test strip, and a stethoscope out of focus behind it.',
         'variants' => [
             'sm' => [
                 'width' => 725,

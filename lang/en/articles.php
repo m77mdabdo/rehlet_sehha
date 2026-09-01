@@ -31,11 +31,20 @@ return [
      * frame, never the headline — a blind reader already has the headline.
      */
     'cover_alt' => [
+        'why-we-quit-in-week-three' => 'Bowls of dry pasta, flour, polenta, red lentils and rice with sliced bread, laid out on grey.',
+        'what-the-scale-does-not-say' => 'A glass jug of water and tumblers on a wooden table beside a kitchen window in warm light.',
+        'what-fix-your-diet-actually-means' => 'Hands slicing a tomato on a wooden board, a colander of lettuce and vegetables beside it.',
+        'dietitian-versus-downloadable-plan' => 'Overhead: hands holding a phone with a blank screen beside a bowl of cereal, juice and fruit.',
+        'normal-results-still-tired' => 'A rack of unlabelled blood collection tubes with orange caps beside a centrifuge rotor.',
+        'what-to-bring-to-a-first-appointment' => 'Hands putting a folder and papers into an open shoulder bag. No faces in frame.',
+        'pcos-and-food-judging-a-claim' => 'Cinnamon sticks and ground cinnamon in a blue bowl on dark slate, with nutmeg and peppercorns.',
+        'questions-to-ask-about-hormones-and-food' => 'Two people\'s hands across a white table with a blank open page and closed notebooks. No faces.',
+        'pregnancy-eating-myths' => 'A white plate of sliced hard cheese, bread, walnuts and black olives on a green ground, with a whole egg beside it.',
+        'feeding-and-eating-recurring-questions' => 'Two small bowls of butternut puree on grey boards with squash, spoons and seeds around them.',
+        'the-child-who-will-not-eat' => 'A child\'s hands flat on a tablecloth beside an untouched plate of carrot, asparagus and cauliflower.',
+        'eating-around-training' => 'A bowl of tuna, halved boiled eggs, chickpeas, red cabbage, lettuce, pickles and red onion.',
         'postpartum-nutrition' => 'A hand lifting pasta from a pan on a hob in a home kitchen, with tomatoes, eggs and vegetables on the counter in front.',
         'diabetes-in-women' => 'A glucose meter with a blank screen on a wooden table, a hand placing a drop of blood on the test strip, and a stethoscope out of focus behind it.',
-        'building-a-habit-that-lasts' => 'An open cookbook on a table surrounded by radishes, tomatoes, avocado, cucumber and oat crackers.',
-        'protein-on-an-egyptian-budget' => 'A kitchen counter with leafy greens, peppers, tomatoes, garlic, a plate of meat and a bowl of chickpeas.',
-        'reading-your-lab-results' => 'Beetroot, kiwi and a halved pomegranate laid beside a laptop and a stethoscope on a dark surface.',
     ],
 
     'empty' => 'Articles will be available shortly.',
