@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\CitationConfidence;
+use App\Enums\PostStatus;
 use App\Models\Concerns\FlushesPublicContentCache;
 use App\Support\ArticleBody;
 use App\Support\Locales;
@@ -25,6 +26,8 @@ use Spatie\Translatable\HasTranslations;
  * @property string $slug
  * @property array<string, string>|string $title
  * @property array<string, string>|string|null $excerpt
+ * @property array<string, string>|string|null $meta_title
+ * @property array<string, string>|string|null $meta_description
  * @property array<string, string>|string $body
  * @property string|null $cover_path
  * @property int|null $reading_minutes
@@ -54,6 +57,8 @@ class Post extends Model
         'category_id',
         'title',
         'excerpt',
+        'meta_title',
+        'meta_description',
         'body',
         'cover_path',
         'reading_minutes',
@@ -64,7 +69,7 @@ class Post extends Model
     ];
 
     /** @var array<int, string> */
-    public array $translatable = ['title', 'excerpt', 'body'];
+    public array $translatable = ['title', 'excerpt', 'meta_title', 'meta_description', 'body'];
 
     /**
      * @return array<string, string>
@@ -302,6 +307,175 @@ class Post extends Model
                 .'. See docs/content/citations-to-verify.md.'
             );
         }
+    }
+
+    /**
+     * The search snippet, which falls back to the copy on the page.
+     *
+     * An article that overrides nothing behaves exactly as it did before this
+     * existed. The override is for the pieces whose excerpt reads well on the
+     * index and is cut mid-word in a search result — see the migration.
+     */
+    public function metaTitle(): string
+    {
+        $override = trim((string) $this->getTranslation('meta_title', Locales::current(), false));
+
+        return $override !== '' ? $override : (string) $this->title;
+    }
+
+    public function metaDescription(): string
+    {
+        $override = trim((string) $this->getTranslation('meta_description', Locales::current(), false));
+
+        return $override !== '' ? $override : (string) $this->excerpt;
+    }
+
+    /**
+     * Where this article is, as one word. See App\Enums\PostStatus.
+     */
+    public function status(): PostStatus
+    {
+        if ($this->published_at === null) {
+            return PostStatus::Draft;
+        }
+
+        return $this->published_at->isFuture() ? PostStatus::Scheduled : PostStatus::Published;
+    }
+
+    /**
+     * EVERY REASON THIS ARTICLE CANNOT GO OUT, IN ARABIC, WITHOUT THROWING.
+     *
+     * The gates themselves stay exactly as they are: booted() throws, and
+     * scopePublished() refuses to serve. Those are the controls, and an
+     * exception is the right shape for a control — it cannot be forgotten and
+     * it applies to seeders, imports and tinker as much as to a form.
+     *
+     * An exception is not a MESSAGE, though. Thrown at somebody who clicked a
+     * button in an admin panel it produces a 500: a stack trace in local, and
+     * in production, where APP_DEBUG is off, a bare "Server Error" page that
+     * tells her nothing at all. She would be left knowing only that publishing
+     * did not work.
+     *
+     * So the same rules are also readable, ahead of time, as sentences she can
+     * act on. This is the one place that knows all of them, and the toggle in
+     * the list, the bulk action, the form validation and the readiness badge
+     * all read it — so a rule added to booted() and not here shows up as a
+     * button that fails with no explanation, which is the failure this method
+     * exists to prevent.
+     *
+     * @return list<string>
+     */
+    public function publishBlockers(): array
+    {
+        $blockers = [];
+
+        if ($this->reviewed_by === null || $this->reviewed_at === null) {
+            $blockers[] = 'محتاج مراجعة إكلينيكية: اسم اللي راجعه وتاريخ المراجعة.';
+        }
+
+        foreach (Locales::all() as $locale) {
+            $language = $locale === 'ar' ? 'العربي' : 'الإنجليزي';
+
+            foreach (['title', 'excerpt', 'body'] as $field) {
+                if (blank($this->getTranslation($field, $locale, false))) {
+                    $blockers[] = "النص {$language} ناقص: مفيش ".self::fieldLabel($field).'.';
+                }
+            }
+
+            $body = (string) $this->getTranslation('body', $locale, false);
+
+            $clinical = substr_count($body, self::CLINICAL_MARKER);
+
+            if ($clinical > 0) {
+                $blockers[] = "في {$clinical} سؤال إكلينيكي (".self::CLINICAL_MARKER
+                    .") لسه محتاج إجابة في النص {$language}.";
+            }
+
+            $voice = substr_count($body, self::PRACTITIONER_MARKER);
+
+            if ($voice > 0) {
+                $blockers[] = "في {$voice} جملة (".self::PRACTITIONER_MARKER
+                    .") لازم تتكتب بصوتك إنتِ في النص {$language}.";
+            }
+        }
+
+        if ($this->exists) {
+            $citations = $this->relationLoaded('citations') ? $this->citations : $this->citations()->get();
+
+            $low = $citations->filter(fn (Citation $c): bool => ! $c->confidence->isPublishable())->count();
+
+            if ($low > 0) {
+                $blockers[] = "في {$low} مصدر المسودة مكانتش متأكدة إنه موجود. "
+                    .'يتشالوا هما والجمل اللي بيسندوها.';
+            }
+
+            $unverified = $citations->filter(
+                fn (Citation $c): bool => $c->confidence->isPublishable() && ! $c->isVerified()
+            )->count();
+
+            if ($unverified > 0) {
+                $blockers[] = "في {$unverified} مصدر لسه محدش راجعه. "
+                    .'كل مصدر لازم حد يفتح الوثيقة ويتأكد إنها بتقول اللي إحنا قايلينه.';
+            }
+        }
+
+        return $blockers;
+    }
+
+    public function isReadyToPublish(): bool
+    {
+        return $this->publishBlockers() === [];
+    }
+
+    /**
+     * The languages this article is not finished in.
+     *
+     * @return list<string>
+     */
+    public function missingLocales(): array
+    {
+        $missing = [];
+
+        foreach (Locales::all() as $locale) {
+            foreach (['title', 'excerpt', 'body'] as $field) {
+                if (blank($this->getTranslation($field, $locale, false))) {
+                    $missing[] = $locale;
+
+                    continue 2;
+                }
+            }
+        }
+
+        return $missing;
+    }
+
+    /**
+     * Unanswered markers across both languages, for the warning in the list.
+     *
+     * @return array{clinical: int, practitioner: int}
+     */
+    public function unansweredMarkers(): array
+    {
+        $counts = ['clinical' => 0, 'practitioner' => 0];
+
+        foreach (Locales::all() as $locale) {
+            $body = (string) $this->getTranslation('body', $locale, false);
+
+            $counts['clinical'] += substr_count($body, self::CLINICAL_MARKER);
+            $counts['practitioner'] += substr_count($body, self::PRACTITIONER_MARKER);
+        }
+
+        return $counts;
+    }
+
+    private static function fieldLabel(string $field): string
+    {
+        return match ($field) {
+            'title' => 'عنوان',
+            'excerpt' => 'مقدمة',
+            'body' => 'نص',
+            default => $field,
+        };
     }
 
     /**

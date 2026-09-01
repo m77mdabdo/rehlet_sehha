@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use App\Filament\Avatars\InitialsAvatarProvider;
 use App\Http\Middleware\ExpireAdminSession;
 use App\Http\Middleware\NoIndexAdminPanel;
 use App\Http\Middleware\SetAdminLocale;
@@ -82,6 +83,22 @@ class AdminPanelProvider extends PanelProvider
              * the whole application loads from one origin.
              */
             ->font('Tajawal', provider: LocalFontProvider::class)
+            /*
+             * AND NO REMOTE AVATAR EITHER — the same defect, found the same
+             * way, three weeks later.
+             *
+             * Filament's default provider builds an <img> pointing at
+             * ui-avatars.com with the user's NAME in the query string, so
+             * every admin page load sent «د. رنا سالم» to a company nobody
+             * here has an agreement with, from the panel where patient
+             * records are opened. The CSP refused it and logged the refusal,
+             * which is the only reason it surfaced.
+             *
+             * A policy that happens to block a request is not the same as not
+             * making it: loosen img-src for an unrelated reason and this comes
+             * back on its own. See App\Filament\Avatars\InitialsAvatarProvider.
+             */
+            ->defaultAvatarProvider(InitialsAvatarProvider::class)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
