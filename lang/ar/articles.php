@@ -30,12 +30,33 @@ return [
      * ALT TEXT for the article covers, keyed by post slug. Describes the
      * frame, never the headline — a blind reader already has the headline.
      */
+    /*
+    |--------------------------------------------------------------------------
+    | Cover alt text
+    |--------------------------------------------------------------------------
+    |
+    | ONE KEY PER ARTICLE SLUG, describing what is FACTUALLY in the frame —
+    | not what the article is about. A reader using a screen reader is being
+    | told what the picture shows; she can read the article for the argument.
+    |
+    | `describes` in config/photos.php is a different thing again: it is a note
+    | for whoever maintains the library. This is the copy a person hears.
+    */
     'cover_alt' => [
+        'why-we-quit-in-week-three' => 'سلطانيات فيها مكرونة ودقيق ودرة وعدس أحمر ورز، وجنبهم شرايح عيش، متحطين على سطح رمادي.',
+        'what-the-scale-does-not-say' => 'إبريق مية من إزاز وكبايات على ترابيزة خشب جنب شباك مطبخ في ضوء دافي.',
+        'what-fix-your-diet-actually-means' => 'إيدين بتقطع طماطاية على لوح خشب، وجنبها مصفاة فيها خس وخضار.',
+        'dietitian-versus-downloadable-plan' => 'من فوق: إيدين ماسكة موبايل شاشته فاضية جنب سلطانية حبوب وكوباية عصير وفاكهة.',
+        'normal-results-still-tired' => 'حامل فيه أنابيب تحليل دم بغطا برتقاني من غير أي بيانات مكتوبة، وجنبه جهاز طرد مركزي.',
+        'what-to-bring-to-a-first-appointment' => 'إيدين بتحط ملف وأوراق في شنطة مفتوحة. مفيش وشوش في الصورة.',
+        'pcos-and-food-judging-a-claim' => 'عيدان قرفة وقرفة مطحونة في سلطانية زرقا على سطح داكن، وجنبهم جوزة الطيب وحبات فلفل.',
+        'questions-to-ask-about-hormones-and-food' => 'إيدين اتنين على ترابيزة بيضا، وبينهم ورقة مفتوحة فاضية ودفاتر مقفولة. مفيش وشوش.',
+        'pregnancy-eating-myths' => 'طبق أبيض فيه شرايح جبنة قديمة وعيش وعين جمل وزيتون أسود على خلفية خضرا، وجنبه بيضة كاملة.',
+        'feeding-and-eating-recurring-questions' => 'سلطانيتين صغيرين فيهم قرع مهروس على لوح خشب رمادي، وحواليهم قرعة ومعالق وبذور.',
+        'the-child-who-will-not-eat' => 'إيدين طفلة مفرودة على مفرش أبيض جنب طبق فيه جزر وهليون وقرنبيط ما اتلمسش.',
+        'eating-around-training' => 'سلطانية فيها تونة وبيض مسلوق ونص ونص وحمص وكرنب أحمر وخس ومخلل وبصل أحمر.',
         'postpartum-nutrition' => 'إيد بترفع مكرونة من حلة على البوتاجاز في مطبخ بيت، وقدامها طماطم وبيض وخضار على الرخامة.',
         'diabetes-in-women' => 'جهاز قياس سكر شاشته فاضية على ترابيزة خشب، وإيد بتحط نقطة دم على شريط التحليل، وسماعة طبيب مش واضحة وراه.',
-        'building-a-habit-that-lasts' => 'كتاب طبخ مفتوح على ترابيزة وحواليه فجل وطماطم وأفوكادو وخيار وبقسماط.',
-        'protein-on-an-egyptian-budget' => 'ترابيزة مطبخ عليها خضار ورق أخضر وفلفل وطماطم وتوم وطبق لحمة وسلطانية حمص.',
-        'reading-your-lab-results' => 'بنجر وكيوي ورمّان مقطوع جنب لابتوب وسماعة طبيب على سطح داكن.',
     ],
 
     'empty' => 'المقالات هتكون متاحة قريب.',

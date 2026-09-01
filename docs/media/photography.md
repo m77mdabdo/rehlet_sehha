@@ -84,12 +84,60 @@ with the photographer, their profile URL, the source page, the Pexels id, the
 download date and the library's own alt text for every candidate it downloads,
 kept or rejected. That file is the record. Keep it with the originals.
 
-| slug | photographer | Pexels id | downloaded |
-| --- | --- | --- | --- |
-| `postpartum-kitchen-simple-meal` | Klaus Nielsen | 6287482 | 2026-08-31 |
-| `diabetes-home-glucose-kitchen` | Towfiqu barbhuiya | 12326657 | 2026-08-31 |
+### Article covers
+
+One image per article, matched to that article's argument rather than to a
+generic mood — the staples bowls belong to the piece that says a plan has to be
+built from the food already in the house; the jug of water to the piece that
+says most of a short-term scale reading is water; the cinnamon to the piece that
+uses cinnamon as its worked example of a mechanism that is not an outcome.
+
+| slug | article | photographer | Pexels id | downloaded |
+| --- | --- | --- | --- | --- |
+| `pantry-staples-overhead` | why-we-quit-in-week-three | Silviu Din | 17236198 | 2026-09-01 |
+| `water-jug-morning-table` | what-the-scale-does-not-say | Diego Gonzalez | 14545871 | 2026-09-01 |
+| `hands-slicing-tomato-board` | what-fix-your-diet-actually-means | Arina Krasnikova | 6653638 | 2026-09-01 |
+| `phone-blank-screen-breakfast` | dietitian-versus-downloadable-plan | Marcus Aurelius | 9788841 | 2026-09-01 |
+| `blood-tubes-rack` | normal-results-still-tired | Pavel Danilyuk | 8442021 | 2026-09-01 |
+| `packing-papers-into-bag` | what-to-bring-to-a-first-appointment | Daniel & Hannah Snipes | 29359845 | 2026-09-01 |
+| `cinnamon-bowl-dark` | pcos-and-food-judging-a-claim | Eva Bronzini | 5740404 | 2026-09-01 |
+| `two-hands-blank-page` | questions-to-ask-about-hormones-and-food | Artem Podrez | 6787057 | 2026-09-01 |
+| `eggs-cheese-bread-plate` | pregnancy-eating-myths | Nataliya Vaitkevich | 5605634 | 2026-09-01 |
+| `vegetable-puree-small-bowls` | feeding-and-eating-recurring-questions | Katrin Bolovtsova | 5662126 | 2026-09-01 |
+| `child-hands-untouched-plate` | the-child-who-will-not-eat | cottonbro studio | 6969724 | 2026-09-01 |
+| `tuna-eggs-chickpea-bowl` | eating-around-training | Alesia Kozik | 6632285 | 2026-09-01 |
+| `postpartum-kitchen-simple-meal` | postpartum-nutrition | Klaus Nielsen | 6287482 | 2026-08-31 |
+| `diabetes-home-glucose-kitchen` | diabetes-in-women | Towfiqu barbhuiya | 12326657 | 2026-08-31 |
 
 ## Rejections, and why
+
+### The article covers
+
+Seventy-seven candidates were downloaded across fourteen searches and every one
+was opened. What follows is what they were rejected for, because the reasons
+repeat and the next person searching for the same thing will meet the same
+pictures.
+
+| candidate | rejected because |
+| --- | --- |
+| `egyptian-bread-lentils-table-2960581` | **legible text** — a newspaper and a printed brand name under the bowl |
+| `child-plate-vegetables-*` (five of six) | identifiable children's faces. The face rule is at its strictest here: a stock licence does not carry a model release, and a recognisable child beside an article about a child who will not eat is a claim about that child |
+| `baby-bowl-spoon-mashed-food-*` (four of six) | identifiable infants AND adults. The whole first search for the feeding article was unusable; it was re-run for food rather than for people |
+| `tote-bag-notebook-table-18291381` | a legible Spanish book title. **Foreign-language material** — the rule that killed `2.mp4` |
+| `hands-notebook-desk-conversation-5124868`, `-5124874` | an open book of legible printed paragraphs |
+| `hands-notebook-desk-conversation-7731352`, `-8348763` | printed forms with legible text; the second also has identifiable people |
+| `boiled-eggs-cheese-plate-breakfast-19409031` | **prosciutto**. Cured meat is on the caution list in the article this would have illustrated — an image contradicting our own text |
+| `smartphone-…-36697522` | a chroma-key green screen, which reads as a mistake rather than as a phone |
+| `smartphone-…-8440093` | a newspaper in frame, legible |
+| `smartphone-…-7788433` | identifiable face |
+| `laboratory-test-tubes-rack-8442376` | **legible printed labels on the sample tubes** |
+| `laboratory-test-tubes-rack-8533087` | garish coloured liquids under purple light — reads as a school chemistry set, not a pathology lab |
+| `cinnamon-sticks-…-1717771`, `-19665864`, `-9502233` | dried orange slices and pastry stars. Christmas styling, wrong register for a clinic |
+| `lentils-chickpeas-eggs-protein-bowls-6187572`, `-6187593` | pink background. Same objection as the diabetes card below: "pink it" is not how this practice talks to women |
+| `egyptian-bread-lentils-table-28010164` | a bakery interior, dim and industrial; the person is turned away but the frame is a workplace, not a kitchen |
+| `boiled-eggs-cheese-plate-breakfast-5836619` | **chosen first, then dropped.** The strongest image of the set — grilled halloumi, halved boiled eggs, tomato and olives, every item on the safe side of the pregnancy article's own list. The patterned ceramic and two neighbouring plates put so much detail in frame that WebP missed the small variant's byte budget at the quality floor, and two successive crops did not recover it. A cover that cannot be served inside the performance budget is not a cover |
+
+### The two staged earlier
 
 Every candidate downloaded for the two new articles was opened and looked at.
 The rejections are recorded because the reasons are reusable — the next person

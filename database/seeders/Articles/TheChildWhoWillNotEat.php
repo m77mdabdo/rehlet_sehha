@@ -29,7 +29,7 @@ class TheChildWhoWillNotEat extends ArticleDefinition
             'slug' => 'the-child-who-will-not-eat',
             'category' => 'child-nutrition',
             'tags' => ['family', 'myths'],
-            'cover' => 'food-fruit-bowl',
+            'cover' => 'child-hands-untouched-plate',
 
             'title' => [
                 'ar' => 'الطفل اللي مش بياكل',

@@ -26,7 +26,7 @@ class QuestionsToAskAboutHormonesAndFood extends ArticleDefinition
             'slug' => 'questions-to-ask-about-hormones-and-food',
             'category' => 'pcos-hormonal',
             'tags' => ['questions-to-ask'],
-            'cover' => 'food-market-counter',
+            'cover' => 'two-hands-blank-page',
 
             'title' => [
                 'ar' => 'أسئلة تسأليها عن الهرمونات والأكل',

@@ -28,7 +28,7 @@ class WhatTheScaleDoesNotSay extends ArticleDefinition
             'slug' => 'what-the-scale-does-not-say',
             'category' => 'weight-management',
             'tags' => ['adherence', 'lab-results'],
-            'cover' => 'food-kitchen-still-life',
+            'cover' => 'water-jug-morning-table',
 
             'title' => [
                 'ar' => 'الميزان بيقول إيه — والحاجات اللي مش بيقولها',

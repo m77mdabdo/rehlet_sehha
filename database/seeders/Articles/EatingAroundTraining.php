@@ -29,7 +29,7 @@ class EatingAroundTraining extends ArticleDefinition
             'slug' => 'eating-around-training',
             'category' => 'sports-nutrition',
             'tags' => ['supplements', 'myths'],
-            'cover' => 'pantry-jars-legumes',
+            'cover' => 'tuna-eggs-chickpea-bowl',
 
             'title' => [
                 'ar' => 'الأكل حوالين التمرين — إيه اللي ليه دليل',
