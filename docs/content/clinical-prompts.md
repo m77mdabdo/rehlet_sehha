@@ -4,8 +4,8 @@
 > `database/seeders/Articles/`, not this document — anything typed here is
 > overwritten on the next run.
 
-38 questions across 14 articles: **25 CLINICAL_INPUT** and
-**13 PRACTITIONER_VOICE**. Every one is a gap left open deliberately, and no
+36 questions across 14 articles: **24 CLINICAL_INPUT** and
+**12 PRACTITIONER_VOICE**. Every one is a gap left open deliberately, and no
 article can be published while any of its own remain.
 
 ## The two kinds, and why they are not the same
@@ -39,45 +39,6 @@ the article.
 
 Where a question does not apply, say so. "I would not give a number here" is an
 answer, and a useful one.
-
----
-
-## «ظبّطي أكلك» — الجملة دي معناها إيه بالظبط؟
-
-`what-fix-your-diet-actually-means` · التغذية العلاجية
-
-> الدكتور بيقولها في آخر الكشف من غير تفاصيل. ورا الجملة دي في حاجة ليها اسم وتعريف وخطوات معروفة.
-
-### CLINICAL_INPUT
-
-**في قسم:** في المطبخ المصري
-
-**السؤال:** لما تيجي مريضة قايلة إن دكتورها قالها «ظبّطي أكلك» ومفيش تفاصيل — إيه أول حاجة بتعمليها في الكشف؟
-
-*In English:* When a patient arrives saying her doctor told her to sort her diet out, with no detail, what is the first thing you do in the consultation?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-وفي حاجة تانية بتتنسى: الأكل مش قرار فردي في بيت مصري. الأم بتطبخ حسب اللي العيلة بتاكله، والميزانية واحدة، والوجبة واحدة. الخطة اللي بتتعامل مع ده بتقترح تعديلات على الحلة نفسها — كمية زيت أقل، خضار أكتر جنب النشوى، بقوليات أكتر — بدل ما تطلب مطبخ منفصل.
-
-</details>
-
-### PRACTITIONER_VOICE — **بصوتك إنتِ**
-
-**في قسم:** الأسئلة اللي تسأليها لما تسمعي الجملة دي
-
-**السؤال:** إيه أكتر سوء فهم بيوصل معاكي من الجملة دي؟ يعني المرضى بيفهموا منها إيه غالبًا وهو غلط؟
-
-*In English:* What is the most common misunderstanding that reaches you from this sentence — what do patients usually take it to mean that is wrong?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-في مقال منفصل عن اللي تجهزيه قبل أول زيارة: [[article:what-to-bring-to-a-first-appointment|إيه اللي تجيبيه معاكي في أول زيارة]].
-
-</details>
-
 
 ---
 

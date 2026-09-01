@@ -81,6 +81,38 @@ class PostSeeder extends Seeder
     {
         $category = Category::query()->where('slug', $article['category'])->first();
 
+        /*
+         * A PUBLISHED ARTICLE IS LEFT ALONE. THIS USED TO OVERWRITE IT.
+         *
+         * The seeder wrote `published_at => null` unconditionally on every
+         * run, so `db:seed` silently took every live article off the site and
+         * replaced its text with the unanswered draft — throwing away the
+         * practitioner's answers, the clinical sign-off and the citation
+         * verification in one command, and reporting success.
+         *
+         * That was harmless while all fourteen were drafts and became a live
+         * foot-gun the moment two of them went out. Seeders get run: after a
+         * restore, on a fresh clone, by somebody chasing an unrelated bug.
+         *
+         * The original reasoning was sound — a run that leaves a live page
+         * showing the previous draft's text while claiming success is worse
+         * than one that resets it. The answer is to do NEITHER: skip the row
+         * and say so, loudly enough that nobody mistakes silence for a
+         * successful update.
+         *
+         * To re-seed a published article deliberately, unpublish it first —
+         * one click in the admin, and reversible.
+         */
+        $existing = Post::query()->where('slug', $article['slug'])->first();
+
+        if ($existing?->published_at !== null) {
+            $this->command?->warn(
+                "  skipped {$article['slug']} — it is published. Unpublish it first to re-seed it."
+            );
+
+            return;
+        }
+
         $post = Post::updateOrCreate(
             ['slug' => $article['slug']],
             [
@@ -101,14 +133,13 @@ class PostSeeder extends Seeder
                 'reading_minutes' => null,
 
                 /*
-                 * Draft, and re-drafted on every run.
+                 * Still a draft, and still re-drafted on every run — but only
+                 * ever for a row that was ALREADY a draft. A published one
+                 * never reaches this array; see the guard at the top of this
+                 * method.
                  *
-                 * Deliberately destructive: if a seeded article has been
-                 * reviewed and published, re-seeding takes it back down. The
-                 * alternative is worse — a run that silently leaves a live
-                 * page showing the previous draft's text while the seeder
-                 * reports success. Nothing here is a place to edit published
-                 * copy; the admin panel is.
+                 * Nothing here is a place to edit published copy. The admin
+                 * panel is.
                  */
                 'published_at' => null,
                 'reviewed_by' => null,
