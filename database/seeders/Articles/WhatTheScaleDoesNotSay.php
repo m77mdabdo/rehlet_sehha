@@ -7,6 +7,29 @@ namespace Database\Seeders\Articles;
 use App\Enums\CitationConfidence;
 
 /**
+ * THE ONE ARTICLE ON THIS SITE THAT PRINTS NUMBERS, AND WHY THAT IS ALLOWED.
+ *
+ * The daily-weighing section shows three readings — 70, 70.7, 69.8 — as a
+ * worked example of what ordinary fluctuation looks like written down.
+ *
+ * The site's no-numbers rule is not a ban on digits. It bans a QUANTITY AIMED
+ * AT THE READER: a target she can measure herself against and fail, set by
+ * somebody who has not seen her. That is why the plate builder refuses to show
+ * a calorie, why no article states grams per kilogram, and why the postpartum
+ * screening interval is left for the clinician.
+ *
+ * These three are the opposite of a target. They belong to nobody, they are
+ * not an instruction, and the entire point of printing them is to show that a
+ * number moving by this much means nothing — which is an argument that cannot
+ * be made without showing the number moving. Removing them would leave the
+ * section asserting the very thing it exists to demonstrate.
+ *
+ * ArticleStandardTest enforces the real rule mechanically: a digit adjacent to
+ * a unit. These are deliberately written without one, in both languages, so
+ * the check stays strict rather than being widened to accommodate them.
+ *
+ * ---------------------------------------------------------------------------
+ *
  * The scale, read honestly.
  *
  * THE SELF-WEIGHING SECTION IS DELIBERATELY NOT THE OBVIOUS ONE. It would have
@@ -45,6 +68,8 @@ class WhatTheScaleDoesNotSay extends ArticleDefinition
 الميزان بيدي رقم واحد، والرقم ده بيتقري على إنه إجابة. هو مش إجابة — هو قياس لحاجة واحدة اسمها كتلة الجسم كلها، وجواها حاجات كتير مالهاش أي علاقة بالسؤال اللي إنتِ بتسأليه.
 
 المقال ده عن إيه اللي جوه الرقم ده بالظبط، وإيه اللي بيتقاس بطريقة تانية.
+
+وفي جملة لد. رنا بتحدد المسألة كلها: «ممكن المريضة تخس كيلو، لكن تفضل متوترة طول الوقت وخايفة من الأكل». الرقم ممكن يتحرك في الاتجاه الصح والحاجة اللي إنتِ عايزاها فعلًا تكون بعيدة.
 
 ## القراية الواحدة فيها إيه غير اللي بتدوري عليه
 
@@ -96,7 +121,17 @@ class WhatTheScaleDoesNotSay extends ArticleDefinition
 
 يعني السؤال مش «كل قد إيه». السؤال هو: الرقم بيعمل إيه فيكي لما تشوفيه؟
 
-CLINICAL_INPUT: إنتِ بتنصحي بالقياس كل قد إيه؟ وفي حالات بتنصحي فيها حد إنه يبطل يقيس خالص — إيه هي؟
+د. رنا بتجاوب على ده كده:
+
+«لو الميزان كل يوم هيخلي مزاجك متعلق بالرقم، يبقى الأفضل نقلل عدد مرات الوزن. الوزن الطبيعي بيطلع وينزل من يوم للتاني، والفرق ممكن يوصل لكيلو أو أكتر — وده مش معناه إنك خسرتي أو زدتي دهون في يوم واحد.
+
+والمشكلة إن المريضة لما تشوف الرقم طلع شوية، ممكن تقلل أكلها زيادة، أو تحبط، أو تقول (أنا بعمل كل ده على الفاضي).
+
+عشان كده بفضّل الوزن مرة واحدة أسبوعيًا، في نفس الظروف تقريبًا: الصبح، بعد دخول الحمام، وقبل الأكل.
+
+ولو حد بيحب يوزن يوميًا ومش بيتأثر نفسيًا بالأرقام، بنبص وقتها على متوسط الأسبوع، مش على رقم كل يوم».
+
+والشكل ده بيبان بسرعة لما تكتبي القرايات جنب بعض: ٧٠ النهارده، ٧٠٫٧ بكرة، ٦٩٫٨ بعده. التلات أرقام دول مش تلات نتايج مختلفة — ده رقم واحد بيتحرك حوالين نفسه.
 
 وفي نقطة أخيرة عن التوقيت. الوزن مش بيتحرك بخط مستقيم لأي حد، حتى في أفضل الظروف. الشكل الطبيعي فيه صعود ونزول حوالين اتجاه عام، والاتجاه ده مش بيبان في أسبوع — بيبان في شهور. اللي بيقارن قراية النهارده بقراية امبارح مش بيقيس الاتجاه؛ هو بيقيس الضوضاء وبس.
 
@@ -124,9 +159,29 @@ CLINICAL_INPUT: إنتِ بتنصحي بالقياس كل قد إيه؟ وفي �
 
 الحاجات دي مع بعض بتوصف الحالة بشكل أقرب للحقيقة بكتير من رقم واحد، وأهم من كده: بتدي حاجة تتعدل. رقم واقف مش بيقول لحد يعمل إيه بعده.
 
-CLINICAL_INPUT: إيه الحاجات اللي إنتِ بتتابعيها فعليًا مع المريضة جنب الوزن؟ اذكري اللي بتستخدميه في العيادة.
+د. رنا بتقول: «الوزن عندي مؤشر واحد بس، مش هو التقييم كله».
 
-PRACTITIONER_VOICE: إيه أكتر موقف بيتكرر قدامك لمريضة اتفزعت من قراية ميزان، وطلع السبب حاجة زي دي؟
+واللي بيتابع معاه:
+
+المقاسات، وخصوصًا محيط البطن والوسط، والهدوم بقت عاملة إزاي.
+
+الجوع والشبع: بقت تقدر تتحكم في أكلها أكتر، ولا لسه في نوبات جوع شديدة؟
+
+الطاقة خلال اليوم، والنوم، والهضم، والحركة، ومدى سهولة الالتزام.
+
+وحاجة مهمة جدًا: علاقتها بالأكل نفسها. «هل بقت تعرف تاكل وجبة بتحبها من غير إحساس بالذنب؟ لو خرجت عن الخطة بتعرف ترجع تاني؟ اختياراتها بقت أهدى وأوعى؟»
+
+والسبب اللي بيخلي البند الأخير ده مهم بالذات: «ممكن المريضة تخس كيلو، لكن تفضل متوترة طول الوقت وخايفة من الأكل — وده مش النجاح اللي إحنا عايزينه. التحسن الحقيقي إن جسمها يتحسن، وفي نفس الوقت حياتها وعلاقتها بالأكل تتحسن».
+
+وده اللي بتقوله د. رنا لمريضة ملتزمة والرقم مش بيتحرك:
+
+«الميزان مش دايمًا بيحكي كل اللي بيحصل في جسمك. ممكن تكوني ملتزمة جدًا وفعلًا جسمك بيتغيّر، بس الرقم ما اتحركش الأسبوع ده.
+
+الوزن بيتأثر بحاجات كتير غير الدهون: احتباس السوائل، أكل فيه ملح أكتر من المعتاد، قلة النوم، التوتر، الإمساك، أو وقت الدورة الشهرية. يعني لو وزنك ثابت أسبوع، ده مش معناه إنك ما خسرتيش دهون، ومش معناه إن الخطة مش شغالة.
+
+أنا ببص على الصورة كاملة، مش على رقم أسبوع واحد. لو التزامك كويس، ومقاساتك بتتحسن، وهدومك أريح، ونمط أكلك أحسن — فإحنا ماشيين في الاتجاه الصح.
+
+اللي يهمني الاتجاه على مدار أسابيع، مش إن الميزان لازم ينزل كل مرة تطلعي عليه».
 
 ## اللي يستاهل تفتكريه
 
@@ -137,12 +192,16 @@ PRACTITIONER_VOICE: إيه أكتر موقف بيتكرر قدامك لمريض�
 لو الرقم بقى أول حاجة بتحدد مزاجك الصبح، دي مش مشكلة في إرادتك — دي مشكلة في إن الأداة بقت بتستخدمك. والحل بيبدأ بكلام مع حد شايف حالتك: تقدري تشوفي [[specialty:weight-management|متابعة الوزن]] أو [[booking|تحجزي موعد]].
 
 ولو حابة تفهمي ليه الرقم بيتحرك بسرعة في الأول وبعدين يهدى، ده موضوع مقال [[article:why-we-quit-in-week-three|ليه بنسيب النظام في الأسبوع التالت]].
+
+والجملة اللي تستاهل تفضل معاكي: الميزان أداة نستخدمها، مش حكم على نجاحك أو فشلك.
 AR,
 
                 'en' => <<<'EN'
 A scale gives one number, and that number gets read as an answer. It is not an answer. It measures one thing — total body mass — and a great deal inside it has nothing to do with the question you are actually asking.
 
 This article is about what is inside that number, and about what gets measured another way.
+
+And there is a sentence of Dr Rana's that settles the whole question: "A patient can lose a kilo and still be anxious all the time and frightened of food." The number can move in the right direction while the thing you actually wanted stays out of reach.
 
 ## What a single reading contains besides what you are looking for
 
@@ -194,7 +253,17 @@ And for one group in particular, frequent weighing genuinely is a concern: anyon
 
 So the question is not "how often". The question is: what does the number do to you when you see it?
 
-CLINICAL_INPUT: How often do you advise weighing? And are there cases where you advise somebody to stop weighing altogether — which ones?
+Dr Rana answers it like this:
+
+"If weighing every day is going to leave your mood attached to the number, then we weigh less often. Normal weight goes up and down from one day to the next, and the difference can be a kilo or more — and that does not mean you lost or gained fat in a day.
+
+The problem is that when a patient sees the number has gone up a little, she may cut her food back too far, or get discouraged, or decide 'I'm doing all this for nothing.'
+
+So I prefer once a week, in roughly the same conditions: in the morning, after the bathroom, before eating.
+
+And if somebody likes weighing daily and isn't affected by the numbers, then we look at the week's average rather than at each day's figure."
+
+The shape shows itself as soon as you write the readings next to each other: 70 today, 70.7 tomorrow, 69.8 the day after. Those are not three different results — it is one number moving around itself.
 
 One last point, about time. Weight does not move in a straight line for anybody, even under the best conditions. The normal shape is a rise and fall around a general trend, and that trend does not appear in a week — it appears over months. Comparing today's reading with yesterday's is not measuring the trend; it is measuring the noise and nothing else.
 
@@ -222,9 +291,29 @@ In serious follow-up, weight is one indicator inside a set. What also gets asked
 
 Together those describe the situation far more accurately than a single figure, and — more importantly — they give something that can be adjusted. A number standing still tells nobody what to do next.
 
-CLINICAL_INPUT: What do you actually track alongside weight with a patient? Name what you use in clinic.
+Dr Rana: "Weight, for me, is one indicator. It is not the whole assessment."
 
-PRACTITIONER_VOICE: What is the situation you see most often where a patient was alarmed by a reading, and the cause turned out to be something like this?
+What gets followed alongside it:
+
+Measurements, particularly around the abdomen and waist, and how clothes are fitting.
+
+Hunger and fullness: is she more in control of her eating, or are there still episodes of severe hunger?
+
+Energy through the day, sleep, digestion, movement, and how easy the plan is to keep to.
+
+And one that matters a great deal: her relationship with food itself. "Can she eat a meal she enjoys without guilt? If she goes off the plan, does she know how to come back? Are her choices calmer and more considered?"
+
+And the reason that last one matters so much: "A patient can lose a kilo and still be anxious all the time and frightened of food — and that is not the success we are after. Real improvement is her body improving and, at the same time, her life and her relationship with food improving." 
+
+This is what Dr Rana says to a patient who is sticking to the plan while the number refuses to move:
+
+"The scale doesn't always tell you everything that's happening in your body. You can be doing everything right, and your body can genuinely be changing, and the number still hasn't moved this week.
+
+Weight is affected by a great many things besides fat: fluid retention, a meal with more salt than usual, poor sleep, stress, constipation, or where you are in your cycle. So if your weight is level for a week, that does not mean you have not lost fat, and it does not mean the plan isn't working.
+
+I look at the whole picture, not at one week's number. If you are keeping to it, and your measurements are improving, and your clothes are more comfortable, and the way you eat is better — then we are going in the right direction.
+
+What I care about is the direction over weeks, not that the scale has to fall every time you step on it." 
 
 ## Worth remembering
 
@@ -235,6 +324,8 @@ A single reading contains water, salt, food, a menstrual cycle and a time of day
 If the number has become the first thing that sets your mood in the morning, that is not a problem with your willpower — it is a problem with a tool that has started using you. The answer begins with a conversation with somebody who has seen your case: you can look at [[specialty:weight-management|weight management follow-up]] or [[booking|book an appointment]].
 
 And if you want to understand why the number falls quickly at first and then settles, that is the subject of [[article:why-we-quit-in-week-three|Why we quit in week three]].
+
+And the sentence worth keeping: a scale is a tool we use. It is not a verdict on whether you are succeeding or failing.
 EN,
             ],
 
