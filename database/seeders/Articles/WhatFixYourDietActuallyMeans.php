@@ -39,6 +39,8 @@ class WhatFixYourDietActuallyMeans extends ArticleDefinition
 
 المشكلة إن الجملة دي مش تعليمات. هي عنوان لحاجة كبيرة، ومحدش قال إيه اللي جواها. المقال ده عن اللي جواها.
 
+وأول حاجة تستاهل تتقال إن الجملة دي مش بالضرورة معناها «كلي أقل». د. رنا بتقولها كده: «ممكن أطلب منك تزودي حاجة في أكلك، مش تقلليها».
+
 ## في الطب، الحاجة دي ليها اسم
 
 اللي بيتقال عنه بالعامية «ظبّط أكلك» ليه في الأدبيات الطبية اسم محدد: العلاج الغذائي الطبي، أو Medical Nutrition Therapy.
@@ -121,7 +123,27 @@ class WhatFixYourDietActuallyMeans extends ArticleDefinition
 
 وفي حاجة تانية بتتنسى: الأكل مش قرار فردي في بيت مصري. الأم بتطبخ حسب اللي العيلة بتاكله، والميزانية واحدة، والوجبة واحدة. الخطة اللي بتتعامل مع ده بتقترح تعديلات على الحلة نفسها — كمية زيت أقل، خضار أكتر جنب النشوى، بقوليات أكتر — بدل ما تطلب مطبخ منفصل.
 
-CLINICAL_INPUT: لما تيجي مريضة قايلة إن دكتورها قالها «ظبّطي أكلك» ومفيش تفاصيل — إيه أول حاجة بتعمليها في الكشف؟
+وده اللي بتبدأ بيه د. رنا مع مريضة جاية بالجملة دي ومفيش تفاصيل معاها:
+
+«قبل ما نفكر هنمنع إيه وهنسمح بإيه، أنا محتاجة أفهم يومك الأول».
+
+والأسئلة اللي بتتسأل:
+
+بتاكلي إيه من أول ما تصحي لحد ما تنامي؟
+
+مواعيد شغلك عاملة إزاي؟
+
+بتجوعي إمتى؟
+
+بتطلبي أكل من بره قد إيه؟
+
+نومك عامل إزاي؟
+
+وحركتك خلال اليوم شكلها إيه؟
+
+وجنبها أسئلة عن سبب الإحالة نفسها: «الدكتور قالك (ظبطي أكلك) ليه؟ هل الهدف نزول وزن؟ هل في تحاليل معينة محتاجة تتحسن؟ ولا في سبب صحي محدد خلاه يطلب منك تغيّري طريقة أكلك؟ لأن (ظبطي أكلك) مش خطة واحدة تنفع لكل الناس».
+
+وبعد ده كله، التغيير بيبدأ صغير: «مش لازم أقلب حياتها كلها في أول أسبوع — بالعكس، بنحدد أهم حاجتين أو تلاتة محتاجين يتغيروا ونبدأ بيهم. أنا عايزاها تخرج من أول متابعة عارفة هتعمل إيه بكرة الصبح، مش خارجة بقائمة طويلة من الممنوعات».
 
 ## الأسئلة اللي تسأليها لما تسمعي الجملة دي
 
@@ -137,7 +159,25 @@ CLINICAL_INPUT: لما تيجي مريضة قايلة إن دكتورها قال
 
 في مقال منفصل عن اللي تجهزيه قبل أول زيارة: [[article:what-to-bring-to-a-first-appointment|إيه اللي تجيبيه معاكي في أول زيارة]].
 
-PRACTITIONER_VOICE: إيه أكتر سوء فهم بيوصل معاكي من الجملة دي؟ يعني المرضى بيفهموا منها إيه غالبًا وهو غلط؟
+## أكتر سوء فهم بيوصل مع الجملة دي
+
+د. رنا:
+
+«أكتر حاجة الناس بتفهمها غلط إن (ظبطي أكلك) معناها (كلي أقل). فتلاقي واحدة بطلت عيش ورز، وواحدة بتفوت الفطار، وواحدة بتعيش طول اليوم على سلطة، وواحدة منعت كل حاجة بتحبها مرة واحدة.
+
+وبعد كام يوم تبدأ تجوع وتتعب، وبالليل تلاقي نفسها بتاكل أكتر، فتفتكر إن المشكلة فيها وإن إرادتها ضعيفة — مع إن المشكلة غالبًا إن الطريقة نفسها مش مناسبة.
+
+تنظيم الأكل مش معناه إننا نقلل الأكل لأقصى درجة. معناه إننا نعرف جسمك محتاج إيه، ونظبط الكميات والتوقيت والاختيارات بشكل يناسب هدفك وحالتك ويكون قابل للاستمرار.
+
+يعني ممكن أطلب منك تزودي حاجة في أكلك، مش تقلليها. ممكن نزود بروتين، خضار، مياه، أو وجبة صغيرة في وقت معين — لأن الهدف مش إنك تاكلي أقل وخلاص؛ الهدف إنك تاكلي بشكل أحسن».
+
+## اللي محتاجة تعرفيه قبل ما تبدأي
+
+«محتاجة تعرفي إننا مش داخلين سباق أسبوعين. مش مطلوب منك من أول يوم تبطلي السكر والعيش والخروجات والحلويات وكل حاجة بتحبيها عشان تقولي إنك (ظبطتي أكلك). إحنا محتاجين الأول نعرف إحنا بنغيّر الأكل ليه، وإيه اللي محتاج يتغير فعلًا.
+
+ومحتاجة تعرفي كمان إن الخطة الصح مش المفروض تحسي إنها حياة مؤقتة مستنية تخلصي منها. المفروض تكون طريقة أكل تقدري تكمّلي عليها وسط شغلك وبيتك وخروجاتك وسفرك.
+
+هيكون في أيام ممتازة وأيام أقل، وده طبيعي. المهم إنك تعرفي ترجعي تاني من غير ما تعاقبي نفسك أو تبدأي من الصفر كل مرة».
 
 ## اللي يستاهل تفتكريه
 
@@ -146,12 +186,18 @@ PRACTITIONER_VOICE: إيه أكتر سوء فهم بيوصل معاكي من ا�
 الفرق بين الإرشاد العام والخطة الفردية هو الفرق بين معلومة صحيحة ومعلومة قابلة للتنفيذ في حالتك إنتِ. والتقييم اللي بيعمل الفرق ده بيسأل عن التاريخ والأدوية والتحاليل وشكل يومك ومطبخك، مش عن قايمة أكل.
 
 لو الجملة اتقالتلك ومحدش وضّحها، دي بداية معقولة: [[specialty:medical-nutrition|التغذية العلاجية]]، أو [[booking|احجزي موعد]] وابدأي من السؤال اللي محدش جاوبه.
+
+وبدل ما يكون السؤال «إيه الممنوع؟» — أول سؤال يكون: إيه التغيير اللي أقدر أعمله وأستمر عليه؟
+
+والجملة اللي تستاهل تفضل معاكي: ظبط الأكل مش معناه إن حياتك كلها تتمحور حوالين الأكل؛ معناه إن الأكل يبقى جزء متوازن من حياتك.
 AR,
 
                 'en' => <<<'EN'
 The sentence arrives in the last minute of a consultation: "sort your diet out." It is said in good faith, by a respectable doctor, usually while a prescription is being written.
 
 The difficulty is that it is not an instruction. It is the title of something large, and nobody has said what is inside it. This article is about what is inside it.
+
+And the first thing worth saying is that the sentence does not necessarily mean "eat less". Dr Rana puts it plainly: "I might ask you to add something to what you eat, not take something away." 
 
 ## In medicine, this thing has a name
 
@@ -235,7 +281,27 @@ And a practical point: Egyptian home cooking is usually one pot for the whole fa
 
 And something else gets forgotten: eating is not an individual decision in an Egyptian household. The mother cooks according to what the family eats, the budget is one budget, the meal is one meal. A plan that deals with this proposes adjustments to the pot itself — less oil, more vegetables alongside the starch, more legumes — rather than asking for a separate kitchen.
 
-CLINICAL_INPUT: When a patient arrives saying her doctor told her to sort her diet out, with no detail, what is the first thing you do in the consultation?
+This is how Dr Rana starts with a patient who arrives with that sentence and no detail attached:
+
+"Before we think about what to cut out and what to allow, I need to understand your day first."
+
+The questions she asks:
+
+What do you eat from the moment you wake until you sleep?
+
+What are your working hours?
+
+When do you get hungry?
+
+How often do you order food in?
+
+How are you sleeping?
+
+And how much do you move during the day?
+
+Alongside them, questions about the referral itself: "Why did the doctor tell you to sort your diet out? Is the goal to lose weight? Are there particular results that need to improve? Or is there a specific health reason behind the request? Because 'sort your diet out' is not one plan that suits everybody."
+
+And after all of that, the change starts small: "I don't have to turn her whole life over in the first week — quite the opposite. We pick the two or three things that most need to change and start with those. I want her to leave the first appointment knowing what she is doing tomorrow morning, not carrying a long list of things she is banned from." 
 
 ## The questions to ask when you hear that sentence
 
@@ -251,7 +317,25 @@ If the sentence arrived without detail, there are questions that turn it into so
 
 There is a separate article on what to prepare beforehand: [[article:what-to-bring-to-a-first-appointment|What to bring to a first appointment]].
 
-PRACTITIONER_VOICE: What is the most common misunderstanding that reaches you from this sentence — what do patients usually take it to mean that is wrong?
+## The misunderstanding that arrives with the sentence
+
+Dr Rana:
+
+"The thing people get wrong most is that 'sort your diet out' means 'eat less'. So you get one who has stopped bread and rice, one who skips breakfast, one living on salad all day, and one who has cut out everything she likes all at once.
+
+A few days later she is hungry and tired, and in the evening she finds herself eating more — so she concludes the problem is her, that her willpower is weak. When the problem is usually that the approach itself does not suit her.
+
+Organising your eating does not mean reducing it as far as it will go. It means knowing what your body needs, and setting the amounts, the timing and the choices in a way that fits your goal and your situation and that you can keep going with.
+
+Which means I might ask you to add something to what you eat, not take something away. We might add protein, vegetables, water, or a small meal at a particular time — because the aim is not for you to eat less. The aim is for you to eat better."
+
+## What she wants you to know before you start
+
+"You need to know that we are not entering a two-week race. Nobody is asking you, from day one, to give up sugar and bread and going out and sweets and everything you like in order to say you have 'sorted your diet out'. First we need to know why we are changing the food, and what actually needs to change.
+
+And you need to know that the right plan should not feel like a temporary life you are waiting to be finished with. It should be a way of eating you can carry on with alongside your work, your home, going out, and travelling.
+
+There will be excellent days and less good ones, and that is normal. What matters is that you know how to come back without punishing yourself or starting from zero every time." 
 
 ## Worth remembering
 
@@ -260,6 +344,10 @@ PRACTITIONER_VOICE: What is the most common misunderstanding that reaches you fr
 The difference between population guidance and an individual plan is the difference between correct information and information you can act on in your own case. And the assessment that makes that difference asks about history, medications, lab work, the shape of your day and your kitchen — not about a list of foods.
 
 If the sentence was said to you and nobody explained it, this is a reasonable place to start: [[specialty:medical-nutrition|medical nutrition therapy]], or [[booking|book an appointment]] and begin from the question nobody answered.
+
+And instead of the question being "what am I not allowed?", let the first question be: what change can I make and keep making?
+
+The sentence worth keeping: sorting out your eating does not mean your whole life revolves around food. It means food becomes a balanced part of your life.
 EN,
             ],
 

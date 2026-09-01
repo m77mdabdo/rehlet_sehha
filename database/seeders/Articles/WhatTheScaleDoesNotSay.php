@@ -7,26 +7,23 @@ namespace Database\Seeders\Articles;
 use App\Enums\CitationConfidence;
 
 /**
- * THE ONE ARTICLE ON THIS SITE THAT PRINTS NUMBERS, AND WHY THAT IS ALLOWED.
+ * THIS ARTICLE BRIEFLY CARRIED THREE WEIGHT READINGS THAT NOBODY SAID.
  *
- * The daily-weighing section shows three readings — 70, 70.7, 69.8 — as a
- * worked example of what ordinary fluctuation looks like written down.
+ * The daily-weighing section showed 70, 70.7 and 69.8 as a worked example of
+ * ordinary fluctuation. They were added on an instruction saying the
+ * practitioner had named them — and she had not. They were not in the answer
+ * she gave, and writing them in put three specific numbers about a patient's
+ * body into an article published under her name, sourced from nowhere.
  *
- * The site's no-numbers rule is not a ban on digits. It bans a QUANTITY AIMED
- * AT THE READER: a target she can measure herself against and fail, set by
- * somebody who has not seen her. That is why the plate builder refuses to show
- * a calorie, why no article states grams per kilogram, and why the postpartum
- * screening interval is left for the clinician.
+ * The reasoning offered for keeping them was not wrong in itself: the
+ * no-numbers rule bans a quantity aimed at the reader, a target she can fail
+ * against, and an illustration is not that. But the rule that mattered here
+ * was a different one, and it is absolute — NOTHING IS ATTRIBUTED TO HER THAT
+ * SHE DID NOT SAY. A defensible category of number is still an invented number
+ * if she did not give it.
  *
- * These three are the opposite of a target. They belong to nobody, they are
- * not an instruction, and the entire point of printing them is to show that a
- * number moving by this much means nothing — which is an argument that cannot
- * be made without showing the number moving. Removing them would leave the
- * section asserting the very thing it exists to demonstrate.
- *
- * ArticleStandardTest enforces the real rule mechanically: a digit adjacent to
- * a unit. These are deliberately written without one, in both languages, so
- * the check stays strict rather than being widened to accommodate them.
+ * The paragraph makes the same point without them, which is the tell: the
+ * figures were never carrying the argument.
  *
  * ---------------------------------------------------------------------------
  *
@@ -131,7 +128,7 @@ class WhatTheScaleDoesNotSay extends ArticleDefinition
 
 ولو حد بيحب يوزن يوميًا ومش بيتأثر نفسيًا بالأرقام، بنبص وقتها على متوسط الأسبوع، مش على رقم كل يوم».
 
-والشكل ده بيبان بسرعة لما تكتبي القرايات جنب بعض: ٧٠ النهارده، ٧٠٫٧ بكرة، ٦٩٫٨ بعده. التلات أرقام دول مش تلات نتايج مختلفة — ده رقم واحد بيتحرك حوالين نفسه.
+والشكل ده بيبان بسرعة لما تكتبي قرايات الأسبوع جنب بعض: الرقم بيطلع يوم وينزل يوم ويرجع، من غير ما يكون في حاجة اتغيرت في الدهون. مش تلات نتايج مختلفة — رقم واحد بيتحرك حوالين نفسه.
 
 وفي نقطة أخيرة عن التوقيت. الوزن مش بيتحرك بخط مستقيم لأي حد، حتى في أفضل الظروف. الشكل الطبيعي فيه صعود ونزول حوالين اتجاه عام، والاتجاه ده مش بيبان في أسبوع — بيبان في شهور. اللي بيقارن قراية النهارده بقراية امبارح مش بيقيس الاتجاه؛ هو بيقيس الضوضاء وبس.
 
@@ -263,7 +260,7 @@ So I prefer once a week, in roughly the same conditions: in the morning, after t
 
 And if somebody likes weighing daily and isn't affected by the numbers, then we look at the week's average rather than at each day's figure."
 
-The shape shows itself as soon as you write the readings next to each other: 70 today, 70.7 tomorrow, 69.8 the day after. Those are not three different results — it is one number moving around itself.
+The shape shows itself as soon as you write a week's readings next to each other: the number rises one day, falls the next, and comes back, without anything having changed in the fat. Not three different results — one number moving around itself.
 
 One last point, about time. Weight does not move in a straight line for anybody, even under the best conditions. The normal shape is a rise and fall around a general trend, and that trend does not appear in a week — it appears over months. Comparing today's reading with yesterday's is not measuring the trend; it is measuring the noise and nothing else.
 
