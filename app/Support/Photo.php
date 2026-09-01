@@ -79,6 +79,21 @@ final class Photo
     }
 
     /**
+     * The whole library, for anything that has to OFFER a choice rather than
+     * render one image — the admin's photo picker being the only such thing.
+     *
+     * Public where manifest() is private because the shape returned is the
+     * manifest's shape, and a caller iterating it is coupled to that. Kept to
+     * one caller for the same reason.
+     *
+     * @return array<string, array{topic: string, describes: string, variants: array<string, array{width: int, height: int, bytes: int}>}>
+     */
+    public static function all(): array
+    {
+        return self::manifest();
+    }
+
+    /**
      * @return array<string, array{topic: string, describes: string, variants: array<string, array{width: int, height: int, bytes: int}>}>
      */
     private static function manifest(): array

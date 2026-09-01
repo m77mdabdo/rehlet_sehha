@@ -38,7 +38,24 @@ class ArticlesController extends Controller
          * query asking a question the paginator answers for free, on a page
          * whose query budget is asserted.
          */
+        /*
+         * FEATURED FIRST, THEN NEWEST — and this is the only ordering control
+         * the blog has, deliberately.
+         *
+         * There is no sort_order column on articles and there should not be
+         * one: a blog whose order is hand-arranged stops being a chronology,
+         * and a manual order silently rots the moment anything is added.
+         *
+         * `is_featured` gives the one thing a manual order is actually wanted
+         * for — pinning a piece to the top — without pretending the rest of
+         * the list is arranged rather than dated. It already did this on the
+         * homepage strip (see PublicContent) and did not here, so the same
+         * toggle meant two different things on two pages.
+         */
         $posts = Post::published()
+            ->reorder()
+            ->orderByDesc('is_featured')
+            ->orderByDesc('published_at')
             ->with(['category', 'tags'])
             ->paginate(self::PER_PAGE)
             ->withQueryString();
