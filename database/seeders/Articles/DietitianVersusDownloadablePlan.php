@@ -41,6 +41,8 @@ class DietitianVersusDownloadablePlan extends ArticleDefinition
 
 المقال ده مش عن إن الملفات دي وحشة. هو عن حاجة أدق: كل خطة أكل هي مجموعة افتراضات عن الشخص اللي هياكلها — والملف الجاهز بيفترض من غير ما يسأل، ومن غير ما يقول إنه بيفترض.
 
+ود. رنا بتحط الفرق في جملة واحدة: «الخطة الجاهزة بتقولك (كلي إيه؟) — دوري إني أفهم إنتِ بتاكلي ليه بالشكل ده أصلًا».
+
 ## الخطة الجاهزة بتفترض إيه من غير ما تقول
 
 أي جدول أكل مكتوب فيه «الفطار: كذا» بيفترض ضمنيًا:
@@ -123,7 +125,25 @@ class DietitianVersusDownloadablePlan extends ArticleDefinition
 
 الخطة اللي بتشتغل في مصر هي اللي بتبدأ من الحلة اللي في المطبخ، مش من جدول اتكتب في مكان تاني.
 
-CLINICAL_INPUT: لما تيجي مريضة بملف نظام جاهز وتسألك «ده كويس؟» — إنتِ بتردي إزاي؟
+## اللي بيتسأل قبل ما حد يحكم على ملف
+
+د. رنا بتقول: «لما مريضة تيجي لي، مش ببص بس على وزنها وأديها ورقة فيها فطار وغدا وعشا».
+
+واللي بتحتاج تعرفه قبل أي حكم:
+
+يومها ماشي إزاي، وشغلها، ونومها، وحركتها.
+
+مواعيد أكلها.
+
+بتحب إيه، ومبتحبش إيه.
+
+إمتى بتجوع.
+
+وإيه أكتر وقت بتلاقي فيه صعوبة في الالتزام.
+
+«ولو عندها حالة صحية أو تحاليل أو أدوية مرتبطة بالتغذية، ده لازم يدخل في تقييم الخطة».
+
+ومن هنا بييجي الاعتراض الأساسي على أي جدول جاهز: «ممكن اتنين يكونوا نفس الوزن والطول تقريبًا، لكن مستحيل أفترض إن نفس النظام هو الأفضل للاتنين».
 
 ## طب إيه اللي بتدفعي فيه فعلًا؟
 
@@ -133,11 +153,33 @@ CLINICAL_INPUT: لما تيجي مريضة بملف نظام جاهز وتسأل
 
 الجزء الأخير ده هو الفرق الحقيقي. الملف مش بيتابع، ومش بيعدّل، ومش بيرد. ولو حصلت مشكلة، مفيش حد.
 
+وبكلامها: «ده بالظبط الفرق بين إنك تاخدي (جدول أكل) وبين إن يكون عندك متابعة حقيقية. أنا مش بس بديكي خطة وأستناكي تنفذيها؛ بشوف جسمك استجاب إزاي، إيه اللي نجح، إيه اللي كان صعب، وإيه اللي محتاج يتعدل، والخطة بتتطور معاكي».
+
 وفي حاجة الملف مش بيعملها بطبيعته: بيقول لك إمتى تبطلي. الخطة الفردية فيها نقطة إعادة تقييم — بعد فترة معينة بيتشاف إيه اتحرك وإيه لأ، والخطة بتتغير. الملف مالوش نهاية ومالوش مراجعة، فالشخص بيفضل ماشي عليه لحد ما يزهق، وبعدين يسيبه فجأة من غير خروج مخطط. والخروج المفاجئ ده هو اللي بيرجّع اللي حصل غالبًا.
 
-PRACTITIONER_VOICE: إيه أكتر خطة جاهزة شوفتيها بتتكرر عند المرضى؟ وإيه الحاجة اللي بتقلقك فيها لما تشوفيها؟
+## اللي بيوصل للعيادة بعد دايت من الإنترنت
+
+«أما لما حد يجرب دايت من الإنترنت وبعدين ييجي لي، فغالبًا بلاقي واحدة من مشكلتين: يا إما النظام كان شديد جدًا ومقدرتش تكمل عليه، يا إما نزلت وزن فعلًا، لكن أول ما وقفته رجعت لنفس طريقة أكلها القديمة والوزن بدأ يرجع.
+
+وساعات بلاقي إنها خرجت من التجربة وهي مقتنعة إن المشكلة في إرادتها: (أنا مش بعرف ألتزم)، (أنا ببوظ أي دايت)، (أنا مش هخس).
+
+وساعتها بنرجع خطوة لورا، لأن ممكن المشكلة ما تكونش في إرادتها أصلًا؛ ممكن تكون في الخطة نفسها. لو النظام مش مناسب لشغلك، جوعك، بيتك، ميزانيتك وطريقة حياتك، طبيعي جدًا يكون الاستمرار عليه صعب».
 
 والمتابعة بتعمل حاجة تانية مش واضحة من بره: بتفرّق بين «الخطة مش شغالة» و«الخطة مش بتتنفذ»، والاتنين شكلهم واحد من بعيد وعلاجهم مختلف تمامًا.
+
+## طب إمتى فعلًا تحتاجي أخصائي تغذية ومش مجرد نظام؟
+
+بكلام د. رنا:
+
+لما تكوني جرّبتي أنظمة كتير وكل مرة ترجعي لنفس النقطة.
+
+لما تكون علاقتك بالأكل بقت كلها منع وذنب.
+
+لما مش عارفة تحددي إنتِ محتاجة تاكلي قد إيه أو إيه المناسب ليكي.
+
+أو لما يكون عندك هدف أو حالة صحية محتاجة تغذية متظبطة بشكل فردي ومتابعة مناسبة.
+
+«وكمان مش لازم تستني لحد ما تكون عندك مشكلة كبيرة. ممكن تحتاجي أخصائي ببساطة لأنك عايزة تتعلمي تاكلي صح بطريقة تناسب حياتك بدل ما تفضلي تنتقلي من دايت لدايت».
 
 ## اللي يستاهل تفتكريه
 
@@ -148,12 +190,16 @@ PRACTITIONER_VOICE: إيه أكتر خطة جاهزة شوفتيها بتتكر�
 لو عندك ملف جاهز دلوقتي وحابة تعرفي هو مناسب لحالتك ولا لأ، ده سؤال بيتجاوب في كشف واحد: [[specialty:medical-nutrition|التغذية العلاجية]] أو [[booking|احجزي موعد]] وهاتي الملف معاكي.
 
 ولو حابة تعرفي الأول إيه اللي بيتسأل في التقييم، في مقال عن ده: [[article:what-fix-your-diet-actually-means|«ظبّطي أكلك» معناها إيه بالظبط]].
+
+والجملة اللي تستاهل تفضل معاكي: أي حد يقدر يلاقي جدول أكل على الإنترنت في دقايق. لكن السؤال مش «هل عندي دايت؟» — السؤال الأهم: «هل الخطة دي معمولة ليا أنا؟ وهل هعرف أعيش بيها وأكمّل عليها؟».
 AR,
 
                 'en' => <<<'EN'
 Almost everybody has, at some point, been sent a PDF on WhatsApp: "the two-week plan", "the Egyptian keto plan", "Dr So-and-so's plan". Free, ready to use, and full of tables.
 
 This article is not about those files being bad. It is about something more precise: every eating plan is a set of assumptions about the person who is going to eat it — and a ready-made file assumes without asking, and without saying that it is assuming.
+
+Dr Rana puts the difference in one sentence: "A ready-made plan tells you what to eat. My job is to understand why you eat the way you do in the first place." 
 
 ## What a ready-made plan assumes without saying so
 
@@ -237,7 +283,25 @@ And the alternative is not inferior. Foul, lentils, chickpeas and black-eyed bea
 
 The plan that works in Egypt is the one that starts from the pot already in the kitchen, not from a table written somewhere else.
 
-CLINICAL_INPUT: When a patient arrives with a ready-made plan and asks whether it is any good, how do you answer?
+## What gets asked before anybody judges a file
+
+Dr Rana: "When a patient comes to me, I don't just look at her weight and hand her a sheet with breakfast, lunch and dinner on it."
+
+What she needs to know before any judgement:
+
+How her day runs — her work, her sleep, how much she moves.
+
+When she eats.
+
+What she likes, and what she does not.
+
+When she gets hungry.
+
+And the time of day she finds it hardest to keep to anything.
+
+"And if she has a health condition, or results, or medication related to nutrition, that has to come into the assessment of the plan."
+
+Which is where the basic objection to any ready-made table comes from: "Two people can be roughly the same weight and the same height, and it is still impossible for me to assume the same plan is best for both of them." 
 
 ## So what are you actually paying for?
 
@@ -247,11 +311,33 @@ What is paid for is: an assessment that asks about history, medications, lab wor
 
 That last part is the real difference. A file does not follow up, does not adjust, and does not reply. And if something goes wrong, there is nobody.
 
+In her words: "That is exactly the difference between being handed a food table and actually being followed. I'm not just giving you a plan and waiting for you to carry it out. I see how your body responded, what worked, what was hard, and what needs adjusting — and the plan develops with you." 
+
 And there is something a file cannot do by its nature: tell you when to stop. An individual plan has a point of reassessment — after a defined period somebody looks at what moved and what did not, and the plan changes. A file has no ending and no review, so people carry on with it until they are tired of it and then drop it abruptly, with no planned exit. That abrupt exit is usually what undoes the result.
 
-PRACTITIONER_VOICE: Which ready-made plan do you see most often among patients? And what worries you about it when you see it?
+## What arrives at the clinic after an internet diet
+
+"When somebody has tried a diet from the internet and then comes to me, I usually find one of two things: either the plan was so severe she couldn't keep it up, or she did lose weight, and the moment she stopped she went back to eating the way she used to and the weight started coming back.
+
+And sometimes I find she has come out of it convinced the problem is her willpower: 'I can't stick to anything', 'I ruin every diet', 'I'm never going to lose weight'.
+
+At that point we go back a step, because the problem may not be her willpower at all — it may be the plan. If a plan doesn't suit your work, your hunger, your home, your budget and the way you live, then of course it is going to be hard to keep going with." 
 
 Follow-up also does something not obvious from outside: it distinguishes between "the plan is not working" and "the plan is not being followed". Those look identical from a distance and their remedies are entirely different.
+
+## So when do you actually need a dietitian rather than just a plan?
+
+In Dr Rana's words:
+
+When you have tried many plans and keep arriving back at the same point.
+
+When your relationship with food has become nothing but restriction and guilt.
+
+When you cannot work out how much you need to eat, or what suits you.
+
+Or when you have a goal or a health condition that needs nutrition set individually and followed properly.
+
+"And you don't have to wait until you have a big problem. You might need a dietitian simply because you want to learn to eat well in a way that fits your life, instead of moving from one diet to the next."
 
 ## Worth remembering
 
@@ -262,6 +348,8 @@ And the reference bodies themselves — the ADA, NICE, EASO — say there is no 
 If you have a file now and want to know whether it suits your case, that is a question answered in a single consultation: [[specialty:medical-nutrition|medical nutrition therapy]] or [[booking|book an appointment]] and bring the file with you.
 
 And if you would rather first know what an assessment asks about, there is an article on that: [[article:what-fix-your-diet-actually-means|what "sort your diet out" actually means]].
+
+And the sentence worth keeping: anybody can find a food table on the internet in minutes. But the question is not "do I have a diet?" — it is "was this plan made for me, and will I be able to live with it and keep going?" 
 EN,
             ],
 
