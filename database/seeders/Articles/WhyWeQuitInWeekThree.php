@@ -43,6 +43,8 @@ class WhyWeQuitInWeekThree extends ArticleDefinition
 
 المقال ده مش عن إزاي تتحمسي تاني. هو عن إن الأسبوع التالت له شكل معروف ومتكرر، وله أسباب مفهومة — نصها في الجسم ونصها في الدماغ — وإن معرفة الشكل ده قبل ما يوصل بتغيّر رد فعلك لما يوصل.
 
+وفي جملة واحدة بتلخص المقال ده كله، وهي جملة د. رنا نفسها: «مش بغيّر الخطة لمجرد إن الميزان منزلش أسبوع — بغيّر السبب اللي مخلي الخطة مش ماشية».
+
 ## الأسبوعين الأولانيين بيشتغلوا بحاجة تانية خالص
 
 في البداية بتشتغلي بحاجة اسمها الجدة. كل حاجة جديدة: الأكل جديد، والروتين جديد، والفكرة نفسها إن في خطة أصلًا جديدة. الجدة دي بتدي طاقة حقيقية — بس هي طاقة ليها تاريخ صلاحية، ومش مبنية على أي حاجة في الخطة نفسها.
@@ -119,7 +121,13 @@ class WhyWeQuitInWeekThree extends ArticleDefinition
 
 وبين الوقوف والتعديل مسافة كبيرة. الخطة اللي بتتعدل في الأسبوع التالت بتفضل شغالة؛ الخطة اللي بتتساب بترجع من الأول بعد شهرين، ومعاها الإحساس إن المحاولة دي كمان فشلت — وده الجزء اللي بيتراكم.
 
-PRACTITIONER_VOICE: لما مريضة توصل للأسبوع التالت وتقولك «زهقت» — إنتِ بتقوليلها إيه بالظبط؟ الجملة اللي بتستخدميها فعلًا، مش الكلام النظري.
+وده اللي بتقوله د. رنا للمريضة اللي بتوصل للنقطة دي:
+
+«الإحساس ده طبيعي جدًا، وخصوصًا بعد أول أسبوعين، لأن حماس البداية بيبدأ يهدى، وهنا بيبدأ التحدي الحقيقي. بس أنا مش عايزاكي تكمّلي وإنتِ مضغوطة أو حاسة إن الدايت عقاب.
+
+خلينا نشوف إيه اللي مزهّقك بالظبط: جعانة؟ الأكل متكرر؟ مش عارفة تلتزمي بسبب الشغل؟ ولا النتيجة أبطأ من اللي كنتِ متوقعاها؟ لأن الحل مش إننا نقول لازم تلتزمي أكتر — الحل إننا نعدّل الخطة عشان تبقى مناسبة ليكِ وتقدري تكمّلي عليها.
+
+ولو الأسبوع ده كان وحش، خلاص، ده أسبوع مش الرحلة كلها. مش هنبدأ من الصفر، هنكمّل من المكان اللي وقفنا عنده».
 
 ## إيه اللي بيتغيّر في المتابعة
 
@@ -127,9 +135,33 @@ PRACTITIONER_VOICE: لما مريضة توصل للأسبوع التالت وت�
 
 وده كمان اللي بيخلي التعديل ممكن. الشخص اللي بيتابع لوحده بيبقى قدامه خيارين: يكمّل زي ما هو، أو يبطل. الشخص اللي بيتابع مع حد شايف حالته بيبقى قدامه خيار تالت.
 
-CLINICAL_INPUT: أول حاجة بتغيّريها في الخطة لما حد يوصل للنقطة دي إيه؟ لو في تعديل محدد بتبدأي بيه — اكتبيه.
+وأول حاجة بتحصل في المتابعة مش تعديل. د. رنا بتقول: «أول حاجة: مش بغيّر الدايت على طول. بسأل الأول إيه اللي حصل الأسبوع ده».
 
-CLINICAL_INPUT: في حاجة بتنصحي بيها قبل ما الأسبوع التالت يوصل، يعني من الأسبوع الأول، عشان اللحظة دي تبقى أسهل؟
+والتعديل بعد كده بيتحدد حسب الإجابة:
+
+لو المشكلة جوع — مراجعة لكميات الأكل وتوزيع الوجبات والبروتين والألياف.
+
+لو مشغولة ومش بتلحق تحضّر — تبسيط الوجبات واختيارات أسرع.
+
+لو الالتزام بيتكسر بالليل — السؤال هو ليه بتوصل لآخر اليوم جعانة، وإعادة توزيع الأكل على اليوم.
+
+لو المشكلة خروجات أو عزومات — مش منع، لكن تعلّم إزاي تختاري، وتظبيط باقي اليوم حوالين الخروجة.
+
+ولو الالتزام كويس فعلًا والنتيجة واقفة — وقتها مراجعة للسعرات والكميات والنشاط وأي عوامل تانية ممكن تكون مأثرة.
+
+يعني، بكلامها: «أنا مش بغيّر الخطة لمجرد إن الميزان منزلش أسبوع — أنا بغيّر السبب اللي مخلي الخطة مش ماشية».
+
+## مين بيكمّل، ومين بيسيب
+
+الفرق بين الاتنين مش اللي حد يتوقعه. د. رنا بتقول:
+
+«أكتر حاجة بشوفها إن اللي بيكمّل مش شرط يكون أكتر شخص ملتزم ١٠٠٪ — بالعكس، هو غالبًا الشخص اللي عرف يتعامل مع اليوم اللي لخبط فيه من غير ما يعتبر إن كل حاجة باظت.
+
+المريضة اللي بتكمّل ممكن تاكل وجبة زيادة، أو تخرج، أو يعدّي عليها أسبوع صعب، بس بترجع تاني للروتين من الوجبة اللي بعدها أو اليوم اللي بعده.
+
+إنما اللي بيسيب غالبًا بيدخل في فكرة «يا أعمل كل حاجة صح يا بلاش» — أول ما يلخبط يومين يحس إنه فشل، فيسيب البرنامج كله.
+
+عشان كده النجاح بالنسبة لي مش إن المريضة متغلطش خالص — النجاح إنها تعرف ترجع بسرعة بعد الغلطة. وهدفي في المتابعة مش بس إن وزنها ينزل، لكن إنها تتعلم نظام تقدر تعيش بيه حتى بعد ما المتابعة تخلص».
 
 ## اللي يستاهل تفتكريه
 
@@ -138,6 +170,8 @@ CLINICAL_INPUT: في حاجة بتنصحي بيها قبل ما الأسبوع �
 النزول السريع في الأول كان حقيقي بس مش كله شحم، والهدوء بعده مش توقف. والزهق ليه حل، بس الحل مش «حماس أكتر» — الحل إن الخطة تتعدل عشان تنفع في أسبوع عادي، مش في أسبوع فيه حماس.
 
 لو وصلتي للنقطة دي دلوقتي، دي مش لحظة إنك تبطلي — دي بالظبط اللحظة اللي فيها الكلام مع حد بيفرق. تقدري تشوفي شكل [[specialty:weight-management|متابعة الوزن]] هنا، أو [[booking|تحجزي موعد]] وتتكلمي عن الأسبوع التالت بتاعك إنتِ.
+
+والجملة اللي تستاهل تفضل معاكي: النجاح مش إن المريضة متغلطش خالص، النجاح إنها تعرف ترجع بسرعة بعد الغلطة.
 AR,
 
                 'en' => <<<'EN'
@@ -146,6 +180,8 @@ The most common sentence in the clinic is not "I cannot do it" or "the food is b
 And it tends to arrive at the same moment. Not the first week, not the third month. Week three.
 
 This article is not about how to get motivated again. It is about the fact that week three has a recognisable, repeating shape, with understandable causes — half of them in the body and half in the mind — and that knowing the shape before it arrives changes what you do when it does.
+
+There is one sentence that holds the whole of this article, and it is Dr Rana's own: "I don't change the plan because the scale didn't move this week — I change whatever is making the plan not work."
 
 ## The first two weeks run on something else entirely
 
@@ -223,7 +259,13 @@ The problem is not that people get bored. It is that boredom gets read as a verd
 
 There is a great deal of room between stopping and adjusting. A plan adjusted in week three carries on working; a plan abandoned in week three starts again from zero two months later, and brings with it the sense that this attempt failed too — and that is the part that accumulates.
 
-PRACTITIONER_VOICE: When a patient reaches week three and tells you she is bored, what do you actually say? The sentence you really use, not the theory.
+This is what Dr Rana says to a patient who has reached that point:
+
+"What you're feeling is completely normal, and it usually turns up after the first fortnight, because the excitement of starting has worn off — and that's where the real work begins. But I don't want you carrying on while you feel pressured, or while the plan feels like a punishment.
+
+Let's find out what exactly is wearing you down. Are you hungry? Is the food too repetitive? Is work making it impossible to stick to? Or is the result slower than you expected? Because the answer isn't for me to tell you to try harder — it's for us to change the plan so it fits you and you can keep going with it.
+
+And if this week was bad, then it was a bad week — not the whole journey. We're not starting from zero. We pick up where we stopped." 
 
 ## What follow-up is for
 
@@ -231,9 +273,33 @@ Follow-up does not exist so that somebody can check up on you. It exists for thi
 
 It is also what makes adjustment possible at all. Somebody following a plan alone has two options: carry on exactly as before, or stop. Somebody following a plan with a clinician who has seen her case has a third.
 
-CLINICAL_INPUT: What is the first thing you change in a plan when somebody reaches this point? If there is a specific adjustment you start with, write it.
+And the first thing that happens at a follow-up is not an adjustment. In Dr Rana's words: "The first thing is that I don't change the plan straight away. I ask what actually happened this week."
 
-CLINICAL_INPUT: Is there something you advise before week three arrives — from week one — to make this moment easier?
+What changes after that depends on the answer:
+
+If the problem is hunger — a review of amounts, how meals are spread through the day, protein and fibre.
+
+If she is busy and has no time to prepare — simpler meals and faster options.
+
+If it falls apart in the evening — the question is why she is arriving at the end of the day hungry, and the food gets redistributed across the day.
+
+If the problem is going out or family meals — not banning them, but learning how to choose, and arranging the rest of the day around them.
+
+And if she is genuinely sticking to it and the result has stalled — that is when calories, portions, activity and anything else that might be affecting it get reviewed.
+
+Which is to say, in her words: "I don't change the plan because the scale didn't move this week. I change whatever is making the plan not work." 
+
+## Who keeps going, and who stops
+
+The difference is not what anybody expects. Dr Rana:
+
+"The thing I see most is that the person who keeps going isn't necessarily the one who is 100% consistent — quite the opposite. She's usually the one who learned how to handle the day that went wrong without deciding that everything was ruined.
+
+The patient who keeps going might eat an extra meal, or go out, or have a hard week — but she comes back to the routine at the next meal, or the next day.
+
+The one who stops usually falls into all-or-nothing: the moment two days go badly she feels she has failed, and drops the whole programme.
+
+So success, to me, isn't a patient who never slips. Success is a patient who knows how to come back quickly after she does. And my aim in follow-up isn't only that her weight comes down — it's that she learns a way of eating she can live with after the follow-up ends."
 
 ## Worth remembering
 
@@ -242,6 +308,8 @@ Week three is not a sign that the plan is wrong. It is a sign that the plan has 
 The fast fall at the start was real but was not all fat, and the slowing after it is not a stop. Boredom has an answer, but the answer is not more enthusiasm — it is adjusting the plan so that it works in an ordinary week rather than an excited one.
 
 If you are at that point now, this is not the moment to stop. It is exactly the moment where talking to somebody makes a difference. You can see what [[specialty:weight-management|weight management follow-up]] looks like here, or [[booking|book an appointment]] and talk about your own week three.
+
+And the sentence worth keeping: success is not never slipping. Success is knowing how to come back quickly afterwards.
 EN,
             ],
 
