@@ -4,8 +4,8 @@
 > `database/seeders/Articles/`, not this document — anything typed here is
 > overwritten on the next run.
 
-36 questions across 14 articles: **24 CLINICAL_INPUT** and
-**12 PRACTITIONER_VOICE**. Every one is a gap left open deliberately, and no
+34 questions across 14 articles: **23 CLINICAL_INPUT** and
+**11 PRACTITIONER_VOICE**. Every one is a gap left open deliberately, and no
 article can be published while any of its own remain.
 
 ## The two kinds, and why they are not the same
@@ -39,45 +39,6 @@ the article.
 
 Where a question does not apply, say so. "I would not give a number here" is an
 answer, and a useful one.
-
----
-
-## النظام الجاهز والخطة الفردية — الفرق فين بالظبط؟
-
-`dietitian-versus-downloadable-plan` · التغذية العلاجية
-
-> الخطة الجاهزة مش «وحشة». هي بتفترض حاجات عن جسمك من غير ما تسألك عنها — والمقال ده عن الافتراضات دي.
-
-### CLINICAL_INPUT
-
-**في قسم:** في المطبخ المصري: الخطط المترجمة
-
-**السؤال:** لما تيجي مريضة بملف نظام جاهز وتسألك «ده كويس؟» — إنتِ بتردي إزاي؟
-
-*In English:* When a patient arrives with a ready-made plan and asks whether it is any good, how do you answer?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-الخطة اللي بتشتغل في مصر هي اللي بتبدأ من الحلة اللي في المطبخ، مش من جدول اتكتب في مكان تاني.
-
-</details>
-
-### PRACTITIONER_VOICE — **بصوتك إنتِ**
-
-**في قسم:** طب إيه اللي بتدفعي فيه فعلًا؟
-
-**السؤال:** إيه أكتر خطة جاهزة شوفتيها بتتكرر عند المرضى؟ وإيه الحاجة اللي بتقلقك فيها لما تشوفيها؟
-
-*In English:* Which ready-made plan do you see most often among patients? And what worries you about it when you see it?
-
-<details>
-<summary>الفقرة اللي قبله في المقال</summary>
-
-وفي حاجة الملف مش بيعملها بطبيعته: بيقول لك إمتى تبطلي. الخطة الفردية فيها نقطة إعادة تقييم — بعد فترة معينة بيتشاف إيه اتحرك وإيه لأ، والخطة بتتغير. الملف مالوش نهاية ومالوش مراجعة، فالشخص بيفضل ماشي عليه لحد ما يزهق، وبعدين يسيبه فجأة من غير خروج مخطط. والخروج المفاجئ ده هو اللي بيرجّع اللي حصل غالبًا.
-
-</details>
-
 
 ---
 
