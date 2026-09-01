@@ -47,6 +47,8 @@ class NormalResultsStillTired extends ArticleDefinition
 
 المقال ده مش هيقولك إن في حاجة اتلغبطت، ومش هيقولك تطلبي تحليل معيّن. هو عن حاجة أهم وأقل ما بتتشرح: كلمة «طبيعي» في ورقة التحليل دي معناها إيه بالظبط، وإيه اللي بتغطيه وإيه اللي مش بتغطيه.
 
+وأول حاجة بتقولها د. رنا للمريضة في الموقف ده: «التحاليل الطبيعية شيء مطمّن، لكن ده مش معناه إننا نتجاهل إحساسها أو نفترض إن مفيش حاجة محتاجة تتراجع».
+
 ## «طبيعي» في ورقة التحليل معناها إيه
 
 النطاق المرجعي اللي بتشوفيه جنب كل نتيجة مش حد فاصل بين الصحة والمرض. هو وصف إحصائي.
@@ -83,7 +85,7 @@ class NormalResultsStillTired extends ArticleDefinition
 
 وفي تعقيد إضافي: الفيريتين بيرتفع مع الالتهاب، فقراية عالية مش دايمًا معناها مخزون كويس، وده سبب إن التفسير محتاج حد شايف الصورة كلها.
 
-CLINICAL_INPUT: في حالة تعب مستمر مع هيموجلوبين جوه النطاق — إيه اللي بيخليكي تفكري في تقييم أوسع للحديد؟ من غير أرقام.
+ود. رنا بتحط الحد هنا بوضوح: «مش معنى إن تحليل معين قريب من الحد الأدنى أو الأعلى إننا نقدر نقول فورًا (أهو ده سبب التعب). التحاليل لازم تتقري مع الأعراض والتاريخ الصحي وتقييم الطبيب، وممكن الطبيب يشوف إن في فحوصات إضافية مطلوبة حسب الحالة».
 
 ## نقص الحديد بيحصل على مراحل، مش مرة واحدة
 
@@ -145,7 +147,25 @@ CLINICAL_INPUT: في حالة تعب مستمر مع هيموجلوبين جوه
 
 وفيتامين د حالة غريبة هنا: بلد شمسه قوية طول السنة، والنقص موجود. السبب مش الشمس — السبب التعرض. الشغل جوه المباني، والخروج في وقت مش وقت ذروة الأشعة، واللبس اللي بيغطي الجلد، كلها بتقلل التصنيع في الجلد بغض النظر عن الطقس بره.
 
-CLINICAL_INPUT: إيه أول حاجة بتسألي عنها لما مريضة تيجي بتحاليل «سليمة» وتعب مستمر؟
+## اللي بيتسأل قبل أي استنتاج
+
+د. رنا بتبدأ من الصورة كاملة، مش من ورقة التحليل. الأسئلة:
+
+بتنامي كام ساعة؟ ونومك نفسه مريح ولا بتصحي تعبانة؟
+
+بتاكلي كام مرة في اليوم؟ والوجبات فيها بروتين وكربوهيدرات ودهون بشكل متوازن؟
+
+بتشربي مياه كفاية؟
+
+بتعتمدي على القهوة عشان تكمّلي اليوم؟
+
+في فترات طويلة جدًا من غير أكل؟
+
+نشاطك وحركتك عاملين إزاي؟
+
+وهل الإرهاق جديد ولا موجود من فترة؟
+
+وجنب ده كله، مراجعة للتحاليل اللي اتعملت فعلًا: «لأن جملة (تحاليلي كلها طبيعية) مش معناها بالضرورة إن كل حاجة ممكن تكون مرتبطة بالإرهاق اتفحصت».
 
 وفي عادة تانية بتحصل في رمضان: كل الأكل بيتركز في ساعات قليلة، والشاي بيبقى بعد الفطار مباشرة، والوجبة اللي فيها مصدر الحديد بتبقى هي نفسها اللي بعدها الشاي. ده مش سبب لوحده لأي حاجة، بس هو عامل حقيقي بيستاهل يتقال.
 
@@ -161,7 +181,19 @@ CLINICAL_INPUT: إيه أول حاجة بتسألي عنها لما مريضة �
 
 واحتفظي بالورق. النتايج القديمة بتوري اتجاه، والاتجاه بيقول حاجات النتيجة الواحدة مش بتقولها. في مقال عن تجهيز ده كله: [[article:what-to-bring-to-a-first-appointment|إيه اللي تجيبيه معاكي في أول زيارة]].
 
-PRACTITIONER_VOICE: إيه أكتر حاجة بتلاقيها لما تراجعي تحاليل مريضة اتقالها «كله تمام» وهي لسه تعبانة؟
+## اللي بيطلع غالبًا من الناحية الغذائية
+
+«أوقات المشكلة مش نقص عنصر واحد أصلًا. ممكن الجسم ببساطة مش بياخد طاقة كفاية على مدار اليوم، أو الوجبات غير متوازنة، أو المريضة عاملة دايت قاسي، أو بتعدّي ساعات طويلة من غير أكل وبعدها تعتمد على السكريات والكافيين عشان تستعيد طاقتها».
+
+## «حاسّة إن محدش لاقي عندي حاجة»
+
+الجملة دي بتتقال كتير، وده الرد عليها:
+
+«إحساسك بالتعب حقيقي ويستحق إننا نفهمه، لكن مش هخمن له سبب لمجرد إن التحاليل الأساسية طبيعية.
+
+هنراجع أكلك، نومك، نشاطك، أعراضك، التحاليل اللي اتعملت، وأي أدوية أو عوامل ممكن تكون مؤثرة. ولو في أعراض مستمرة أو حاجة محتاجة تقييم طبي أكتر، بنرجع للطبيب بدل ما نحاول نفسّر كل حاجة بالتغذية.
+
+الهدف مش إننا نلاقي نقص في تحليل وخلاص. الهدف إننا نفهم جسمك ويومك كصورة كاملة، ونحدد إيه اللي نقدر نحسّنه بالتغذية ونمط الحياة، وإيه اللي محتاج متابعة طبية».
 
 ## اللي يستاهل تفتكريه
 
@@ -172,12 +204,18 @@ PRACTITIONER_VOICE: إيه أكتر حاجة بتلاقيها لما تراجع�
 اللي بيفرق هو إن حد يقرا الأرقام مع الأعراض والتاريخ والأدوية مع بعض. لو عندك ورق تحاليل ومحدش قعد يشرحه، ده اللي بتعمله [[specialty:lab-review|مراجعة التحاليل]] — وتقدري [[booking|تحجزي موعد]] وتجيبي الورق كله معاكي.
 
 ولو حابة تفهمي الأول ليه «ظبّطي أكلك» مش إجابة كافية: [[article:what-fix-your-diet-actually-means|الجملة دي معناها إيه بالظبط]].
+
+و«التحاليل طبيعية» خبر كويس، لكنه مش معناه إننا نقول للمريضة «يبقى إنتِ كويسة ومفيش حاجة». وفي نفس الوقت، التعب مش معناه تلقائيًا إن عندك نقص فيتامينات.
+
+المهم إننا ما نهملش الأعراض، وما نفسرهاش من غير دليل.
 AR,
 
                 'en' => <<<'EN'
 A situation that recurs constantly: the exhaustion has lasted months, the tests were done, the report came back with every number inside its range. The doctor said everything is fine, and the exhaustion is exactly where it was.
 
 This article will not tell you that something was missed, and it will not tell you to demand a particular test. It is about something more useful and less often explained: what the word "normal" on that report actually means, and what it does and does not cover.
+
+And the first thing Dr Rana says to a patient in this position: "Normal results are reassuring. But that does not mean we ignore how she feels, or assume there is nothing that needs looking at." 
 
 ## What "normal" means on a lab report
 
@@ -215,7 +253,7 @@ The WHO has issued guidance devoted specifically to using ferritin concentration
 
 And there is an added complication: ferritin rises with inflammation, so a high reading does not always mean a healthy store — which is another reason interpretation needs somebody looking at the whole picture.
 
-CLINICAL_INPUT: With persistent fatigue and a haemoglobin inside the range, what makes you consider a broader assessment of iron? No figures.
+Dr Rana draws the line here plainly: "A result sitting near the lower or upper limit does not mean we can turn round and say 'there, that's the cause of the tiredness'. Results have to be read alongside the symptoms, the medical history and the doctor's assessment — and the doctor may decide further tests are needed depending on the case." 
 
 ## Iron depletion happens in stages, not all at once
 
@@ -277,7 +315,25 @@ So the same plate of lentils can deliver different amounts of usable iron depend
 
 Vitamin D is a strange case here: a country with strong sun all year, and deficiency is present anyway. The reason is not the sun — it is exposure. Working indoors, going out outside the hours of peak ultraviolet, and clothing that covers the skin all reduce synthesis in the skin regardless of the weather outside.
 
-CLINICAL_INPUT: What is the first thing you ask about when a patient arrives with "normal" results and persistent exhaustion?
+## What gets asked before any conclusion
+
+Dr Rana starts from the whole picture, not from the report. The questions:
+
+How many hours are you sleeping? And is the sleep itself restful, or do you wake up tired?
+
+How many times a day do you eat? And are the meals balanced between protein, carbohydrate and fat?
+
+Are you drinking enough water?
+
+Are you relying on coffee to get through the day?
+
+Are there very long stretches with no food?
+
+How are your activity and movement?
+
+And is the exhaustion new, or has it been there a while?
+
+Alongside all of that, a review of which tests were actually done: "Because 'all my results are normal' does not necessarily mean that everything which might be connected to the exhaustion was tested." 
 
 There is another pattern in Ramadan: all the food is concentrated into a few hours, tea comes straight after iftar, and the meal containing the iron source is the same meal the tea follows. That is not a cause of anything on its own, but it is a real factor worth naming.
 
@@ -293,7 +349,19 @@ There is another pattern in Ramadan: all the food is concentrated into a few hou
 
 And keep the paper. Old results show a direction, and a direction says things a single result cannot. There is an article on preparing all of this: [[article:what-to-bring-to-a-first-appointment|What to bring to a first appointment]].
 
-PRACTITIONER_VOICE: What do you most often find when you review the results of a patient who was told everything was fine and is still exhausted?
+## What usually turns out to be true, nutritionally
+
+"Sometimes the problem is not a single nutrient at all. The body may simply not be getting enough energy across the day, or the meals are unbalanced, or the patient is on a severe diet, or she goes many hours without food and then relies on sugar and caffeine to get her energy back."
+
+## "I feel like nobody has found anything wrong with me"
+
+This gets said often, and this is the answer to it:
+
+"Your exhaustion is real and it deserves to be understood. But I am not going to guess at a cause for it just because the basic tests came back normal.
+
+We will go through your eating, your sleep, your activity, your symptoms, the tests that were done, and any medication or other factors that might be affecting it. And if there are persistent symptoms, or anything that needs more medical assessment, we go back to the doctor rather than trying to explain everything through nutrition.
+
+The aim is not to find a deficiency on a report and stop there. The aim is to understand your body and your day as a whole picture, and to work out what we can improve through nutrition and lifestyle — and what needs medical follow-up." 
 
 ## Worth remembering
 
@@ -304,6 +372,10 @@ Anaemia is not only haemoglobin, and the store falls before it. There are other 
 What makes the difference is somebody reading the numbers alongside the symptoms, the history and the medications together. If you have results and nobody has sat down and explained them, that is what a [[specialty:lab-review|lab review]] is — and you can [[booking|book an appointment]] and bring all of the paper with you.
 
 And if you would first like to understand why "sort your diet out" is not a sufficient answer: [[article:what-fix-your-diet-actually-means|what that sentence actually means]].
+
+"Your results are normal" is good news, but it does not mean telling a patient "so you're fine and there's nothing wrong". And at the same time, being tired does not automatically mean you have a vitamin deficiency.
+
+What matters is that we do not dismiss the symptoms, and we do not explain them without evidence.
 EN,
             ],
 
