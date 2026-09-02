@@ -17,6 +17,29 @@ use App\Enums\CitationConfidence;
  * The supply-and-demand mechanism is the other section carrying real weight,
  * because "my milk is not enough" is the sentence behind most early weaning,
  * and understanding why supply follows removal changes what somebody does next.
+ *
+ * ---------------------------------------------------------------------------
+ *
+ * THE WEIGHT-LOSS SECTION IS NEW AND IS ENTIRELY HERS. Nothing in the draft
+ * covered "I want to lose weight — when do I start?", which she names as the
+ * second most repeated question she gets. It sits after the section on a
+ * breastfeeding mother's raised requirement, because that is the fact that
+ * makes her answer make sense, and it carries no number of any kind: quality
+ * first, amounts adjusted gradually, nothing anybody can fail against.
+ *
+ * THE EGG-AND-NUTS PROMPT WAS NOT ANSWERED AND NOTHING WAS INVENTED FOR IT. It
+ * asked what she says to a mother anxious about introducing egg or peanut. The
+ * section already carries the substance from published guidance — introduce in
+ * time rather than postponing, with a known allergy or strong family history
+ * handled individually by a paediatrician — so the prompt was removed rather
+ * than filled with a plausible-sounding reassurance in her voice.
+ *
+ * THE FAMILY-ADVICE PROMPT WAS ALSO LEFT UNFILLED, for a subtler reason. She
+ * gave the belief and the correction in full — the mother who cuts out dairy,
+ * legumes, vegetables and spices until her own food has almost nothing left in
+ * it — but she did not say it arrives from the family, and the article does not
+ * claim she did. That material went into the colic section, where it answers
+ * the question actually being asked.
  */
 class FeedingAndEatingRecurringQuestions extends ArticleDefinition
 {
@@ -58,7 +81,11 @@ class FeedingAndEatingRecurringQuestions extends ArticleDefinition
 
 والمؤشر اللي بيتابع فعلًا مش إحساس الأم — هو نمو الطفل وعدد الحفاضات، وده بيتقيّم عند طبيب الأطفال.
 
-CLINICAL_INPUT: إمتى بتحوّلي أم بتشتكي من قلة اللبن، وإمتى بتطمنيها؟
+ود. رنا بتقول إن السؤال بيوصلها في شكل تاني: «آكل إيه عشان اللبن يزيد؟» — «وساعات بتكون مستنية مني أكلة سحرية أو مشروب معين».
+
+والرد مش أكلة: «الحقيقة إننا بنبص للصورة الأكبر: هل الأم بتاكل بشكل كافي ومتوازن؟ بتشرب سوائل بشكل مناسب؟ بتاخد فرصة ترتاح؟ والرضاعة نفسها ماشية إزاي؟».
+
+وفين الخط اللي بعده الموضوع بيطلع من إيد التغذية: «كمية اللبن مش بنحكم عليها من إحساس الأم لوحده، ولو في قلق حقيقي على الرضاعة أو نمو الطفل فهنا تقييم طبيب الأطفال أو مختص الرضاعة مهم».
 
 ## «أكلي بيأثر على اللبن إزاي؟»
 
@@ -77,6 +104,16 @@ CLINICAL_INPUT: إمتى بتحوّلي أم بتشتكي من قلة اللبن
 المشكلة العملية إن الفترة دي بالذات هي الأصعب في تجهيز الأكل: نوم متقطع، وقت مش موجود، وأولوية للطفل. النتيجة إن كتير من الأمهات بياكلوا أقل وأسرع وأضعف في الوقت اللي احتياجهم فيه أعلى.
 
 في مقال مخصص للنقطة دي: [[article:postpartum-nutrition|التغذية بعد الولادة — للأم في أول ستة شهور]].
+
+## «أنا عايزة أخس، أبدأ إمتى؟»
+
+ده تاني أكتر سؤال بيتكرر، وبيجي بدري غالبًا.
+
+ود. رنا مش بتقول لأ، وبتقول ليه: «نقدر نهتم بوزنك، لكن مش هنبدأ بحرمان شديد وإنتِ جسمك أصلًا في مرحلة محتاجة تغذية وتعافي».
+
+والشكل اللي بتشتغل بيه: «هنبص على أكلك ونحسن جودته، ونظبط الكميات تدريجيًا حسب حالتك، ونحاول نعمل تغيير تقدري تستمري عليه من غير أنظمة قاسية أو وعود بنزول سريع».
+
+والجملة اللي بتقفل النقاش ده كله: «مش مطلوب منها تختار بين إنها تهتم بصحتها وبين إنها ترضع طفلها؛ المطلوب خطة تراعي الاتنين».
 
 ## «أشرب مية كتير عشان اللبن يزيد»
 
@@ -104,7 +141,13 @@ CLINICAL_INPUT: إمتى بتحوّلي أم بتشتكي من قلة اللبن
 
 في حالات حقيقية فيها حساسية أو عدم تحمل عند الرضيع، وبتتشخص إكلينيكيًا وبتتابع، ومش بتتحدد بالتجربة والخطأ في البيت.
 
-CLINICAL_INPUT: إمتى بيبقى في داعي فعلًا لاستبعاد صنف من أكل الأم المرضعة؟
+ود. رنا بتوصف الحلقة دي زي ما بتشوفها: «كل ما الطفل يعيط أو يكون عنده غازات، تبدأ الأم تسأل نفسها (أنا أكلت إيه غلط؟) فتبدأ تمنع اللبن، والبقوليات، والخضار، والبهارات، وبعد فترة تلاقي قائمة أكلها بقت صغيرة جدًا».
+
+والقاعدة عندها واضحة: «مش كل غازات أو بكاء عند الطفل معناها إن الأم أكلت حاجة غلط. مش بنمنع مجموعات كاملة من الطعام بشكل روتيني لمجرد الخوف».
+
+وإمتى بيبقى في داعي فعلًا؟ «لو في أعراض متكررة أو اشتباه حقيقي في حساسية أو مشكلة مرتبطة بأكل معين، هنا بنقيّم الحالة مع طبيب الطفل ونحدد هل فعلًا محتاجين تدخل».
+
+يعني الاستبعاد قرار بيتاخد بعد تقييم، مش احتياط بيتاخد قبله.
 
 ## «أبدأ أكل الطفل إمتى؟»
 
@@ -136,8 +179,6 @@ CLINICAL_INPUT: إمتى بيبقى في داعي فعلًا لاستبعاد ص
 
 والاستثناء الواضح: الطفل اللي عنده حساسية معروفة أو تاريخ عائلي قوي بيتعامل معاه بشكل فردي عند طبيب الأطفال.
 
-CLINICAL_INPUT: إيه اللي بتقوليه لأم قلقانة من إدخال البيض أو المكسرات للطفل؟
-
 ## العسل قبل السنة — القاعدة الوحيدة اللي مالهاش استثناء هنا
 
 دي أهم نقطة في المقال كله.
@@ -156,8 +197,6 @@ CLINICAL_INPUT: إيه اللي بتقوليه لأم قلقانة من إدخا
 
 وبدل السكر والعسل في المشروبات، الأكل نفسه بيقدم الحلاوة الطبيعية: الموز، البلح المهروس بعد السنة، والفاكهة الموسمية.
 
-PRACTITIONER_VOICE: إيه أكتر نصيحة عن الرضاعة بتوصلك من العيلة وبتضطري تصححيها؟
-
 ## اللي يستاهل تفتكريه
 
 إنتاج اللبن بيشتغل بالعرض والطلب، فالرضاعة المتكررة والتفريغ هما اللي بيرفعوا الإنتاج مش الأكل ولا الشرب.
@@ -167,6 +206,8 @@ PRACTITIONER_VOICE: إيه أكتر نصيحة عن الرضاعة بتوصلك 
 الستة شهور رضاعة حصرية توصية من منظمة الصحة العالمية ومن الأكاديمية الأمريكية لطب الأطفال، والأطعمة التكميلية بعدها لازم تكون غنية بالحديد.
 
 والعسل قبل السنة لأ — دي الحاجة الوحيدة في المقال ده اللي مالهاش استثناء.
+
+وزي ما بتقول د. رنا: «متخليش فترة الرضاعة تتحول لقائمة طويلة من الممنوعات. الأم المرضعة محتاجة تتغذى كويس هي كمان».
 
 لو عايزة متابعة في الرضاعة أو في إدخال الأكل: [[specialty:pregnancy-nutrition|تغذية الحمل والرضاعة]] أو [[booking|احجزي موعد]].
 
@@ -192,7 +233,11 @@ And several things get misread as low supply: that the baby feeds often (normal 
 
 The indicator actually followed is not the mother's impression — it is the baby's growth and nappy output, assessed by a paediatrician.
 
-CLINICAL_INPUT: When do you refer a mother worried about low supply, and when do you reassure her?
+Dr Rana says the question reaches her in a different shape: "What do I eat so that my milk increases?" — "and sometimes she is waiting for me to name a magic food or a particular drink."
+
+The answer is not a food: "The truth is that we look at the bigger picture. Is the mother eating enough, and eating a balanced diet? Is she drinking fluids properly? Is she getting a chance to rest? And how is the feeding itself going?"
+
+And here is the line past which it stops being a nutrition question: "We don't judge the amount of milk from the mother's impression alone, and if there is real concern about the feeding or about the baby's growth, then an assessment by the paediatrician or a lactation specialist matters."
 
 ## "How does what I eat affect my milk?"
 
@@ -211,6 +256,16 @@ Producing milk itself costs energy, and the requirement during full breastfeedin
 The practical problem is that this period is the hardest for preparing food: broken sleep, no time, and the baby first. The result is that many mothers eat less, faster and more poorly at exactly the point when their requirement is highest.
 
 There is an article devoted to this: [[article:postpartum-nutrition|Postpartum nutrition — the mother in the first six months]].
+
+## "I want to lose weight — when do I start?"
+
+This is the second most repeated question, and it usually arrives early.
+
+Dr Rana does not say no, and she says why: "We can pay attention to your weight, but we are not going to start with severe deprivation while your body is already in a stage that needs nourishing and recovering."
+
+And the shape she works in: "We look at your food and improve its quality, we adjust the amounts gradually according to your case, and we try to make a change you can keep going with — without harsh regimes or promises of rapid loss."
+
+And the sentence that closes the whole argument: "She is not being asked to choose between looking after her own health and feeding her baby. What is needed is a plan that takes account of both."
 
 ## "Should I drink a lot of water so my milk increases?"
 
@@ -238,7 +293,13 @@ Mothers excluding whole food groups — dairy, legumes, brassicas — happens co
 
 There are genuine cases of allergy or intolerance in an infant, and those are diagnosed clinically and followed, rather than determined by trial and error at home.
 
-CLINICAL_INPUT: When is there genuinely a reason to exclude something from a breastfeeding mother's diet?
+Dr Rana describes the loop as she sees it: "Every time the baby cries or has wind, the mother starts asking herself 'what did I eat wrong?' — so she cuts out dairy, and legumes, and vegetables, and spices, and after a while she finds the list of what she eats has become very small."
+
+Her rule is explicit: "Not every episode of wind or crying in a baby means the mother ate something wrong. We do not routinely exclude whole food groups out of fear alone."
+
+And when is there genuinely a reason? "If there are recurring symptoms, or a real suspicion of an allergy or of a problem connected to a particular food, then we assess the case with the child's doctor and decide whether an intervention is actually needed."
+
+So exclusion is a decision taken after an assessment, not a precaution taken before one.
 
 ## "When do I start solid food?"
 
@@ -270,8 +331,6 @@ The older idea was to delay foods associated with allergy — egg, peanut, fish 
 
 The clear exception: a child with a known allergy or a strong family history is handled individually by a paediatrician.
 
-CLINICAL_INPUT: What do you say to a mother anxious about introducing egg or nuts to her child?
-
 ## Honey before one year — the one rule in this article with no exception
 
 This is the most important point in the whole piece.
@@ -290,8 +349,6 @@ Tea in particular is an important point: it is given to children in a great many
 
 And instead of sugar and honey in drinks, food itself provides natural sweetness: banana, mashed dates after the first year, and seasonal fruit.
 
-PRACTITIONER_VOICE: What is the breastfeeding advice that reaches you most often from the family and that you find yourself correcting?
-
 ## Worth remembering
 
 Milk production works on supply and demand, so frequent feeding and emptying are what raise it — not food and not drink.
@@ -301,6 +358,8 @@ A breastfeeding mother's energy requirement is higher than a pregnant woman's, a
 Six months of exclusive breastfeeding is a recommendation of both the WHO and the American Academy of Pediatrics, and complementary foods after it need to be rich in iron.
 
 And no honey before one year — the one thing in this article with no exception.
+
+As Dr Rana puts it: "Don't let the breastfeeding months turn into a long list of forbidden foods. A breastfeeding mother needs to be well fed herself."
 
 If you want follow-up on breastfeeding or on introducing food: [[specialty:pregnancy-nutrition|pregnancy and breastfeeding nutrition]] or [[booking|book an appointment]].
 

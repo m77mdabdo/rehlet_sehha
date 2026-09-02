@@ -20,6 +20,22 @@ use App\Enums\CitationConfidence;
  *
  * The red-flags section is not optional. An article that reassures without
  * saying what would not be reassuring is a liability.
+ *
+ * ---------------------------------------------------------------------------
+ *
+ * HER RED FLAGS ARE IN A CALLOUT, AND THAT IS THE POINT OF THE SECTION. This
+ * article reassures for most of its length — that is what it is for — and the
+ * risk that creates is specific: a frightened parent skims a reassuring piece,
+ * finds the reassurance, and stops. A list set in the same type as the eleven
+ * calming paragraphs above it is a list that gets skimmed past, and the items
+ * on it are the ones where skimming past has a cost.
+ *
+ * The article's own additions — chronic diarrhoea, recurrent abdominal pain,
+ * blood in the stool, persistent pallor — follow the callout as prose rather
+ * than being merged into it, so that what is inside the box is hers and is
+ * exactly what she said.
+ *
+ * All three prompts on this article were answered.
  */
 class TheChildWhoWillNotEat extends ArticleDefinition
 {
@@ -50,6 +66,26 @@ class TheChildWhoWillNotEat extends ArticleDefinition
 ## أول سؤال: «مش بياكل» ولا «مش بياكل اللي إحنا عايزينه»؟
 
 في فرق كبير بين الاتنين، والفرق ده بيغيّر كل حاجة.
+
+ود. رنا بتقول إنها مش بتبدأ بحل: «لما أم تدخل وتقولي (ابني مش بياكل خالص)، أول حاجة مش بقولها (جربي تديه كذا). بسألها الأول».
+
+والأسئلة اللي بتبدأ بيها:
+
+يعني إيه مش بياكل؟ بياكل كام وجبة؟
+
+بياكل إيه فعلًا خلال اليوم؟
+
+بيشرب لبن أو عصير بكميات كبيرة؟
+
+بياكل سناكس بين الوجبات؟
+
+بيرفض كل الأكل ولا أصناف معينة؟
+
+المشكلة بدأت إمتى؟
+
+ووزنه وطوله ونموه ماشيين إزاي؟
+
+والسبب إن الإجابات دي بتودّي لمكانين مختلفين تمامًا: «أوقات الطفل فعلًا عنده مشكلة محتاجة تقييم، وأوقات تانية بنكتشف إنه بياكل، لكن الكمية أقل من توقعات الأسرة».
 
 الطفل اللي بياكل خمس أصناف بس وبيرفض الباقي مختلف عن الطفل اللي كمية أكله كلها قليلة. والأول ده اسمه انتقائية في الأكل، وهو شائع جدًا وغالبًا مرحلة. والتاني موضوع تاني بيتقيّم إكلينيكيًا.
 
@@ -91,7 +127,9 @@ class TheChildWhoWillNotEat extends ArticleDefinition
 
 والضغط بيشتغل عكسي. الإجبار على الأكل بيربط الصنف ده بتجربة سلبية، وده بيقلل قبوله على المدى الطويل بدل ما يزوّده.
 
-CLINICAL_INPUT: إيه اللي بتنصحي بيه عمليًا لأم بتحاول تدخل صنف جديد ومقابلة رفض؟
+ود. رنا بتلخص دور الأم في الموقف ده كله في جملتين: «دورك مش إنك تجبريه يخلص الطبق. دورك إنك توفري أكل مناسب ومتوازن في مواعيد منتظمة وبيئة هادية، وتستمري في عرض أطعمة متنوعة من غير ضغط».
+
+والنتيجة مش فورية وده جزء من التصميم: «والطفل تدريجيًا يتعلم يسمع إشارات الجوع والشبع عنده».
 
 ## تقسيم المسؤولية: مين بيقرر إيه
 
@@ -120,6 +158,10 @@ CLINICAL_INPUT: إيه اللي بتنصحي بيه عمليًا لأم بتحا
 «طاردي وراه وحطي في بقه». دي بتشتري لقمة النهاردة بتكلفة طويلة المدى: الأكل بيرتبط بالإجبار، وبيقل قبوله.
 
 الاتنين بيشتركوا في حاجة: الاتنين بيخلوا الأكل موضوع تفاوض بين طرفين. والحل مش في وسط بينهم — الحل إن الأكل يرجع يبقى روتين عادي.
+
+ود. رنا بتقول إن ده أكتر خطأ بتشوفه: «إن وقت الأكل يتحول لمعركة». والأشكال اللي بتاخدها المعركة دي مألوفة: «كُل معلقة كمان»، «لو خلصت الطبق هديك حلو»، نجري وراه بالمعلقة، نشغل الشاشة عشان ياكل من غير ما يحس، أو نفضل نقارن بينه وبين أخوه.
+
+والتكلفة مش في الوجبة دي: «كل الضغط ده ممكن يخلي الطفل يربط الأكل بالتوتر بدل الجوع والشبع».
 
 ## «فاتح الشهية» — الحاجة اللي بتتشترى من الصيدلية
 
@@ -155,25 +197,37 @@ CLINICAL_INPUT: إيه اللي بتنصحي بيه عمليًا لأم بتحا
 
 والعزومات والزيارات بيبقى فيها ضغط من الكبار — «كُل يا حبيبي عشان خاطري». الضغط ده بحب، وبيعمل نفس أثر أي ضغط تاني.
 
+## حاجات صغيرة بتقلل الشهية من غير ما ناخد بالنا
+
+في حاجات في اليوم بتشتغل ضد الوجبة من غير ما حد يربط بينهم. د. رنا بتعدّدها كده:
+
+سناكس طول اليوم.
+
+مشروبات قبل الوجبة.
+
+كميات كبيرة جدًا في الطبق.
+
+أو إننا أول ما يرفض الوجبة نجري نعمله الأكلة الوحيدة اللي بيحبها.
+
+والصفة المشتركة بينهم إنهم كلهم بيتعملوا بحسن نية، وكلهم بيوصلوا الطفل للسفرة مش جعان.
+
 ## علامات مش المفروض تتطمني عليها
 
-المقال ده بيطمّن في أغلب الحالات، وعشان كده لازم يقول اللي مش بيطمّن:
+المقال ده بيطمّن في أغلب الحالات، وعشان كده لازم يقول اللي مش بيطمّن.
 
-نزول في الوزن، أو توقف في النمو على المنحنى عبر الوقت.
+ودي العلامات اللي د. رنا بتقول عندها إن ده مبقاش مجرد انتقائية:
 
-رفض شديد جدًا لأصناف كتيرة بشكل بيقلل الأكل لعدد أصناف صغير جدًا.
+> لو في:
+> - فقدان وزن أو ضعف في النمو
+> - صعوبة واضحة في المضغ أو البلع
+> - قيء متكرر
+> - ألم مع الأكل
+> - اختناق أو كحة متكررة أثناء الأكل
+> - قائمة الأطعمة المقبولة بتضيق جدًا
+> - أو الأهل حاسين إن في تغير كبير ومستمر
+> هنا الموضوع محتاج تقييم متخصص، ومش مجرد «هيكبر وياكل».
 
-كحة أو اختناق أو ترجيع متكرر مع الأكل، أو صعوبة في البلع.
-
-إسهال مزمن، أو ألم بطن متكرر، أو دم في البراز.
-
-شحوب أو خمول أو تعب مستمر.
-
-الحاجات دي بتتشاف عند طبيب أطفال، مش بتتعالج بتعديل في السفرة.
-
-CLINICAL_INPUT: إمتى بتقولي لأم إن ده مش مجرد انتقائية ومحتاج تقييم؟
-
-PRACTITIONER_VOICE: إيه أكتر حاجة بتلاحظيها في بيوت فيها طفل «مش بياكل»، والأهل مش واخدين بالهم منها؟
+والقايمة دي مش شاملة كل حاجة. إسهال مزمن، أو ألم بطن متكرر، أو دم في البراز، أو شحوب وخمول مستمر — كلها كمان بتتشاف عند طبيب أطفال، مش بتتعالج بتعديل في السفرة.
 
 ## اللي يستاهل تفتكريه
 
@@ -184,6 +238,8 @@ PRACTITIONER_VOICE: إيه أكتر حاجة بتلاحظيها في بيوت ف
 واللبن بكميات كبيرة بيبان حل وهو بيقلل الأكل الصلب والحديد مع بعض.
 
 ولو في علامة من علامات القايمة اللي فوق، دي مش انتقائية — دي زيارة دكتور.
+
+وزي ما بتقول د. رنا: «الهدف مش إن الطفل (يخلص طبقه). الهدف إننا نبني علاقة صحية مع الأكل، وفي نفس الوقت نتابع نموه ونتأكد إنه بياخد احتياجاته. لأن الطفل اللي مش بياكل محتاج الأول نفهم: هل فعلًا مش بياكل كفاية، ولا إحنا منتظرين منه ياكل أكتر من احتياجه؟».
 
 لو الموضوع مستمر وعايزة تقييم: [[specialty:child-nutrition|تغذية الأطفال]] أو [[booking|احجزي موعد]].
 
@@ -198,6 +254,26 @@ This happens in a great many households and causes genuine anxiety. This article
 ## First question: "will not eat" or "will not eat what we want"?
 
 There is a large difference between the two, and it changes everything.
+
+Dr Rana says she does not begin with a solution: "When a mother comes in and tells me 'my son doesn't eat at all', the first thing I say is not 'try giving him this'. I ask her first."
+
+The questions she starts with:
+
+What does "not eating" mean? How many meals does he eat?
+
+What does he actually eat through the day?
+
+Is he drinking milk or juice in large amounts?
+
+Is he eating snacks between meals?
+
+Does he refuse all food, or particular things?
+
+When did the problem start?
+
+And how are his weight, his height and his growth doing?
+
+The reason is that those answers lead to two completely different places: "Sometimes the child genuinely has a problem that needs assessment, and other times we discover that he is eating — but the amount is less than the family expected."
 
 A child who eats five foods and refuses the rest is not the same as a child whose total intake is small. The first is food selectivity, which is very common and usually a phase. The second is a different matter and is assessed clinically.
 
@@ -239,7 +315,9 @@ And the number of exposures needed is usually far greater than parents expect. M
 
 Pressure works in reverse. Forcing food associates it with an unpleasant experience, which reduces acceptance over the long run rather than increasing it.
 
-CLINICAL_INPUT: What do you practically advise a mother trying to introduce a new food and meeting refusal?
+Dr Rana puts the mother's part in all of this into two sentences: "Your job is not to make him finish the plate. Your job is to provide suitable, balanced food at regular times in a calm environment, and to keep offering a variety of foods without pressure."
+
+And the result is not immediate, which is part of the design: "And gradually the child learns to hear his own hunger and fullness cues."
 
 ## The division of responsibility: who decides what
 
@@ -268,6 +346,10 @@ Tea does the same thing from another direction: it reduces iron absorption, and 
 "Chase him and put it in his mouth." This buys today's mouthful at a long-term cost: food becomes associated with coercion, and acceptance falls.
 
 The two share something: both make eating a negotiation between two parties. And the answer is not a midpoint between them — it is for eating to become an ordinary routine again.
+
+Dr Rana says this is the commonest mistake she sees: "mealtimes turning into a battle." The forms that battle takes are familiar: "one more spoonful", "if you finish your plate I'll give you a sweet", chasing him round with the spoon, putting a screen on so that he eats without noticing, or comparing him with his brother.
+
+And the cost is not paid at that meal: "All that pressure can make the child associate food with tension instead of with hunger and fullness."
 
 ## "Something to open his appetite" — the thing bought at the pharmacy
 
@@ -303,25 +385,37 @@ Snacking between meals is the silent problem: crisps, biscuits and sweetened jui
 
 And gatherings and visits bring pressure from adults — eat, darling, for my sake. That pressure comes from affection, and has the same effect as any other pressure.
 
+## Small things that reduce appetite without anybody noticing
+
+There are things in a day that work against the meal without anybody connecting the two. Dr Rana lists them:
+
+Snacks throughout the day.
+
+Drinks before the meal.
+
+Very large amounts on the plate.
+
+Or the moment he refuses the meal, rushing to make him the one dish he likes.
+
+What they have in common is that all of them are done with the best of intentions, and all of them bring the child to the table not hungry.
+
 ## Signs that should not be reassured away
 
-This article is reassuring in most situations, which is exactly why it has to say what is not reassuring:
+This article is reassuring in most situations, which is exactly why it has to say what is not reassuring.
 
-Weight loss, or growth flattening on the curve over time.
+These are the signs at which Dr Rana says this is no longer simple selectivity:
 
-Very severe refusal across many foods, narrowing intake to a very small number of items.
+> If there is:
+> - weight loss or faltering growth
+> - clear difficulty chewing or swallowing
+> - repeated vomiting
+> - pain with eating
+> - choking or repeated coughing while eating
+> - a very sharp narrowing of the list of accepted foods
+> - or a sense in the family of a large and continuing change
+> then this needs specialist assessment, and not "he'll grow out of it".
 
-Coughing, choking or repeated vomiting with food, or difficulty swallowing.
-
-Chronic diarrhoea, recurrent abdominal pain, or blood in the stool.
-
-Pallor, lethargy, or persistent tiredness.
-
-These are seen by a paediatrician, not managed by adjusting the dinner table.
-
-CLINICAL_INPUT: When do you tell a mother that this is not simple selectivity and needs assessment?
-
-PRACTITIONER_VOICE: What do you most often notice in households with a child who "will not eat" that the parents have not noticed?
+And that list is not exhaustive. Chronic diarrhoea, recurrent abdominal pain, blood in the stool, or persistent pallor and lethargy are also seen by a paediatrician, not managed by adjusting the dinner table.
 
 ## Worth remembering
 
@@ -332,6 +426,8 @@ Refusing new things is a phase with a name; acceptance increases with repeated n
 And milk in large volumes looks like a solution while reducing both solid food and iron at once.
 
 If any of the signs on the list above is present, this is not selectivity — it is a doctor's appointment.
+
+As Dr Rana puts it: "The goal is not for the child to 'finish his plate'. The goal is to build a healthy relationship with food, and at the same time to follow his growth and make sure he is getting what he needs. Because with a child who is not eating, the first thing we need to understand is this: is he genuinely not eating enough, or are we expecting him to eat more than he needs?"
 
 If it is continuing and you want an assessment: [[specialty:child-nutrition|child nutrition]] or [[booking|book an appointment]].
 

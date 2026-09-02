@@ -16,6 +16,30 @@ use App\Enums\CitationConfidence;
  * preformed vitamin A, and fesikh, which is eaten by whole families on one
  * particular day of the year. Neither appears in a translated foreign article,
  * and both are the kind of thing somebody's mother-in-law has an opinion about.
+ *
+ * ---------------------------------------------------------------------------
+ *
+ * HER FOOD-SAFETY PARAGRAPH IS GENERAL ON PURPOSE AND MUST STAY THAT WAY. She
+ * names CATEGORIES — contamination risk, cooking and storage, choosing fish and
+ * avoiding the high-mercury kinds — and it would have been easy, and wrong, to
+ * "helpfully" expand that into a named list under her name. What exactly a
+ * given woman should avoid at a given stage is clinical guidance for a
+ * consultation, and the section says so in as many words.
+ *
+ * The article's own sections still name liver, unpasteurised dairy, fesikh and
+ * undercooked meat. That is deliberate and is a different thing: it is reported
+ * from published guidance and carries its own citations, and it is introduced
+ * as information rather than as the list she would give this reader.
+ *
+ * TWO PROMPTS WERE NOT ANSWERED AND NOTHING WAS INVENTED FOR THEM — what she
+ * tells a woman planning a pregnancy about folic acid timing, and what she
+ * suggests when an iron supplement causes symptoms. Both sections already carry
+ * the substance from published guidance (the timing is pre-conception; the
+ * answer to symptoms is to tell the doctor, because timing, form and dose can
+ * be adjusted), so the prompts were removed rather than filled. Her general
+ * rule about supplements — not a place for experimenting, doses set with the
+ * medical team — went into the iron section, because that is a thing she
+ * actually said.
  */
 class PregnancyEatingMyths extends ArticleDefinition
 {
@@ -45,13 +69,15 @@ class PregnancyEatingMyths extends ArticleDefinition
 
 ## «كلي لاتنين»
 
-الجملة الأشهر، والأكثر تضليلًا.
+الجملة الأشهر، والأكثر تضليلًا. ود. رنا بتقول إنها «أكتر جملة تقريبًا كل حامل بتسمعها»، وإن أثرها عملي: «بتخلي بعض السيدات تتعامل مع الحمل كإن الجسم محتاج ضعف كمية الأكل من أول يوم، وده مش صحيح».
 
 الاحتياج من الطاقة في الحمل بيزيد فعلًا، بس الزيادة متواضعة، ومعظمها في التلت التاني والتالت مش من أول يوم. الجنين في الشهور الأولى صغير جدًا، والاحتياج الإضافي في المرحلة دي بسيط.
 
 اللي بيزيد بشكل أكبر نسبيًا مش الطاقة — هو الاحتياج من عناصر معيّنة زي الحديد وحمض الفوليك. يعني الصورة الصح مش «ضعف الكمية»، هي «نفس الكمية تقريبًا بجودة أعلى، مع عناصر محددة بتتابع».
 
 الخرافة دي منتشرة لأنها منطقية على السطح — في اتنين، يبقى الأكل مرتين — ولأن المجتمع بيشجعها. النتيجة زيادة وزن أكبر من اللازم في الحمل، وده موضوع ليه متابعة إكلينيكية مش نصيحة عامة.
+
+وبتلخصها كده: «احتياجات الجسم فعلًا بتتغير خلال الحمل، لكن بشكل تدريجي، وبتختلف حسب مرحلة الحمل وحالة الأم ووزنها ونشاطها وتقييم الطبيب. الفكرة مش إننا نضاعف الأكل، لكن إننا نهتم أكتر بجودته واحتياجات الأم والجنين».
 
 ## حمض الفوليك: الحاجة اللي التوقيت فيها هو كل الحكاية
 
@@ -63,8 +89,6 @@ class PregnancyEatingMyths extends ArticleDefinition
 
 يعني اللي بتقول «هبدأ الفيتامينات لما أروح للدكتور» ممكن تكون فاتت المرحلة اللي المكمل ده أهم فيها.
 
-CLINICAL_INPUT: إيه اللي بتقوليه لست بتخطط للحمل عن التوقيت ده؟
-
 ## «الحديد بيتعب المعدة، يبقى بلاش»
 
 الجزء الأول من الجملة صح غالبًا. الأعراض الهضمية من مكملات الحديد معروفة وشائعة، والإمساك منها.
@@ -73,7 +97,9 @@ CLINICAL_INPUT: إيه اللي بتقوليه لست بتخطط للحمل عن
 
 والحل مش الوقف — الحل إن الأعراض تتقال للطبيب، لأن في تعديلات ممكنة في التوقيت أو الشكل أو الجرعة. الوقف من غير كلام هو أسوأ الاختيارات، لأنه بيسيب النقص من غير ما يحل العرض.
 
-CLINICAL_INPUT: لما مريضة حامل تشتكي من أعراض مكمل الحديد — إيه اللي بتقترحيه؟
+ود. رنا بتحط قاعدة عامة للمكملات في الحمل: «المكملات مش مجال للتجربة. متاخديش فيتامين أو أعشاب أو مكمل لمجرد إن حد قال إنه (مفيد للحامل). المكملات والجرعات تتحدد مع الفريق الطبي حسب احتياجك».
+
+والقاعدة دي بتشتغل في الاتجاهين: زي ما هي بتمنع إضافة حاجة من نفسك، هي كمان بتمنع إيقاف حاجة من نفسك.
 
 ## ليه الاحتياج من الحديد بيزيد في الحمل بالذات
 
@@ -84,6 +110,12 @@ CLINICAL_INPUT: لما مريضة حامل تشتكي من أعراض مكمل �
 وفي نفس الوقت في احتياج حقيقي جديد: تكوين كرات دم إضافية، وبناء المشيمة، والجنين نفسه بيخزن حديد في الشهور الأخيرة عشان يستخدمه بعد الولادة.
 
 يعني في احتياج بيزيد ومخزون بيتسحب منه، وده اللي بيخلي مخزون الحديد قبل الحمل مهم بقد الحمل نفسه.
+
+## سلامة الأكل: القواعد اللي فعلًا مهمة
+
+جنب الخرافات، في حاجات حقيقية. ود. رنا بتحطها كفئات مش كقايمة: «في قواعد لسلامة الغذاء أثناء الحمل مهمة فعلًا، زي تجنب الأطعمة المعروفة بخطر التلوث، والانتباه لطريقة طهي وتخزين الأكل، واختيار أنواع الأسماك المناسبة وتجنب الأنواع عالية الزئبق».
+
+وهي بتقولها كفئات عن قصد. إيه بالظبط اللي يتجنب في حالتك وفي مرحلتك إنتِ حاجة بتتحدد في المتابعة مع الطبيب، مش قايمة بتتحفظ من مقال. اللي جاي بعد كده بيشرح اللي التوصيات المنشورة بتقوله في النقط اللي بيتسأل عنها أكتر — وهو معلومات، مش بديل عن الكلام ده في العيادة.
 
 ## «امنعي كل السمك»
 
@@ -147,7 +179,23 @@ CLINICAL_INPUT: لما مريضة حامل تشتكي من أعراض مكمل �
 
 واللي يستاهل يتقال: الغثيان الشديد المستمر اللي بيمنع الأكل والشرب ومعاه نقصان في الوزن أو علامات جفاف مش مرحلة بتعدي — ده موقف بيتشاف عند الطبيب، لأن ليه إدارة إكلينيكية.
 
-CLINICAL_INPUT: إيه اللي بتقترحيه عمليًا لست عندها غثيان بيمنعها من الأكل في التلت الأول؟
+## طب لما حامل تيجي أول مرة، بنسأل عن إيه؟
+
+الأعراض دي مش تفصيلة على هامش الخطة — هي جزء من اللي الخطة بتتبني عليه.
+
+د. رنا بتقول إن أول حاجة بتسأل عنها مرحلة الحمل، والوزن قبل الحمل والتغير اللي حصل، والأعراض، والتحاليل والمتابعة مع طبيب النساء، والأدوية والمكملات اللي بتتاخد — وبعدها اليوم والأكل.
+
+وبعدين الأسئلة العملية:
+
+هل عندك غثيان؟ ترجيع؟
+
+حموضة؟ إمساك؟
+
+نفسك مفتوحة ولا مش قادرة تاكلي؟
+
+في أكلات معينة بقيتي مش طايقاها؟
+
+والسبب اللي بتقوله بنفسها: «خطة الحامل لازم تتعامل مع اللي بيحصل معاها فعلًا، مش مع جدول مثالي على الورق».
 
 ## في السياق المصري: الأعشاب والمشروبات
 
@@ -157,7 +205,11 @@ CLINICAL_INPUT: إيه اللي بتقترحيه عمليًا لست عندها 
 
 الحاجة العملية: أي حاجة بتتاخد بانتظام تتقال للطبيب، حتى لو مشروب.
 
-PRACTITIONER_VOICE: إيه أكتر خرافة عن أكل الحمل بتوصلك من العيلة مش من المريضة نفسها؟
+## والكلام اللي بيجي من العيلة
+
+النصيحة في الحمل بتوصل من ناس جربوا الحمل قبلك، وبتتقال بثقة عشان كده بالظبط.
+
+ود. رنا بتقول إن دي حاجة بتحب كل حامل تعرفها: «مش كل نصيحة بتسمعيها من حد جرّب الحمل قبلك تنطبق عليكي».
 
 وفي حاجة أخيرة عن العيلة نفسها. الضغط في الحمل بيجي من ناس بتحب فعلًا، وده اللي بيخليه صعب. الجملة اللي بتنفع مش «ده كلام غلط» — الجملة اللي بتنفع إن في دكتور بيتابع الحمل ده، وإن الكلام ده هيتسأل فيه. ده بيقفل النقاش من غير ما يجرح حد.
 
@@ -168,6 +220,8 @@ PRACTITIONER_VOICE: إيه أكتر خرافة عن أكل الحمل بتوصل
 الاحتياج بيزيد في الجودة أكتر من الكمية. حمض الفوليك توقيته قبل الحمل. الحديد ليه أعراض بتتعالج مش بتوقف المكمل. الكبدة معلومتها الصح بتؤدي لاستنتاج غلط. والألبان غير المبسترة والفسيخ واللحوم غير مكتملة الطهي ليها ملاحظات معروفة.
 
 والتورم المفاجئ مش موضوع ملح — ده موضوع دكتور.
+
+وزي ما بتقول د. رنا: «الحمل مش وقت ناكل فيه براحتنا بحجة (باكل لاتنين)، ومش وقت نعمل فيه دايت قاسي خوفًا من زيادة الوزن. هو وقت نغذي فيه جسمك بشكل مناسب، نتابع صحتك ونمو الحمل، ونخلي أي قرار غذائي كبير مبني على حالتك إنتِ».
 
 لو حامل وعايزة خطة مبنية على حالتك ومرحلتك: [[specialty:pregnancy-nutrition|تغذية الحمل والرضاعة]] أو [[booking|احجزي موعد]].
 
@@ -181,13 +235,15 @@ Most of it is said with genuine affection. Some of it is correct, some has no ba
 
 ## "Eat for two"
 
-The most famous sentence, and the most misleading.
+The most famous sentence, and the most misleading. Dr Rana calls it "almost the one sentence every pregnant woman hears", and its effect is practical: "it makes some women treat pregnancy as though the body needed twice as much food from the first day, and that is not true."
 
 Energy requirement in pregnancy does increase, but the increase is modest, and most of it belongs to the second and third trimesters rather than the first day. The fetus in the early months is very small, and the additional requirement at that stage is slight.
 
 What increases proportionally more is not energy but the requirement for particular nutrients, iron and folic acid among them. So the accurate picture is not "twice as much" — it is "roughly the same amount at higher quality, with specific nutrients being followed".
 
 The myth spreads because it is superficially logical — there are two of you, so eat twice — and because society encourages it. The consequence is greater weight gain in pregnancy than intended, which is a matter for clinical follow-up rather than general advice.
+
+She puts it this way: "The body's requirements do change during pregnancy, but gradually, and they differ according to the stage, the mother's condition, her weight, her activity and the doctor's assessment. The idea is not that we double the food — it is that we pay more attention to its quality and to what the mother and the baby need."
 
 ## Folic acid: the thing where the timing is the whole point
 
@@ -199,8 +255,6 @@ Which is why published guidance discusses folic acid before conception rather th
 
 So somebody saying "I will start the vitamins when I see the doctor" may have passed the stage at which this supplement mattered most.
 
-CLINICAL_INPUT: What do you tell a woman planning a pregnancy about that timing?
-
 ## "Iron upsets my stomach, so I stopped it"
 
 The first half of that sentence is usually true. Digestive symptoms from iron supplements are well known and common, constipation among them.
@@ -209,7 +263,9 @@ The second half is the error. The WHO recommends daily iron and folic acid suppl
 
 And the answer is not stopping — it is telling the doctor about the symptoms, because there are possible adjustments in timing, form or dose. Stopping without saying anything is the worst of the options, because it leaves the deficiency in place without resolving the symptom.
 
-CLINICAL_INPUT: When a pregnant patient reports symptoms from an iron supplement, what do you suggest?
+Dr Rana sets a general rule for supplements in pregnancy: "Supplements are not a place for experimenting. Don't take a vitamin or a herb or a supplement just because somebody said it was 'good for pregnancy'. Supplements and doses are decided with the medical team according to what you need."
+
+That rule runs in both directions: just as it rules out adding something on your own, it rules out stopping something on your own.
 
 ## Why the iron requirement rises in pregnancy specifically
 
@@ -220,6 +276,12 @@ In pregnancy the blood volume increases substantially, and the increase is not e
 At the same time there is a genuine new requirement: forming additional red cells, building the placenta, and the fetus itself storing iron in the later months to use after birth.
 
 So there is a rising requirement and a store being drawn on, which is what makes iron status before pregnancy matter as much as during it.
+
+## Food safety: the rules that do matter
+
+Alongside the myths there are real things. Dr Rana states them as categories rather than as a list: "There are food-safety rules during pregnancy that genuinely matter — avoiding foods known to carry a risk of contamination, paying attention to how food is cooked and stored, and choosing suitable kinds of fish while avoiding the ones high in mercury."
+
+She says it as categories deliberately. What exactly should be avoided in your case and at your stage is decided in follow-up with the doctor, not memorised from an article. What comes next sets out what published guidance says on the points that get asked about most — as information, not as a substitute for that conversation in the clinic.
 
 ## "Avoid all fish"
 
@@ -283,7 +345,23 @@ Nausea in the early months is very common and thoroughly unpleasant, and the con
 
 And what is worth saying: severe persistent nausea that prevents eating and drinking, accompanied by weight loss or signs of dehydration, is not a phase to be got through — it is a situation to be seen by a doctor, because it has clinical management.
 
-CLINICAL_INPUT: What do you practically suggest for a woman whose first-trimester nausea is preventing her from eating?
+## So what gets asked at a first appointment?
+
+Those symptoms are not a footnote to the plan — they are part of what the plan is built on.
+
+Dr Rana says the first things she asks about are the stage of the pregnancy, the weight before it and what has changed since, the symptoms, the tests and the follow-up with the obstetrician, and the medicines and supplements being taken — and after that, the day and the food.
+
+Then the practical questions:
+
+Do you have nausea? Vomiting?
+
+Heartburn? Constipation?
+
+Is your appetite there, or are you unable to eat?
+
+Are there particular foods you have gone off?
+
+And the reason, in her own words: "A pregnant woman's plan has to deal with what is actually happening to her, not with an ideal timetable on paper."
 
 ## In the Egyptian context: herbs and drinks
 
@@ -293,7 +371,11 @@ Fenugreek, aniseed, cinnamon and hibiscus are drunk regularly in Egyptian househ
 
 The practical point: anything taken regularly should be mentioned to the doctor, even if it is a drink.
 
-PRACTITIONER_VOICE: What is the pregnancy eating myth that reaches you most often from the family rather than from the patient herself?
+## And the advice that comes from the family
+
+Advice in pregnancy arrives from people who have been pregnant before you, and that is exactly why it arrives with confidence.
+
+Dr Rana says this is something she wants every pregnant woman to know: "Not every piece of advice you hear from somebody who has been through pregnancy before you applies to you."
 
 One last thing about the family itself. The pressure in pregnancy comes from people who genuinely care, which is what makes it hard. The sentence that works is not "that is wrong" — it is that there is a doctor following this pregnancy, and that this will be asked about. That closes the conversation without wounding anybody.
 
@@ -304,6 +386,8 @@ Not everything said with affection is correct, and not everything "natural" is s
 The requirement rises in quality more than in quantity. Folic acid belongs before conception. Iron has symptoms that are managed rather than a supplement that is stopped. Liver is a correct fact leading to a wrong conclusion. And unpasteurised dairy, fesikh and undercooked meat carry recognised notes.
 
 And sudden swelling is not a question about salt — it is a question for a doctor.
+
+As Dr Rana puts it: "Pregnancy is not a time to eat as we please on the excuse of 'eating for two', and it is not a time for a harsh diet out of fear of gaining weight. It is a time to nourish your body properly, to follow your health and the growth of the pregnancy, and to make any large dietary decision on the basis of your own case."
 
 If you are pregnant and want a plan built on your case and your stage: [[specialty:pregnancy-nutrition|pregnancy and breastfeeding nutrition]] or [[booking|book an appointment]].
 
