@@ -196,11 +196,11 @@
         <picture>
             <source
                 type="image/webp"
-                srcset="{{ asset('brand/hero-poster-1280.webp') }} 1280w"
+                srcset="{{ asset(config('hero.poster_webp')) }} 1280w"
                 sizes="100vw"
             />
             <img
-                src="{{ asset('brand/hero-poster.jpg') }}"
+                src="{{ asset(config('hero.poster')) }}"
                 alt=""
                 aria-hidden="true"
                 fetchpriority="high"
@@ -236,7 +236,22 @@
                 disablepictureinpicture
                 controlslist="nodownload noplaybackrate noremoteplayback"
                 data-hero-video
-                data-src="{{ asset('brand/1.mp4') }}"
+                data-src="{{ asset(config('hero.video')) }}"
+                {{-- Plain JSON, and NOT Js::from(), which emits a
+                     `JSON.parse('…')` EXPRESSION meant for an inline script.
+                     In an attribute that arrives at dataset as those literal
+                     characters and throws on parse — which the script catches,
+                     so the page keeps its static line and the feature silently
+                     never runs. Only the keys the script needs, so the payload
+                     is three fields rather than the whole scene map. --}}
+                data-hero-beats-source="{{ json_encode(array_map(
+                    fn (array $beat): array => [
+                        'key' => $beat['key'],
+                        'start' => $beat['start'],
+                        'end' => $beat['end'],
+                    ],
+                    config('hero.beats'),
+                )) }}"
             ></video>
         @endif
 
@@ -289,6 +304,66 @@
                             <x-button variant="ghost" size="lg" href="#packages">
                                 {{ __('home.hero.secondary_cta') }}
                             </x-button>
+                        </div>
+
+                        {{--
+                            THE SCENE-SYNCED LINE.
+
+                            Inside the panel, at caption weight, beneath the
+                            buttons: it must not compete with the h1 and it must
+                            not sit over moving footage, where a line that
+                            changes on a cut would be unreadable.
+
+                            HOW THIS COSTS NOTHING IN LAYOUT SHIFT — and it is
+                            worth reading, because the obvious implementation
+                            does not.
+
+                            Every line, including the static one, is stacked in
+                            the SAME grid cell. The grid is therefore exactly as
+                            tall as its tallest child, the browser works that out
+                            from the real strings during normal layout, and
+                            nothing ever resizes when a line swaps. There is no
+                            reserved pixel height, no measurement in JavaScript
+                            and no magic number — which matters because Arabic
+                            and English wrap differently and a number correct for
+                            one locale would be wrong for the other. Each locale
+                            reserves its own height because each lays out its own
+                            words.
+
+                            WHAT A SCREEN READER GETS IS ONE SENTENCE. The static
+                            line is real markup, present before any JavaScript
+                            runs, and is the only one in the accessibility tree.
+                            The four cycling lines are decorative duplicates of a
+                            picture that is itself decorative, so they are
+                            aria-hidden — announcing a line change every five
+                            seconds would be an interruption, not information.
+
+                            AND WITH NO JAVASCRIPT, NOTHING MOVES. The cycling
+                            lines ship at opacity-0 and are only ever revealed by
+                            hero-beats.js, which starts only once the video is
+                            actually playing. Reduced motion, Save-Data, 2g/3g,
+                            no JS and a failed video therefore all land in the
+                            same place with no special case: the poster, and this
+                            one sentence.
+                        --}}
+                        <div
+                            class="mt-7 grid border-s-2 border-line ps-4 text-sm leading-relaxed text-balance text-muted sm:text-base"
+                            data-hero-beats
+                        >
+                            {{-- The one sentence. Never removed, never hidden
+                                 from assistive technology. --}}
+                            <p
+                                class="col-start-1 row-start-1 transition-opacity duration-500 motion-reduce:transition-none"
+                                data-hero-beat-static
+                            >{{ __('home.hero.beats.'.config('hero.static_beat')) }}</p>
+
+                            @foreach (config('hero.beats') as $beat)
+                                <p
+                                    class="col-start-1 row-start-1 opacity-0 transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none"
+                                    aria-hidden="true"
+                                    data-hero-beat="{{ $beat['key'] }}"
+                                >{{ __('home.hero.beats.'.$beat['key']) }}</p>
+                            @endforeach
                         </div>
 
                         {{-- Credential chips: what the clinic is, never what it promises. --}}

@@ -15,6 +15,37 @@ return [
         'secondary_cta' => 'See the packages',
 
         // Factual, and none of them a promise about an outcome.
+        /*
+         | THE SCENE-SYNCED HERO COPY.
+         |
+         | Four lines, one per shot of the hero clip, changing ON the cut and
+         | never on a timer of their own — the timings live in config/hero.php
+         | and the beat keys below are what tie the two together.
+         |
+         | THEY ARE ONE SENTENCE BROKEN ACROSS FOUR PICTURES, not four slogans.
+         | `chop` says the plan is CUT to your day while the picture is a knife
+         | on a board; `plate` refuses to moralise the finished meal at exactly
+         | the moment an advert would promise something. Read in order they are
+         | continuous, and they loop cleanly from `plate` back to `wash`.
+         |
+         | `cook` IS ALSO THE STATIC LINE — the one sentence a reduced-motion,
+         | Save-Data, slow-connection, no-JS or failed-video visitor gets, and
+         | the only one in the accessibility tree. It is the only one of the
+         | four that is a complete thought on its own: the others open with
+         | connectives because they are links in a chain. It is also the
+         | longest, which is why it sits on the darkest beat.
+         |
+         | NO NUMBERS, and nothing anybody can fall short of. Same rule as the
+         | plate builder and the hero case card — see
+         | PlateFeedbackHasNoNumbersTest for the argument.
+         */
+        'beats' => [
+            'wash' => 'We start from what is already in your kitchen.',
+            'chop' => 'And the plan is cut to your day.',
+            'cook' => 'You do not have to change everything at once. One thing settles, then the next.',
+            'plate' => 'And at the end of it, an ordinary meal — not a reward, not a punishment.',
+        ],
+
         'chips' => [
             'licensed' => 'Licensed clinic',
             'online' => 'Online or in clinic',

@@ -52,6 +52,18 @@ return [
     'minimum_beat' => 5.0,
 
     /*
+     * The one line that carries the meaning when there is no video.
+     *
+     * `cook` and not `wash`, though `wash` is the beat the poster comes from,
+     * and the reason is that the poster ALREADY SHOWS the beginning. Captioning
+     * a picture of somebody starting with a sentence about starting says one
+     * thing twice; this line says the thing the picture cannot. It is also the
+     * only one of the four that is a complete thought rather than a link in a
+     * chain — see the note above `hero.beats` in the language files.
+     */
+    'static_beat' => 'cook',
+
+    /*
      * The beats, in order. `key` is the translation key under home.hero.beats,
      * so the copy and the timings cannot drift apart without one of them
      * failing to resolve.
