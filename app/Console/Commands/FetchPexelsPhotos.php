@@ -52,7 +52,7 @@ class FetchPexelsPhotos extends Command
      *
      * @var list<string>
      */
-    private const FORBIDDEN_TERMS = [
+    public const FORBIDDEN_TERMS = [
         'weight loss', 'weightloss', 'slimming', 'diet', 'dieting', 'fat loss',
         'before and after', 'transformation', 'obesity', 'overweight', 'skinny',
         'scale', 'weighing', 'tape measure', 'measuring tape', 'waist', 'belly',
@@ -66,7 +66,7 @@ class FetchPexelsPhotos extends Command
     {
         $query = trim((string) $this->argument('query'));
 
-        if ($problem = $this->rejectedQuery($query)) {
+        if ($problem = self::rejectedQuery($query)) {
             $this->error("Refusing to search for «{$query}».");
             $this->line("  It contains «{$problem}».");
             $this->newLine();
@@ -185,7 +185,15 @@ class FetchPexelsPhotos extends Command
         ));
     }
 
-    private function rejectedQuery(string $query): ?string
+    /**
+     * The term this query is refused for, or null if it is allowed.
+     *
+     * Public and static because clinic:fetch-pexels-videos enforces the same
+     * list. A term added here has to apply to both commands, and the only way
+     * to guarantee that is for there to be one list rather than two that agree
+     * on the day they were written.
+     */
+    public static function rejectedQuery(string $query): ?string
     {
         $haystack = Str::lower($query);
 
