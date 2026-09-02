@@ -86,6 +86,33 @@ it('still matches the actual duration of the file', function () {
     );
 });
 
+it('keeps the clip it is not serving, and keeps its credits', function () {
+    /*
+     * The kitchen cut lost the hero on SUBJECT — a wall of chopping and frying
+     * reads as a cooking site — not on craft. It is staged for a content page,
+     * and its four photographers are credited nowhere else in this repository.
+     *
+     * This exists because an unreferenced file is the easiest thing in the
+     * world to delete during a tidy-up, and deleting it would silently drop a
+     * licence obligation along with it.
+     */
+    $alternate = config('hero.alternate');
+
+    foreach (['video', 'poster', 'poster_webp'] as $key) {
+        expect(file_exists(public_path($alternate[$key])))
+            ->toBeTrue("The alternate clip references {$alternate[$key]}, which is not there.");
+    }
+
+    expect(filesize(public_path($alternate['video'])))->toBe($alternate['bytes']);
+
+    expect(array_keys($alternate['beats']))->toBe(array_column($alternate['attribution'], 'beat'));
+
+    foreach ($alternate['attribution'] as $credit) {
+        expect(trim((string) $credit['photographer']))->not->toBeEmpty();
+        expect(trim((string) $credit['source']))->not->toBeEmpty();
+    }
+});
+
 it('credits every beat', function () {
     /*
      * A licence obligation attached to a file we serve. Four beats, four

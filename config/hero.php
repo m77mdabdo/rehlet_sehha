@@ -40,9 +40,9 @@ return [
      * slow-connection visitor sees INSTEAD of the video, and a poster that
      * shows a moment the clip never opens on is a small lie.
      */
-    'video' => 'brand/hero-prep.mp4',
-    'poster' => 'brand/hero-prep-poster.jpg',
-    'poster_webp' => 'brand/hero-prep-poster-1280.webp',
+    'video' => 'brand/hero-consultation.mp4',
+    'poster' => 'brand/hero-consultation-poster.jpg',
+    'poster_webp' => 'brand/hero-consultation-poster-1280.webp',
 
     'duration' => 22.0,
 
@@ -54,14 +54,17 @@ return [
     /*
      * The one line that carries the meaning when there is no video.
      *
-     * `cook` and not `wash`, though `wash` is the beat the poster comes from,
-     * and the reason is that the poster ALREADY SHOWS the beginning. Captioning
-     * a picture of somebody starting with a sentence about starting says one
-     * thing twice; this line says the thing the picture cannot. It is also the
-     * only one of the four that is a complete thought rather than a link in a
-     * chain — see the note above `hero.beats` in the language files.
+     * `plan` and not `talk`, though `talk` is the beat the poster comes from.
+     * The poster ALREADY SHOWS the consultation; captioning a picture of two
+     * people at a desk with a sentence about the session beginning says one
+     * thing twice. This line says the thing the picture cannot.
+     *
+     * It is also the only one of the four that is a complete thought rather
+     * than a link in a chain, and it is the longest, which is why it sits on
+     * the darkest beat. It survived the change of footage unaltered — it was
+     * never about a kitchen, it is about the pace of change.
      */
-    'static_beat' => 'cook',
+    'static_beat' => 'plan',
 
     /*
      * The beats, in order. `key` is the translation key under home.hero.beats,
@@ -70,32 +73,32 @@ return [
      */
     'beats' => [
         [
-            'key' => 'wash',
+            'key' => 'talk',
             'start' => 0.0,
             'end' => 5.5,
-            'shows' => 'Two hands turning a whole lettuce under a running tap.',
-            'luma' => [103, 111],
+            'shows' => 'Two people across a desk, faces out of frame. Hands, a laptop, a glass of water, a plant, a blank sheet being turned.',
+            'luma' => [135, 147],
         ],
         [
-            'key' => 'chop',
+            'key' => 'write',
             'start' => 5.5,
             'end' => 11.0,
-            'shows' => 'Top-down on a dark board: diced pepper, onion, garlic under a knife.',
-            'luma' => [99, 100],
+            'shows' => 'Hands writing in a notebook on a warm wooden desk.',
+            'luma' => [113, 121],
         ],
         [
-            'key' => 'cook',
+            'key' => 'notes',
             'start' => 11.0,
             'end' => 16.5,
-            'shows' => 'Oil poured into a pan on a gas hob, swirling.',
-            'luma' => [39, 65],
+            'shows' => 'A hand writing on a spiral pad, checked sleeve, soft daylight.',
+            'luma' => [107, 109],
         ],
         [
-            'key' => 'plate',
+            'key' => 'plan',
             'start' => 16.5,
             'end' => 22.0,
-            'shows' => 'Avocado on seeded toast, a tomato sliced beside it.',
-            'luma' => [73, 76],
+            'shows' => 'A hand writing in a notebook beside a closed laptop, grey desk, low key.',
+            'luma' => [78, 80],
         ],
     ],
 
@@ -108,35 +111,35 @@ return [
      */
     'attribution' => [
         [
-            'beat' => 'wash',
-            'pexels_id' => 7204589,
-            'photographer' => 'ArtHouse Studio',
-            'photographer_url' => 'https://www.pexels.com/@arthousestudio',
-            'source' => 'https://www.pexels.com/video/washing-lettuces-with-tap-water-7204589/',
+            'beat' => 'talk',
+            'pexels_id' => 7735502,
+            'photographer' => 'Mikhail Nilov',
+            'photographer_url' => 'https://www.pexels.com/@mikhail-nilov',
+            'source' => 'https://www.pexels.com/video/discussing-details-of-a-contract-7735502/',
             'downloaded_at' => '2026-09-02',
         ],
         [
-            'beat' => 'chop',
-            'pexels_id' => 34799727,
-            'photographer' => 'Florian Delée',
-            'photographer_url' => 'https://www.pexels.com/@florian-delee-209542985',
-            'source' => 'https://www.pexels.com/video/enhancing-knife-skills-in-home-cooking-video-34799727/',
+            'beat' => 'write',
+            'pexels_id' => 6326847,
+            'photographer' => 'kaboompics.com',
+            'photographer_url' => 'https://kaboompics.com/',
+            'source' => 'https://www.pexels.com/video/person-writing-on-a-notebook-using-a-pen-6326847/',
             'downloaded_at' => '2026-09-02',
         ],
         [
-            'beat' => 'cook',
-            'pexels_id' => 4912636,
-            'photographer' => 'RDNE Stock project',
-            'photographer_url' => 'https://www.pexels.com/@rdne',
-            'source' => 'https://www.pexels.com/video/person-pouring-an-olive-oil-in-the-frying-pan-4912636/',
+            'beat' => 'notes',
+            'pexels_id' => 5330654,
+            'photographer' => 'Tima Miroshnichenko',
+            'photographer_url' => 'https://www.pexels.com/@tima-miroshnichenko',
+            'source' => 'https://www.pexels.com/video/therapist-taking-notes-during-session-5330654/',
             'downloaded_at' => '2026-09-02',
         ],
         [
-            'beat' => 'plate',
-            'pexels_id' => 9020879,
-            'photographer' => 'T Leish',
-            'photographer_url' => 'https://www.pexels.com/@leish',
-            'source' => 'https://www.pexels.com/video/person-slicing-tomatoes-9020879/',
+            'beat' => 'plan',
+            'pexels_id' => 5212605,
+            'photographer' => 'Tima Miroshnichenko',
+            'photographer_url' => 'https://www.pexels.com/@tima-miroshnichenko',
+            'source' => 'https://www.pexels.com/video/man-writing-on-his-notebook-5212605/',
             'downloaded_at' => '2026-09-02',
         ],
     ],
@@ -153,5 +156,40 @@ return [
      *          -pix_fmt yuv420p -movflags +faststart -r 24 hero-prep.mp4
      */
     'encode' => 'h264 High · CRF 31 · hqdn3d=1.5:1.5:6:6 · 1280x720 · 24fps · no audio · faststart',
-    'bytes' => 1558502,
+    'bytes' => 1042087,
+
+    /*
+     * THE KITCHEN CLIP, KEPT AND NOT SERVED BY THE HERO.
+     *
+     * hero-prep.mp4 was built first and is a better SEQUENCE than the one
+     * above — four unmistakably different scenes rather than one strong shot
+     * and three near-identical ones. It lost the hero on subject, not on
+     * craft: a wall of chopping and frying reads as a cooking site, and this
+     * is a clinic. That was the more serious error of the two.
+     *
+     * It stays here because it is staged for a content page and because its
+     * attribution is a licence obligation attached to a file in this
+     * repository. An entry nobody reads is still the only place four
+     * photographers are credited.
+     */
+    'alternate' => [
+        'name' => 'kitchen',
+        'video' => 'brand/hero-prep.mp4',
+        'poster' => 'brand/hero-prep-poster.jpg',
+        'poster_webp' => 'brand/hero-prep-poster-1280.webp',
+        'duration' => 22.0,
+        'bytes' => 1558502,
+        'beats' => ['wash' => [0.0, 5.5], 'chop' => [5.5, 11.0], 'cook' => [11.0, 16.5], 'plate' => [16.5, 22.0]],
+        'attribution' => [
+            ['beat' => 'wash', 'pexels_id' => 7204589, 'photographer' => 'ArtHouse Studio',
+                'source' => 'https://www.pexels.com/video/washing-lettuces-with-tap-water-7204589/'],
+            ['beat' => 'chop', 'pexels_id' => 34799727, 'photographer' => 'Florian Delée',
+                'source' => 'https://www.pexels.com/video/enhancing-knife-skills-in-home-cooking-video-34799727/'],
+            ['beat' => 'cook', 'pexels_id' => 4912636, 'photographer' => 'RDNE Stock project',
+                'source' => 'https://www.pexels.com/video/person-pouring-an-olive-oil-in-the-frying-pan-4912636/'],
+            ['beat' => 'plate', 'pexels_id' => 9020879, 'photographer' => 'T Leish',
+                'source' => 'https://www.pexels.com/video/person-slicing-tomatoes-9020879/'],
+        ],
+        'downloaded_at' => '2026-09-02',
+    ],
 ];

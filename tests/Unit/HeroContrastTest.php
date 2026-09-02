@@ -106,6 +106,22 @@ function compositeHex(string $over, float $alpha, string $under): string
     );
 }
 
+/**
+ * The overlay's alpha, read off the markup.
+ *
+ * Parsed rather than repeated, because this number appears in the header
+ * legibility bound below as well, and the two silently disagreeing would mean
+ * the bound was being computed against an overlay that is no longer there.
+ */
+function overlayAlpha(): float
+{
+    preg_match('/bg-ink\/\[([0-9.]+)\]/', heroMarkup(), $match);
+
+    expect($match)->not->toBeEmpty('The hero overlay no longer declares an explicit density.');
+
+    return (float) $match[1];
+}
+
 it('keeps the panel opaque enough for the measurement above to hold', function () {
     preg_match('/bg-paper\/\[([0-9.]+)\]/', heroMarkup(), $match);
 
@@ -123,8 +139,28 @@ it('keeps the panel opaque enough for the measurement above to hold', function (
     expect(heroMarkup())->toContain('backdrop-blur');
 });
 
-it('keeps the overlay at the density the panel opacity was measured against', function () {
-    expect(heroMarkup())->toContain('bg-ink/[0.38]');
+it('keeps the overlay at the density the footage was measured against', function () {
+    /*
+     * IT WAS 0.38 AND IT IS NOW 0.52, BECAUSE THE FOOTAGE CHANGED.
+     *
+     * The old clip was a kitchen whose brightest beat measured 111 of 255. The
+     * consultation clip that replaced it opens on a pale room, a white shirt
+     * and daylight, and measures 146 — which matters here because everything
+     * in front of it is a near-white panel and a white card.
+     *
+     * Measured in Chrome against that beat, modal pixel to modal pixel:
+     *
+     *     overlay   panel/footage   card/footage
+     *       0.38        3.12            2.32   ← the card fails 1.4.11
+     *       0.52        4.09            3.30
+     *
+     * 0.52 is the SMALLEST value that gets the case card over the 3:1 wanted
+     * for a component boundary. It is not a round number chosen for looking
+     * about right, and it is a property of the clip rather than of the design:
+     * if the footage changes again, measure again rather than assuming this
+     * still holds.
+     */
+    expect(overlayAlpha())->toBeGreaterThanOrEqual(0.52, 'The hero overlay is thinner than measurement allows.');
 });
 
 it('keeps white header text legible over any possible frame, not just the sampled ones', function () {
@@ -132,8 +168,8 @@ it('keeps white header text legible over any possible frame, not just the sample
      * The bound rather than the sample.
      *
      * Worst case for white text is the brightest backdrop, and the brightest a
-     * pixel can be is white. So: white video pixel, then the 38% ink overlay,
-     * then the scrim. If white text clears AA against THAT, it clears it
+     * pixel can be is white. So: white video pixel, then the ink overlay at
+     * whatever density the markup currently declares, then the scrim. If white text clears AA against THAT, it clears it
      * against every frame of this clip and of any clip that replaces it.
      *
      * Checked at the scrim's weakest point over the header — its bottom edge,
@@ -142,7 +178,7 @@ it('keeps white header text legible over any possible frame, not just the sample
      */
     $ink = '#0E2E4D';
 
-    $overlaid = compositeHex($ink, 0.38, '#FFFFFF');
+    $overlaid = compositeHex($ink, overlayAlpha(), '#FFFFFF');
 
     foreach ([
         'the top of the header, scrim near full' => 0.85,
