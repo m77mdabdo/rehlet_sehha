@@ -46,3 +46,8 @@ Thumbs.db
 /public/css/filament
 /public/js/filament
 /public/fonts/filament
+
+# Staged video candidates from clinic:fetch-pexels-videos. Same rule as the
+# photo inbox: nothing here is accepted, and the ones that are get copied into
+# public/brand/ and recorded in config/hero.php.
+/public/video/inbox
