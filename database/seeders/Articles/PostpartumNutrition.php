@@ -20,6 +20,33 @@ use App\Enums\CitationConfidence;
  * Postpartum thyroiditis is included for the same reason: it presents as
  * exhaustion in the first year, it is common enough to matter, and it is read
  * as "she has a new baby" by everybody including the mother.
+ *
+ * ---------------------------------------------------------------------------
+ *
+ * THE DANGER-SIGNS CALLOUT IS THE MOST CONSEQUENTIAL PASSAGE ON THIS SITE.
+ *
+ * Everything around it reassures — that is what the article is for, and it is
+ * right to reassure, because most postpartum exhaustion is postpartum
+ * exhaustion. The risk that creates is precise: a mother reading at two in the
+ * morning finds the reassurance she came for and stops. Several items on that
+ * list are recognised postnatal danger signs, and the cost of scrolling past
+ * them is not a worse article.
+ *
+ * So it is in a box, under its own heading, immediately after the section on
+ * what is expected — and her sentence about not using lack of sleep as a
+ * ready-made answer follows it rather than opening it, so the list is read
+ * first.
+ *
+ * NOTHING WAS ADDED TO HER LIST. Not one sign, however tempting. A list of
+ * danger signs under a practitioner's name that contains items she did not put
+ * there is a worse failure than a short list.
+ *
+ * THE LAST ITEM IS HANDLED THE WAY SHE FRAMED IT. "Feeling that you are not
+ * well in yourself and cannot cope" points to asking for help. It does not
+ * name a condition, does not diagnose, and does not tell the reader what she
+ * has — because that is not this article's to do, and because a mother who
+ * does not recognise a label in herself will decide the paragraph is not about
+ * her.
  */
 class PostpartumNutrition extends ArticleDefinition
 {
@@ -49,6 +76,28 @@ class PostpartumNutrition extends ArticleDefinition
 
 المقال ده عن الجزء اللي مش بيتسأل عنه: الجسم اللي خرج من تسعة شهور حمل، وولادة، وبقى بيرضّع، وبينام متقطع، وبياكل آخر واحد في البيت.
 
+## أول سؤال في الكشف مش عن الوزن
+
+د. رنا بتقول: «مش أول سؤال بسألها (وزنك كام وعايزة توصلي لكام؟) — أنا الأول عايزة أعرف إنتِ عاملة إيه».
+
+والحاجات اللي بتسأل عنها الأول:
+
+الولادة كانت طبيعية ولا قيصرية؟
+
+التعافي ماشي إزاي؟
+
+الرضاعة شغالة إزاي؟
+
+بتنامي قد إيه؟
+
+نفسك للأكل عاملة إزاي؟
+
+في أنيميا؟
+
+وبتاخدي أدوية إيه؟
+
+سبع حاجات، ومفيش فيهم رقم على ميزان. لأن الإجابات دي هي اللي بتحدد إيه اللي ينفع يتعمل دلوقتي وإيه اللي بدري عليه.
+
 ## الاحتياج بيرتفع في الوقت اللي الوقت فيه بيقل
 
 دي المفارقة اللي بتلخص الفترة كلها.
@@ -73,8 +122,6 @@ class PostpartumNutrition extends ArticleDefinition
 
 والمهم إن ده بيتقاس. مخزون الحديد بيقل قبل ما الهيموجلوبين ينزل، فصورة الدم لوحدها ممكن تبقى مطمنة والمخزون فاضي. في مقال منفصل عن النقطة دي: [[article:normal-results-still-tired|التحاليل سليمة وأنا لسه تعبانة]].
 
-CLINICAL_INPUT: إمتى بتطلبي تقييم حديد لأم بعد الولادة؟ وإيه اللي بيخليكي تشكي في ده؟
-
 ## التعب: إيه اللي متوقع وإيه اللي محتاج يتشاف
 
 الجزء ده لازم يتقال بوضوح، لأن «كله تعب طبيعي» بيخفي حاجات ليها علاج.
@@ -91,6 +138,30 @@ CLINICAL_INPUT: إمتى بتطلبي تقييم حديد لأم بعد الول
 
 يعني «تعبانة» بعد الولادة جملة ليها أكتر من سبب محتمل، وبعضها ليه علاج.
 
+## علامات متتفسّرش بقلة النوم
+
+دي أهم فقرة في المقال، ولازم تتقرا حتى لو مفيش وقت لقراية حاجة تانية.
+
+ودي العلامات اللي د. رنا بتقول إنها بتستدعي تقييم طبي عاجل:
+
+> لو في:
+> - إرهاق شديد أو بيزيد
+> - دوخة
+> - خفقان
+> - ضيق نفس
+> - سخونية
+> - نزيف غير معتاد
+> - ألم شديد
+> - صداع شديد
+> - أو إحساس إن حالتك النفسية مش كويسة ومش قادرة تتعاملي
+> الحاجات دي بتتشاف عند طبيب، ومش بتتأجل لحد ما النوم يتحسن.
+
+والجملة اللي بتقولها بعدها: «مهم جدًا منستخدمش قلة النوم كإجابة جاهزة لكل عرض بعد الولادة».
+
+ومنظمة الصحة العالمية، في توصياتها لرعاية الأم والمولود في فترة ما بعد الولادة، بتتعامل مع علامات الخطر بعد الولادة على إنها حاجة الأم لازم تعرفها وتعرف تتصرف تجاهها، مش حاجة تستنى الزيارة الجاية.
+
+والبند الأخير في القايمة دي زي أي بند تاني فيها. الإحساس إن حالتك النفسية مش كويسة ومش قادرة تتعاملي سبب كافي تمامًا إنك تكلمي حد وتطلبي مساعدة — من غير ما تستني الموضوع يبقى «كفاية».
+
 ## سكري الحمل: الفحص اللي بيتنسى
 
 النقطة دي ممكن تغيّر مسار صحي كامل، ونادرًا ما بتتقال.
@@ -100,8 +171,6 @@ CLINICAL_INPUT: إمتى بتطلبي تقييم حديد لأم بعد الول
 اللي بيحصل عمليًا إن سكري الحمل بيتعامل معاه كحاجة انتهت بالولادة. الست بتخرج من المستشفى والموضوع مقفول في ذهن الجميع.
 
 فالسؤال اللي يتسأل: كان عندي سكري حمل — الفحص المفروض يتعمل إمتى؟ وبعدها كل قد إيه؟
-
-CLINICAL_INPUT: إيه اللي بتقوليه لأم كان عندها سكري حمل عن المتابعة بعد الولادة؟
 
 ## الكالسيوم والعظام في الرضاعة
 
@@ -133,7 +202,9 @@ CLINICAL_INPUT: إيه اللي بتقوليه لأم كان عندها سكري
 
 النصيحة اللي بتقول «اطبخي أكل متوازن» في الفترة دي غير مفيدة عمليًا، لأن المشكلة مش المعرفة — المشكلة الوقت والمجهود.
 
-الحاجات اللي بتشتغل هي اللي محتاجة أقل مجهود ممكن:
+ود. رنا بتختار أكل الفترة دي بأربع صفات، وكلها عملية: يكون بسيط، ويكون متوفر، ويكون فيه بروتين، وينفع يتاكل في يوم صعب. أي حاجة مش مستوفية الأربعة دول مش هتتعمل، مهما كانت صح على الورق.
+
+والحاجات اللي بتشتغل هي اللي محتاجة أقل مجهود ممكن:
 
 أكل جاهز بلا تحضير: بيض مسلوق، جبنة قريش، زبادي، تونة، فاكهة، مكسرات، عيش بلدي.
 
@@ -161,9 +232,13 @@ CLINICAL_INPUT: إيه اللي بتقوليه لأم كان عندها سكري
 
 وأكل النفاس التقليدي — البلح والمكسرات والمشروبات الساخنة — أكل كويس في معظمه. المشكلة مش فيه؛ المشكلة لما يبقى هو كل الأكل، أو لما يحل محل وجبة فيها بروتين وخضار.
 
-PRACTITIONER_VOICE: إيه اللي بتشوفيه فعلًا في الأمهات اللي بيجولك في أول ستة شهور بعد الولادة؟
+## اللي بيتهمل، وبيتهمل في نفس المكان كل مرة
 
-PRACTITIONER_VOICE: إيه أكتر حاجة بتقوليها لأم بتقولك إن مفيش وقت تاكل؟
+الأم في الشهور دي بتتابع كل حاجة تخص الطفل بدقة: الرضعات، النوم، الوزن، الحفاضات، المواعيد. والحاجة الوحيدة اللي مش بتتسجل ولا بتتحسب هي أكلها هي.
+
+الشكل النمطي إن اليوم بيعدي على قهوة ولقمتين واقفة، وبعدين تيجي وجبة واحدة بالليل لما الطفل ينام. ومش لأنها مش عارفة إن ده مش كفاية — لأن كل مرة بتيجي فيها فرصة تاكل، بيكون في حاجة أهم منها بخمس دقايق.
+
+والنتيجة إن الأعراض اللي بتظهر بعد كده — الإرهاق، الدوخة، صعوبة التركيز — بتتقري على إنها أمومة، مع إن جزء منها ممكن يكون ببساطة إن الجسم ده مش بياخد اللي محتاجه.
 
 ## اللي يستاهل تفتكريه
 
@@ -174,6 +249,8 @@ PRACTITIONER_VOICE: إيه أكتر حاجة بتقوليها لأم بتقول�
 والتعب المستمر بعد الولادة له أكتر من سبب محتمل — منها الحديد والغدة الدرقية والحالة النفسية — وكلها بتتقيّم.
 
 ولو كان في سكري حمل، في فحص بعد الولادة موصى بيه وبيتنسى.
+
+وزي ما بتقول د. رنا: «أول ست شهور مش مطلوب منك فيهم (ترجعي زي الأول) بأسرع وقت. المطلوب إنك تتعافي، تتغذي كويس، وتدي جسمك فرصة، وبعدها نشتغل على هدفك خطوة خطوة. البيبي محتاج رعاية، بس أمه محتاجة رعاية هي كمان».
 
 لو حاسة إن التعب أكبر من المتوقع، أو عايزة خطة تنفع في يوم فعلًا مفيهوش وقت: [[specialty:pregnancy-nutrition|تغذية الحمل والرضاعة]] أو [[booking|احجزي موعد]].
 
@@ -186,6 +263,28 @@ After a birth, every question is about the baby. Is he feeding well? Is he sleep
 The mother gets asked one question — "are you all right?" — answers "fine, thank God", and carries on.
 
 This article is about the part nobody asks about: a body that has come out of nine months of pregnancy, then a birth, and is now producing milk, sleeping in fragments, and eating last in the house.
+
+## The first question in the consultation is not about weight
+
+Dr Rana says: "The first question I ask her is not 'what do you weigh and what do you want to get to?' — first I want to know how you are."
+
+The things she asks about first:
+
+Was the birth vaginal or caesarean?
+
+How is the recovery going?
+
+How is the feeding working?
+
+How much are you sleeping?
+
+How is your appetite?
+
+Is there anaemia?
+
+And what medicines are you taking?
+
+Seven things, and not a figure on a scale among them. Because those answers are what decide what can usefully be done now and what is too early.
 
 ## The requirement rises exactly when the time disappears
 
@@ -211,8 +310,6 @@ The WHO has guidance on iron supplementation in postpartum women, which is to sa
 
 And the important part is that it can be measured. Iron stores fall before haemoglobin does, so a blood count alone can be reassuring while the store is empty. There is a separate article on that point: [[article:normal-results-still-tired|my results are normal and I am still exhausted]].
 
-CLINICAL_INPUT: When do you request an iron assessment for a mother after birth? And what makes you suspect it?
-
 ## Exhaustion: what is expected and what needs to be seen
 
 This part has to be said plainly, because "it is all normal tiredness" conceals things that have treatments.
@@ -229,6 +326,30 @@ And postnatal depression, whose symptoms are not always visible sadness — they
 
 So "I am exhausted" after a birth is a sentence with more than one possible cause, and some of those causes have treatments.
 
+## Signs that are not explained by lack of sleep
+
+This is the most important passage in this article, and it should be read even if nothing else is.
+
+These are the signs Dr Rana says call for urgent medical assessment:
+
+> If there is:
+> - severe or worsening exhaustion
+> - dizziness
+> - palpitations
+> - shortness of breath
+> - fever
+> - unusual bleeding
+> - severe pain
+> - severe headache
+> - or a feeling that you are not well in yourself and cannot cope
+> these are seen by a doctor, and not deferred until the sleep improves.
+
+And the sentence she says after it: "It is very important that we don't use lack of sleep as a ready-made answer for every symptom after a birth."
+
+The World Health Organization, in its recommendations on maternal and newborn care in the postnatal period, treats postnatal danger signs as something a mother should know and know how to act on — not something that waits for the next appointment.
+
+And the last item on that list is like any other item on it. Feeling that you are not well in yourself and cannot cope is entirely reason enough to speak to somebody and ask for help — without waiting for it to become "enough".
+
 ## Gestational diabetes: the screening that gets forgotten
 
 This point can change an entire health trajectory, and is rarely said.
@@ -238,8 +359,6 @@ A woman who had gestational diabetes is at higher risk of developing type 2 diab
 What happens in practice is that gestational diabetes is treated as something that ended at delivery. The woman leaves hospital and the matter is closed in everybody's mind.
 
 So the question to ask is: I had gestational diabetes — when should the test be done? And how often after that?
-
-CLINICAL_INPUT: What do you tell a mother who had gestational diabetes about follow-up after birth?
 
 ## Calcium and bone in breastfeeding
 
@@ -271,7 +390,9 @@ Weight after a birth is a subject taken up in its own time, calmly, with somebod
 
 Advice that says "cook balanced meals" is practically useless in this period, because the problem is not knowledge. The problem is time and effort.
 
-What works is whatever requires the least possible effort:
+Dr Rana chooses food for this period by four tests, all of them practical: that it is simple, that it is available, that it contains protein, and that it can actually be eaten on a hard day. Anything failing one of the four will not get made, however correct it looks on paper.
+
+And what works is whatever requires the least possible effort:
 
 Food ready with no preparation: boiled eggs, areesh cheese, yoghurt, tuna, fruit, nuts, baladi bread.
 
@@ -299,9 +420,13 @@ And the pressure runs in two contradictory directions at once: "eat, for the mil
 
 Traditional postpartum food — dates, nuts, hot drinks — is mostly good food. The problem is not the food; the problem is when it becomes all the food, or replaces a meal containing protein and vegetables.
 
-PRACTITIONER_VOICE: What do you actually see in mothers who come to you in the first six months after birth?
+## What gets neglected, and it is neglected in the same place every time
 
-PRACTITIONER_VOICE: What do you most often say to a mother who tells you she has no time to eat?
+A mother in these months follows everything about the baby precisely: the feeds, the sleep, the weight, the nappies, the appointments. The one thing that is neither recorded nor counted is her own eating.
+
+The typical shape is a day that goes by on a coffee and two mouthfuls taken standing up, and then one meal at night once the baby is asleep. And not because she does not know that is not enough — because every time an opportunity to eat arrives, there is something five minutes more urgent than it.
+
+The result is that the symptoms which show up afterwards — exhaustion, dizziness, difficulty concentrating — get read as motherhood, when part of it may simply be that this body is not getting what it needs.
 
 ## Worth remembering
 
@@ -312,6 +437,8 @@ The iron store was drawn on in pregnancy and again at delivery, and the exhausti
 Persistent exhaustion after a birth has more than one possible cause — iron, thyroid and mental health among them — and all of them can be assessed.
 
 And if there was gestational diabetes, there is a recommended test after delivery that gets forgotten.
+
+As Dr Rana puts it: "In the first six months you are not being asked to 'go back to how you were' as fast as possible. What is being asked is that you recover, that you eat well, and that you give your body a chance — and after that we work on your goal step by step. The baby needs looking after, but his mother needs looking after too."
 
 If the exhaustion feels larger than expected, or you want a plan that works in a day that genuinely has no time in it: [[specialty:pregnancy-nutrition|pregnancy and breastfeeding nutrition]] or [[booking|book an appointment]].
 
@@ -328,11 +455,21 @@ EN,
                     ],
                     'year' => 2022,
                     'confidence' => CitationConfidence::Medium,
-                    'note' => 'Supports "treats the postnatal period as a period of care with its own '
-                        .'requirements", and the sentence that postnatal guidance recommends asking about '
-                        .'mental health as part of follow-up. Confident such a WHO document exists and was '
-                        .'issued around this year; confirm the exact title and year, and that mental-health '
-                        .'enquiry is a stated recommendation rather than background text.',
+                    'note' => 'THIS ONE CARRIES THE DANGER-SIGNS SENTENCE AND IS THE MOST CONSEQUENTIAL '
+                        .'CITATION ON THE BLOG. Three claims rest on it: (1) it treats the postnatal period '
+                        .'as a period of care with its own requirements; (2) postnatal guidance recommends '
+                        .'asking about mental health as part of follow-up; and (3) — the new one — that it '
+                        .'treats postnatal danger signs as something a mother should know and know how to '
+                        .'act on rather than something that waits for the next appointment. Claim (3) is '
+                        .'load-bearing: it is what tells a reader with a fever or unusual bleeding not to '
+                        .'wait. VERIFY IT FIRST AND VERIFY IT PROPERLY — confirm the exact title and year, '
+                        .'confirm that danger-sign counselling is a stated recommendation, and confirm that '
+                        .'the signs the article lists are among those it names. Confidence is MEDIUM and '
+                        .'stays medium until somebody has the document open: the recollection is that WHO '
+                        .'issued postnatal care recommendations around 2022 and that danger-sign counselling '
+                        .'is in them, which is not the same as having read it. If the document does not '
+                        .'support the claim, the sentence goes and the practitioner\'s list stays — her list '
+                        .'does not depend on it.',
                 ],
                 [
                     'organisation' => ['ar' => 'منظمة الصحة العالمية', 'en' => 'World Health Organization'],

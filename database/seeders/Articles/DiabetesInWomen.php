@@ -24,6 +24,33 @@ use App\Enums\CitationConfidence;
  * than in men. It is well documented, it is almost unknown outside specialist
  * circles, and it is exactly the kind of claim that must not be published on a
  * half-remembered reference — which is why its citation says so in terms.
+ *
+ * ---------------------------------------------------------------------------
+ *
+ * "THE NUMBER IS INFORMATION, NOT A MARK IN AN EXAM."
+ *
+ * Her closing line is the same rule the application enforces in code two floors
+ * down, and it is worth knowing that the agreement is not a coincidence.
+ *
+ * PlateFeedbackHasNoNumbersTest refuses to let the plate builder show a calorie
+ * and refuses to let the hero case card show an adherence percentage, on the
+ * grounds that a figure attached to a patient's own behaviour is a grade she
+ * can fail against. Her sentence is that argument, from the clinical side, and
+ * about the one number this article cannot remove — a glucose reading is
+ * genuinely necessary information, so the only thing left to get right is what
+ * it MEANS to the person holding the meter.
+ *
+ * If a future editor softens that line, they are not editing a nicety: they are
+ * breaking the agreement between what this clinic says and what its own
+ * software refuses to do.
+ *
+ * DO NOT MOVE OR SOFTEN THE DOSE SENTENCE. "Do not change your doses yourself
+ * just because you have noticed your glucose is higher for a few days" sits
+ * immediately beside the passage that encourages a woman to track readings
+ * against her cycle, and it belongs there and nowhere else. The tracking advice
+ * is what creates the risk the sentence closes: somebody who has just found a
+ * pattern is exactly the person who might act on it alone. Separating them
+ * leaves the encouragement without the guard.
  */
 class DiabetesInWomen extends ArticleDefinition
 {
@@ -51,6 +78,8 @@ class DiabetesInWomen extends ArticleDefinition
 
 والحاجات الأربعة دي بتأثر على سكر الدم بطرق معروفة وموثقة. المقال ده عن الفروق دي: إيه اللي بيتغير، وليه، وإيه اللي المفروض يتابع.
 
+والنقطة اللي د. رنا بتبدأ منها إن الأساسيات مش بتتغير: مبادئ التعامل مع السكري واحدة. اللي بيتغير إن في عوامل خاصة بالستات لازم تدخل الصورة، ولو مدخلتش بتفضل في فجوة بين اللي مكتوب في الكتب واللي بيحصل فعلًا.
+
 ## الأول: مقاومة الإنسولين إيه بالظبط
 
 عشان باقي المقال يبقى مفهوم، لازم الميكانيكية تتقال.
@@ -73,7 +102,11 @@ class DiabetesInWomen extends ArticleDefinition
 
 وفي الاتجاه التاني: تغيّرات الشهية والرغبة في الأكل عبر الدورة حقيقية كمان، وبتأثر على الأكل نفسه.
 
-CLINICAL_INPUT: بتقولي إيه لمريضة بتقيس سكرها وبتلاحظ اختلاف مرتبط بالدورة؟
+ود. رنا بتحذر من التعميم هنا بالذات: الأثر ده موجود وموصوف، بس مقداره وشكله بيختلف من ست للتانية، والقاعدة العامة اللي بتتقال لكل الناس مش هتنفع حد. اللي بينفع إنك تعرفي نمطك إنتِ.
+
+والطريقة عملية: سجّلي القراءات مع يوم الدورة، مش القراءات لوحدها. بعد شهرين أو تلاتة النمط بيبان — أو يبان إنه مفيش نمط، وده معلومة كمان.
+
+وحاجة واحدة لازم تتقال بوضوح هنا: متغيريش الجرعات من نفسك لمجرد إنك لاحظتي السكر أعلى كام يوم. النمط ده بيتشاف مع الطبيب المتابع، وهو اللي بيقرر لو في تعديل. الملاحظة شغلك؛ التعديل شغله.
 
 ## تكيس المبايض والسكري — أوضح تقاطع
 
@@ -82,6 +115,8 @@ CLINICAL_INPUT: بتقولي إيه لمريضة بتقيس سكرها وبتل�
 عشان كده الدليل الدولي المبني على الأدلة لتقييم وإدارة تكيس المبايض بيتعامل مع البُعد الأيضي كجزء من إدارة الحالة، والجمعية الأمريكية للسكري في معاييرها للرعاية بتحط تكيس المبايض ضمن الحالات اللي بتستدعي الانتباه لخطر السكري.
 
 يعني الست اللي عندها تشخيص تكيس مبايض عندها معلومة مهمة عن خطر مستقبلي، والمعلومة دي قابلة للتصرف فيها — وده بالظبط الفرق بين معرفة مبكرة ومعرفة متأخرة.
+
+ود. رنا بتقول الجملة دي بالشكل ده بالظبط، والشكل مقصود: «مش معنى إن عندك تكيس إن إصابتك بالسكري شيء حتمي… ده معناه إن عندنا سبب أكبر نهتم بدري، مش سبب نخاف».
 
 في مقال عن الحالة دي وعن الادعاءات اللي بتتقال عنها: [[article:pcos-and-food-judging-a-claim|تكيس المبايض والأكل — إزاي تحكمي على أي كلام]].
 
@@ -106,8 +141,6 @@ CLINICAL_INPUT: بتقولي إيه لمريضة بتقيس سكرها وبتل�
 الفحص ده مش إجراء روتيني ملوش لازمة. هو الفرق بين اكتشاف حالة في سن أربعين واكتشافها في سن خمسة وخمسين ومعاها مضاعفات بدأت.
 
 في مقال عن الفترة دي كلها: [[article:postpartum-nutrition|التغذية بعد الولادة — للأم في أول ستة شهور]].
-
-CLINICAL_INPUT: إيه اللي بتقوليه لست كان عندها سكري حمل عن المتابعة على المدى الطويل؟
 
 ## سن اليأس
 
@@ -167,9 +200,29 @@ CLINICAL_INPUT: إيه اللي بتقوليه لست كان عندها سكري
 
 والقرار ده بيتاخد قبل رمضان مع الطبيب المتابع، مش في أول يوم.
 
-CLINICAL_INPUT: إيه اللي بتراجعيه مع مريضة سكري قبل رمضان؟
+## الأسئلة اللي بتتسأل ومش بتلاقي إجابة
 
-PRACTITIONER_VOICE: إيه أكتر حاجة بتلاحظيها في مريضات السكري اللي بتيجيلك، ومش بتتقال في العيادات التانية؟
+في أسئلة د. رنا بتسمعها من مريضات السكري كل مرة تقريبًا، ومش بيبقى عندهم مكان يسألوها فيه:
+
+السكر بيعلى قبل الدورة — ده طبيعي؟
+
+الحمل هيأثر إزاي؟ وأقدر أخطط له؟
+
+كان عندي سكري حمل — أنا دلوقتي في خطر؟
+
+سن اليأس هيغيّر إيه؟
+
+والأدوية بتاعتي ليها علاقة بالأكل إزاي؟
+
+والأسئلة دي مش هامشية. كل واحدة فيهم بتغيّر حاجة في المتابعة، وكلها ليها إجابات موجودة في الأدبيات — بس نادرًا ما بيبقى في وقت في الكشف عشان تتسأل.
+
+## وإدارة السكري مش «امنعي السكر»
+
+الاختصار ده هو أكتر حاجة بتضيّع وقت.
+
+إدارة السكري فيها شكل الوجبة وتوزيعها على اليوم، ونوع الكربوهيدرات مش وجودها، والبروتين والألياف والدهون معاها، والحركة، والنوم، والتوتر، والأدوية وتوقيتها، والمتابعة اللي بتقول إيه اللي بيشتغل.
+
+والأكل اللي بيتشال من القايمة بيرجع تاني في أول أسبوع صعب. اللي بيفضل هو الشكل اللي الشخص يقدر يعيش بيه.
 
 ## اللي يستاهل تفتكريه
 
@@ -178,6 +231,10 @@ PRACTITIONER_VOICE: إيه أكتر حاجة بتلاحظيها في مريضا�
 والدورة الشهرية بتأثر على قراءات السكر. وتكيس المبايض ليه علاقة مباشرة بنفس الآلية. والحمل بيرفع المقاومة بطبيعته، والتخطيط له بيبدأ قبله. وسكري الحمل له فحص بعد الولادة بيتنسى. وسن اليأس بيغيّر الصورة من غير ما الشخص يغيّر حاجة.
 
 والخطر القلبي عند الستات المصابات بالسكري نقطة تستاهل تتعرف وتغيّر أولويات المتابعة.
+
+وحاجة أخيرة من د. رنا، وهي اللي بتفرق أكتر من أي معلومة فوق: «متلوميش نفسك على كل قراءة عالية. الرقم معلومة، مش درجة في امتحان».
+
+لأن الهدف مش إنك تمسكي في إيدك قايمة أكل تنفذيها — الهدف إنك تفهمي اللي بيحصل في جسمك، عشان تعرفي تتصرفي لما الظروف تتغير، ومش هتفضل تسألي حد كل مرة.
 
 لو عندك تشخيص وعايزة خطة بتاخد كل ده في الحسبان: [[specialty:medical-nutrition|التغذية العلاجية]] أو [[specialty:pcos-hormonal|تغذية الاضطرابات الهرمونية]] أو [[booking|احجزي موعد]].
 
@@ -188,6 +245,8 @@ AR,
 Most of what is written about diabetes is written for a generic patient. And that generic patient has no menstrual cycle, does not become pregnant, does not pass through a postpartum period, and does not reach menopause.
 
 Those four things affect blood glucose in ways that are known and documented. This article is about those differences: what changes, why, and what should be followed.
+
+The point Dr Rana starts from is that the fundamentals do not change: the principles of managing diabetes are the same. What changes is that there are factors specific to women which have to enter the picture — and when they do not, a gap stays open between what the books say and what is actually happening.
 
 ## First: what insulin resistance actually is
 
@@ -211,7 +270,11 @@ The practical importance is that a woman measuring her glucose and finding fluct
 
 And in the other direction: changes in appetite and food preference across the cycle are real too, and affect the eating itself.
 
-CLINICAL_INPUT: What do you tell a patient who measures her glucose and notices a pattern tied to her cycle?
+Dr Rana cautions against generalising here in particular: the effect is real and described, but its size and its shape differ from one woman to another, and a general rule stated for everybody will not fit anybody. What helps is knowing your own pattern.
+
+And the method is practical: record the readings against the day of your cycle, not the readings on their own. After two or three months a pattern shows — or it shows that there is no pattern, which is information too.
+
+And one thing has to be said plainly here: do not change your doses yourself just because you have noticed your glucose is higher for a few days. That pattern is looked at with the doctor following your case, and it is the doctor who decides whether an adjustment is needed. Noticing is your job; adjusting is theirs.
 
 ## PCOS and diabetes — the clearest intersection
 
@@ -220,6 +283,8 @@ This is neither a coincidence nor a passing observation: insulin resistance is c
 Which is why the international evidence-based guideline on PCOS treats the metabolic dimension as part of managing the condition, and why the American Diabetes Association, in its Standards of Care, includes PCOS among the conditions warranting attention to diabetes risk.
 
 So a woman with a PCOS diagnosis holds important information about a future risk — and it is information she can act on, which is exactly the difference between knowing early and knowing late.
+
+Dr Rana puts it in exactly this shape, and the shape is deliberate: "Having PCOS does not mean that getting diabetes is inevitable… it means we have a stronger reason to pay attention early — not a reason to be afraid."
 
 There is an article on that condition and on the claims made about it: [[article:pcos-and-food-judging-a-claim|PCOS and food — how to judge a claim]].
 
@@ -244,8 +309,6 @@ What happens in practice is that the matter closes with the birth. The pregnancy
 That test is not a routine with no purpose. It is the difference between finding a condition at forty and finding it at fifty-five with complications already beginning.
 
 There is an article on that whole period: [[article:postpartum-nutrition|postpartum nutrition — the mother in the first six months]].
-
-CLINICAL_INPUT: What do you tell a woman who had gestational diabetes about long-term follow-up?
 
 ## Menopause
 
@@ -305,9 +368,29 @@ There is specialist practical guidance on diabetes and Ramadan covering risk str
 
 And that decision is made before Ramadan with the doctor following the case, not on the first day.
 
-CLINICAL_INPUT: What do you review with a diabetic patient before Ramadan?
+## The questions that get asked and find no answer
 
-PRACTITIONER_VOICE: What do you notice most in the women with diabetes who come to you, that does not get said in other clinics?
+There are questions Dr Rana hears from women with diabetes almost every time, and for which they have nowhere else to ask:
+
+My glucose rises before my period — is that normal?
+
+How will pregnancy affect this? And can I plan for it?
+
+I had gestational diabetes — am I at risk now?
+
+What will menopause change?
+
+And how do my medicines relate to my food?
+
+None of those is marginal. Every one of them changes something in the follow-up, and every one has answers that exist in the literature — but there is rarely time in a consultation for them to be asked.
+
+## And managing diabetes is not "cut out sugar"
+
+That shorthand wastes more time than anything else.
+
+Managing diabetes involves the shape of a meal and how it is spread across the day, the kind of carbohydrate rather than its presence, the protein and fibre and fat alongside it, activity, sleep, stress, the medicines and their timing, and the follow-up that says what is working.
+
+And food taken off a list comes back in the first difficult week. What lasts is the shape somebody can live inside.
 
 ## Worth remembering
 
@@ -316,6 +399,10 @@ Insulin resistance precedes a diagnosis by years, which is what gives early scre
 The menstrual cycle affects glucose readings. PCOS shares the same mechanism directly. Pregnancy raises resistance by its nature, and planning for it begins beforehand. Gestational diabetes has a postpartum test that gets forgotten. And menopause changes the picture without the person having changed anything.
 
 And cardiovascular risk in women with diabetes is a point worth knowing that changes the priorities of follow-up.
+
+And one last thing from Dr Rana, which matters more than any fact above it: "Don't blame yourself for every high reading. The number is information, not a mark in an exam."
+
+Because the goal is not to be handed a list of foods to follow — the goal is that you understand what is happening in your body, so that you know how to act when circumstances change, instead of having to ask somebody every time.
 
 If you have a diagnosis and want a plan that accounts for all of this: [[specialty:medical-nutrition|medical nutrition therapy]], [[specialty:pcos-hormonal|hormonal nutrition]], or [[booking|book an appointment]].
 
