@@ -17,6 +17,22 @@ use App\Enums\CitationConfidence;
  * of a scan is a real harm — and it is reported as the guideline's position,
  * with the reasoning, rather than as a suggestion that anybody's diagnosis is
  * wrong.
+ *
+ * ---------------------------------------------------------------------------
+ *
+ * HER FOUR QUESTIONS FRAME THE ARTICLE'S OWN. They are in the callout near the
+ * top, because this piece is a checklist somebody carries into a room rather
+ * than an argument she reads once, and the sections that follow are explicitly
+ * an expansion of them. Article 7 is where that lesson was learnt: two
+ * checklists in one piece is not twice the help.
+ *
+ * THE FERTILITY PROMPT WAS NOT ANSWERED, AND NOTHING WAS INVENTED FOR IT. It
+ * asked what changes in HER ordering of priorities when the goal is pregnancy,
+ * which is clinical opinion and hers alone to give. Rather than delete the
+ * subject, it became what this article is made of: a question the READER is
+ * told to ask, in the goal section, with the reason it cannot be answered on a
+ * page — the answer differs from case to case. That is honest and, in an
+ * article about questions to ask, it is also the better home for it.
  */
 class QuestionsToAskAboutHormonesAndFood extends ArticleDefinition
 {
@@ -43,6 +59,18 @@ class QuestionsToAskAboutHormonesAndFood extends ArticleDefinition
 معظم الناس بتخرج من الكشف ومعاها ورقة وتشخيص، والأسئلة بتيجي بعدين — في العربية، أو بالليل، أو لما حد يسأل «هو قالك إيه بالظبط؟».
 
 المقال ده مجموعة أسئلة تستحق تتسأل في كشف عن الهرمونات والأكل. مش عشان تشكّي في حد، لكن عشان الإجابات دي هي اللي بتحدد شكل الخطة، وأغلبها مش بيتقال من نفسه لأن الوقت ضيق.
+
+ود. رنا بتقول إن الجلسة ساعات بتعدي والمريضة مركّزة كلها في سؤال واحد: «آكل إيه وممنوع عني إيه؟» — «مع إن في أسئلة أهم بكتير ممكن تساعدها تفهم حالتها».
+
+ودي الأربعة اللي بتحب تتسأل فيها:
+
+> من أهم الحاجات اللي أحب المريضة تسأل عنها:
+> - هل فعلًا حالتي محتاجة تغيير معين في الأكل؟
+> - هل في تحاليل محتاجة تتراجع؟
+> - هل الأعراض اللي عندي ممكن يكون ليها أكتر من سبب؟
+> - ولو عندي مشكلة هرمونية، إيه اللي التغذية ممكن تساعد فيه فعلًا، وإيه اللي محتاج متابعة مع الطبيب؟
+
+باقي المقال بيفصّل الأربعة دول في كشف الهرمونات بالذات.
 
 ## اسألي عن التشخيص نفسه: اتحدد إزاي؟
 
@@ -98,6 +126,8 @@ class QuestionsToAskAboutHormonesAndFood extends ArticleDefinition
 
 فاسألي: الخطة دي بتستهدف إيه أول حاجة؟ ولو عندي أكتر من هدف، إيه اللي بيتعمل الأول؟
 
+ولو الهدف حمل، اسألي بالتحديد: إيه اللي بيتغير في ترتيب الأولويات؟ وإيه اللي بيتقدّم على إيه؟ الإجابة دي بتختلف من حالة للتانية، وعشان كده هي سؤال يتسأل في الأوضة مش معلومة تتقرا في مقال.
+
 وفي سؤال فرعي مفيد: الهدف ده بيتقاس إزاي؟ يعني إحنا هنعرف إننا وصلنا منين؟ الهدف اللي مالوش مؤشر بيتقاس بيه بيفضل إحساس، والإحساس بيتغير مع المزاج.
 
 ## اسألي عن الأدوية والأكل مع بعض
@@ -152,21 +182,33 @@ class QuestionsToAskAboutHormonesAndFood extends ArticleDefinition
 
 والصيدلية بتصرف مكملات كتير من غير روشتة، ومنها حاجات بتتباع تحديدًا لتكيس المبايض. الحاجات دي تتقال في الكشف حتى لو الشخص شايفها بسيطة.
 
-CLINICAL_INPUT: إيه السؤال اللي نفسك المريضة تسأله في أول كشف عن الهرمونات ونادرًا بيتسأل؟
+## واسألي «ليه؟»
 
-CLINICAL_INPUT: لما يكون الهدف الخصوبة، إيه اللي بيتغير في أولويات الخطة عندك؟
+د. رنا بتقول إن ده السؤال اللي بتحب تسمعه: «ليه بتطلبي مني أغيّر الوجبة دي؟ ليه زودنا حاجة أو قللنا حاجة؟ ليه الخطة دي مناسبة ليا؟».
 
-PRACTITIONER_VOICE: إيه أكتر جملة بتسمعيها من مريضة تكيس مبايض في أول كشف؟
+والسبب إن التنفيذ مش هو الهدف: «هدفي مش إنك تنفذي تعليمات وخلاص. أنا عايزاكي تفهمي جسمك وتعرفي ليه بنعمل التغييرات دي، عشان مع الوقت تقدري تاخدي قرارات أحسن حتى من غير ما يكون النظام قدامك».
+
+## ومفيش سؤال محرج
+
+في أسئلة ناس كتير بتتكسف تسألها، خصوصًا لما الموضوع يكون متعلق بالدورة، أو الشهية، أو تغيرات الوزن، أو أعراض شخصية.
+
+ود. رنا بتقول للي واقفة عند السؤال ده: «مفيش سؤال محرج هنا. لو حاجة بتحصل في جسمك ومقلقاكي أو مأثرة على أكلك وحياتك، قوليها».
+
+ولأي حاجة بتتقال تلات نهايات ممكنة، وكلها أحسن من السكوت: «ممكن تكون معلومة مهمة جدًا بالنسبة لنا، وممكن تكون حاجة طبيعية ونطمنك عليها، وممكن تكون محتاجة إننا نرجع لطبيب متخصص».
+
+«والأهم إنك متخرجيش من الجلسة وفي دماغك سؤال ساكتة عنه لأنك حسيتي إنه بسيط أو محرج».
 
 وأخيرًا: اطلبي الخلاصة مكتوبة. سطرين على ورقة الروشتة — التشخيص، والهدف، والخطوة الجاية — بيوفروا نقاش شهر بعدين، وبيبقوا مرجع لأي حد تاني بيشوف الحالة.
 
 ## اللي يستاهل تفتكريه
 
-التشخيص اتحدد إزاي، التحاليل اتعمل فيها إيه، إحنا بنستهدف إيه أول حاجة، الأدوية بتشتغل إزاي، إمتى نراجع، وإيه اللي مالوش دليل.
+الأربعة اللي فوق أولًا: حالتي محتاجة تغيير في الأكل فعلًا؟ في تحاليل تتراجع؟ الأعراض ممكن يكون ليها أكتر من سبب؟ وإيه اللي التغذية بتساعد فيه وإيه اللي للطبيب؟
 
-ستة أسئلة، وكلها مشروعة، وكلها بتغيّر الخطة.
+وبعدين التفاصيل: التشخيص اتحدد إزاي، التحاليل اتعمل فيها إيه، بنستهدف إيه أول حاجة، الأدوية بتشتغل إزاي، إمتى نراجع، وإيه اللي مالوش دليل.
 
 اكتبيهم قبل الكشف. الأسئلة اللي في الدماغ بتتنسى، واللي على الورق بتتسأل.
+
+وزي ما بتقول د. رنا: «الجلسة مش امتحان، ومفيش سؤال (غلط). كل ما أفهم منك أكتر، نقدر نبني خطة أنسب ليكي».
 
 لو عايزة كشف الأسئلة دي جزء منه: [[specialty:pcos-hormonal|تغذية تكيس المبايض والاضطرابات الهرمونية]] أو [[booking|احجزي موعد]].
 AR,
@@ -175,6 +217,18 @@ AR,
 Most people leave a consultation with a piece of paper and a diagnosis, and the questions arrive afterwards — in the car, or at night, or when somebody asks "so what exactly did they say?".
 
 This article is a set of questions worth asking in a consultation about hormones and food. Not in order to doubt anybody, but because these answers are what determine the shape of the plan, and most of them do not get said unprompted because time is short.
+
+Dr Rana says a consultation sometimes goes by with the patient's whole attention on one question: "what do I eat and what is forbidden to me?" — "when there are far more important questions that could help her understand her own condition."
+
+These are the four she wishes she were asked:
+
+> The most important things I would like a patient to ask about:
+> - Does my case actually need a particular change in how I eat?
+> - Are there tests that need reviewing?
+> - Could the symptoms I have come from more than one cause?
+> - And if I have a hormonal problem, what can nutrition genuinely help with, and what needs following up with the doctor?
+
+The rest of this article takes those four into a hormonal consultation in particular.
 
 ## Ask about the diagnosis itself: how was it made?
 
@@ -230,6 +284,8 @@ Somebody who has come about her periods is not somebody who has come about ferti
 
 So ask: what is this plan aiming at first? And if I have more than one goal, which is addressed first?
 
+And if the goal is pregnancy, ask specifically: what changes in the ordering of priorities, and what comes before what? That answer differs from case to case, which is exactly why it is a question to ask in the room rather than a fact to read in an article.
+
 And a useful sub-question: how is that goal measured? How will we know we have got there? A goal with no marker attached remains a feeling, and feelings move with mood.
 
 ## Ask about medication and food together
@@ -284,21 +340,33 @@ And another thing: a great deal gets said about PCOS within the family. "Your au
 
 Pharmacies dispense a great many supplements without prescription, including things sold specifically for PCOS. Those should be mentioned in the consultation even if they seem trivial.
 
-CLINICAL_INPUT: What is the question you most wish a patient would ask in a first hormonal consultation, and rarely does?
+## And ask "why?"
 
-CLINICAL_INPUT: When the goal is fertility, what changes in your ordering of priorities?
+Dr Rana says this is the question she likes to hear: "Why are you asking me to change this meal? Why did we add something or reduce something? Why is this plan the right one for me?"
 
-PRACTITIONER_VOICE: What is the sentence you hear most often from a PCOS patient at a first consultation?
+Because carrying out instructions is not the point: "My aim is not for you to follow instructions and that's that. I want you to understand your body and to know why we are making these changes, so that over time you can make better decisions even without the plan in front of you."
+
+## And there is no embarrassing question
+
+There are questions a great many people are too shy to ask, particularly when it concerns periods, appetite, changes in weight, or personal symptoms.
+
+To anybody stopped at that point, Dr Rana says: "There is no embarrassing question here. If something is happening in your body that worries you, or that affects how you eat and how you live, say it."
+
+And anything said has three possible endings, all of them better than silence: "It may be very important information for us; it may be something normal and we reassure you about it; and it may be something we need to go back to a specialist for."
+
+"And most importantly: don't leave the session with a question still in your head because you thought it was too small or too embarrassing."
 
 And finally: ask for the summary in writing. Two lines on the prescription pad — the diagnosis, the goal, the next step — save a month of argument later, and become a reference for anybody else who sees the case.
 
 ## Worth remembering
 
-How the diagnosis was made, what was tested, what we are aiming at first, how the medication works, when we review, and what has no evidence behind it.
+Her four first: does my case actually need a change in how I eat? Are there tests to review? Could my symptoms have more than one cause? And what can nutrition help with, versus what belongs with the doctor?
 
-Six questions, all of them legitimate, all of them changing the plan.
+Then the detail: how the diagnosis was made, what was tested, what we are aiming at first, how the medication works, when we review, and what has no evidence behind it.
 
 Write them down before the appointment. Questions kept in your head are forgotten; questions on paper get asked.
+
+As Dr Rana puts it: "The session is not an exam, and there is no 'wrong' question. The more I understand about you, the better the plan we can build for you."
 
 If you want a consultation these questions are part of: [[specialty:pcos-hormonal|PCOS and hormonal nutrition]] or [[booking|book an appointment]].
 EN,
