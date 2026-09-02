@@ -68,10 +68,10 @@ class FetchPexelsVideos extends Command
     {
         $query = trim((string) $this->argument('query'));
 
-        if ($problem = FetchPexelsPhotos::rejectedQuery($query)) {
+        if ($problem = FetchPexelsPhotos::rejection($query)) {
             $this->error("Refusing to search for «{$query}».");
-            $this->line("  It contains «{$problem}».");
-            $this->line('  A stock library reads that as tape measures and bathroom scales.');
+            $this->line("  It contains «{$problem['term']}».");
+            $this->line('  '.$problem['why']);
 
             return self::FAILURE;
         }

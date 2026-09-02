@@ -256,11 +256,38 @@
         @endif
 
         {{--
-            The overlay. 38% ink: enough to settle the footage down behind a
-            translucent panel and to keep the white case card from disappearing
-            into the plate, and not so much that the picture goes to mud.
+            The overlay. 52% ink.
+
+            IT WAS 38%, AND 38% STOPPED WORKING WHEN THE FOOTAGE CHANGED. The
+            old clip was a kitchen and its brightest beat measured 111 of 255.
+            The consultation clip that replaced it opens on a pale room, a white
+            shirt and daylight, and its brightest beat measures 146 — which is
+            not a small difference in the only direction that matters here,
+            because everything in front of it is a near-white panel and a white
+            card.
+
+            Measured in Chrome against that beat, modal pixel to modal pixel:
+
+                overlay   panel/footage   card/footage
+                  0.38        3.12            2.32   ← the card fails
+                  0.52        4.09            3.30
+
+            WCAG 1.4.11 wants 3:1 for the boundary of a component you are meant
+            to perceive as a component. At 0.38 the case card sat at 2.32
+            against the picture behind it and stopped reading as a card at all;
+            the panel scraped through at 3.12. 0.52 is the smallest value that
+            clears the card, so that is what it is — not a round number chosen
+            for looking about right.
+
+            It costs nothing at the other end. The caption inside the panel
+            measures 4.83:1 at 0.52 against 4.84:1 at 0.38, because the panel
+            is 93% opaque and the change barely reaches through it. On the
+            darkest beat the same ratios are 8.85 and 5.91.
+
+            IF THE FOOTAGE CHANGES AGAIN, MEASURE AGAIN. This number is a
+            property of the clip, not of the design.
         --}}
-        <div class="absolute inset-0 -z-10 bg-ink/[0.38]" aria-hidden="true" data-hero-overlay></div>
+        <div class="absolute inset-0 -z-10 bg-ink/[0.52]" aria-hidden="true" data-hero-overlay></div>
 
         {{--
             The header scrim. The header is transparent over this section, and
