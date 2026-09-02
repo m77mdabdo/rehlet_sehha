@@ -16,6 +16,37 @@ return [
 
         // Credential chips. Short, factual, and none of them a promise about
         // an outcome — "خطة مكتوبة" is something we do, "تخسي ١٠ كيلو" is not.
+        /*
+         | THE SCENE-SYNCED HERO COPY.
+         |
+         | Four lines, one per shot of the hero clip, changing ON the cut and
+         | never on a timer of their own — the timings live in config/hero.php
+         | and the beat keys below are what tie the two together.
+         |
+         | THEY ARE ONE SENTENCE BROKEN ACROSS FOUR PICTURES, not four slogans.
+         | `chop` says the plan is CUT to your day while the picture is a knife
+         | on a board; `plate` refuses to moralise the finished meal at exactly
+         | the moment an advert would promise something. Read in order they are
+         | continuous, and they loop cleanly from `plate` back to `wash`.
+         |
+         | `cook` IS ALSO THE STATIC LINE — the one sentence a reduced-motion,
+         | Save-Data, slow-connection, no-JS or failed-video visitor gets, and
+         | the only one in the accessibility tree. It is the only one of the
+         | four that is a complete thought on its own: the others open with
+         | connectives because they are links in a chain. It is also the
+         | longest, which is why it sits on the darkest beat.
+         |
+         | NO NUMBERS, and nothing anybody can fall short of. Same rule as the
+         | plate builder and the hero case card — see
+         | PlateFeedbackHasNoNumbersTest for the argument.
+         */
+        'beats' => [
+            'wash' => 'بنبدأ من اللي في مطبخك.',
+            'chop' => 'والخطة بتتفصّل على يومك إنتِ.',
+            'cook' => 'مش لازم تغيّري كل حاجة مرة واحدة. حاجة تثبت، وبعدين اللي بعدها.',
+            'plate' => 'وفي الآخر، وجبة عادية — مش مكافأة ولا عقاب.',
+        ],
+
         'chips' => [
             'licensed' => 'عيادة مرخّصة',
             'online' => 'أونلاين أو في العيادة',

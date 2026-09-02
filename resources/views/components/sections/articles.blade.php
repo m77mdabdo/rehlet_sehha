@@ -25,8 +25,19 @@
                     <li class="reveal flex">
                         <x-card as="article" class="flex w-full flex-col">
                             <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium tracking-wide text-accent-dark uppercase">
+                                {{-- ->category->name, NOT ->category. The
+                                     column became a relation when categories
+                                     were given their own table, and a model
+                                     interpolated into Blade stringifies to its
+                                     whole JSON — which is what this printed on
+                                     the homepage, in every locale, wide enough
+                                     to push the document 76px past the viewport
+                                     and take the hero's CLS to 0.067 with it.
+
+                                     The same mistake was found and fixed on the
+                                     article page's eyebrow and missed here. --}}
                                 @if ($post->category)
-                                    <span>{{ $post->category }}</span>
+                                    <span>{{ $post->category->name }}</span>
                                 @endif
 
                                 @if ($post->category && $post->reading_minutes)

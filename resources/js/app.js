@@ -28,6 +28,14 @@ import './plate';
 import './hero-video';
 
 /*
+ * The hero copy, synced to the cuts in that clip. Driven by the video's own
+ * currentTime, so if the video never starts — reduced motion, Save-Data, a
+ * slow connection, a decode failure, a refused autoplay — this never starts
+ * either and the server-rendered static line stays.
+ */
+import './hero-beats';
+
+/*
  * The header goes transparent over a hero that has a background video, and
  * solid once you scroll past it. Adds the transparent state only — the solid
  * header is what the markup ships, so a failure here is never unreadable.
