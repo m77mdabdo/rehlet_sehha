@@ -6,45 +6,57 @@ declare(strict_types=1);
  * The hero's composited contrast — the numbers, and the bound.
  *
  * Everything else on this site reads against a known token, so ContrastTest can
- * check it as one hex against another. The hero cannot: since Task 8.6 the copy
- * sits on a TRANSLUCENT panel over moving footage, and the header is fully
- * transparent over it. What a glyph is read against is therefore a composite of
- * video, overlay, scrim and panel, and it changes as the clip plays.
+ * check it as one hex against another. The hero cannot: the copy sits DIRECTLY
+ * ON MOVING FOOTAGE, lit by a gradient rather than backed by a surface, and
+ * what a glyph is read against is a composite of video and scrim that changes
+ * both as the clip plays and as the viewport resizes.
  *
  * ---------------------------------------------------------------------------
  * WHAT WAS MEASURED
  * ---------------------------------------------------------------------------
  *
- * Not reasoned about — measured, off the rendered page. The hero and header
- * were screenshotted with every glyph made transparent, and each text box was
- * compared against the WORST pixel actually behind it:
+ * Not reasoned about — measured, off the rendered page. Every glyph was made
+ * transparent, the clip was held on a known beat, and each text box was
+ * compared against the WORST pixel actually behind it (the brightest, since all
+ * of this copy is light). Text extents came from a Range rather than the block
+ * box, because an Arabic paragraph is as wide as its column while its glyphs
+ * hug one edge.
  *
- *     444 text elements  =  2 locales x 3 widths (390/768/1440) x 3 frames
- *     failures: 0
+ *     80 text elements  =  2 locales x 5 widths x 8 elements
+ *     widths: 390, 768, 1024, 1440, 1920      failures: 0
  *
- *     worst at  390px   4.63:1   the eyebrow, on the panel
- *     worst at  768px   4.62:1   the eyebrow, on the panel
- *     worst at 1440px   4.65:1   the eyebrow, on the panel
- *     worst in the transparent header   5.55:1
+ *     worst overall            4.76:1   the eyebrow, ar 390, beat 1
+ *     worst at 1920            4.84:1   the eyebrow, ar
+ *     worst body copy          7.39:1   the scene line, en 1920
+ *     title (large, needs 3)   8.89:1   ar 1440
  *
- * The binding constraint is accent-dark on the panel, not anything over bare
- * video. The three frames were the clip's brightest, its darkest, and one from
- * its second scene; across them no single ratio on the panel moved by more than
- * a rounding error, because at this opacity only about 7% of the backdrop
- * reaches through and backdrop-blur flattens what does.
+ * The binding element is the EYEBROW, and it is binding because it is the only
+ * coloured text on the picture: teal at 14px, needing 4.5:1, sitting at the top
+ * of the copy block where a bottom-anchored gradient is thinnest. Everything
+ * else is white and clears by a wide margin.
  *
- * That measurement is a SAMPLE — three frames of a hundred and twenty-eight.
- * The panel is safe by margin and by the clip's evenness (luminance 120.4 to
- * 129.1 out of 255 across every frame). The header has no panel to hide behind,
- * so for the header a sample is not good enough, and the test below replaces it
- * with a BOUND: white text on the scrim over the worst backdrop physically
- * possible, a pure white pixel. If that passes, every frame passes, including
- * any clip somebody swaps in later.
+ * TWO SHAPES OF FAILURE WERE FOUND AND FIXED BY MEASURING, and both looked
+ * fine on the screen they were designed on:
+ *
+ *   - percentage gradient stops, which track the window while the copy column
+ *     does not. Failed at 1024, where a 36rem column is 56% of the frame.
+ *   - rem stops, which track the column but not the CONTAINER'S CENTRING, an
+ *     inset that grows from 0 at 1152 to 24rem at 1920. Failed at 1920, lead
+ *     at 1.44:1.
+ *
+ * The shipped stops are max(rem, %) so each end is held by whichever term is
+ * larger there.
+ *
+ * That measurement is a SAMPLE — two beats of a twenty-two second clip. For the
+ * header, which has no gradient of its own beyond its scrim, a sample is not
+ * good enough, and the test below replaces it with a BOUND: white text over the
+ * worst backdrop physically possible, a pure white pixel. If that passes, every
+ * frame passes, including any clip somebody swaps in later.
  *
  * ---------------------------------------------------------------------------
  *
- * These assertions pin the three values that measurement depends on. Change any
- * of them and the numbers above stop describing the page — so re-measure rather
+ * These assertions pin the values that measurement depends on. Change any of
+ * them and the numbers above stop describing the page — so re-measure rather
  * than adjusting a threshold here.
  */
 function heroMarkup(): string
@@ -107,60 +119,62 @@ function compositeHex(string $over, float $alpha, string $under): string
 }
 
 /**
- * The overlay's alpha, read off the markup.
+ * The scrim's densest stop, read off the markup.
  *
- * Parsed rather than repeated, because this number appears in the header
- * legibility bound below as well, and the two silently disagreeing would mean
- * the bound was being computed against an overlay that is no longer there.
+ * Parsed rather than repeated, because the header legibility bound below is
+ * computed from it and the two silently disagreeing would mean the bound was
+ * being checked against a scrim that is no longer there.
  */
-function overlayAlpha(): float
+function scrimPeakAlpha(): float
 {
-    preg_match('/bg-ink\/\[([0-9.]+)\]/', heroMarkup(), $match);
+    preg_match_all('/rgb\(14 46 77 \/ ([0-9.]+)\)/', heroMarkup(), $match);
 
-    expect($match)->not->toBeEmpty('The hero overlay no longer declares an explicit density.');
+    expect($match[1])->not->toBeEmpty('The hero scrims no longer declare explicit densities.');
 
-    return (float) $match[1];
+    return max(array_map('floatval', $match[1]));
 }
 
-it('keeps the panel opaque enough for the measurement above to hold', function () {
-    preg_match('/bg-paper\/\[([0-9.]+)\]/', heroMarkup(), $match);
-
-    expect($match)->not->toBeEmpty('The hero panel no longer declares an explicit opacity.');
-
+it('keeps a directional scrim rather than a flat wash', function () {
     /*
-     * Measured, not chosen. At 0.90 the credential chips came out at 4.48:1
-     * against the footage behind them, which fails AA; 0.93 is the first value
-     * where all 444 measurements clear it. Lowering this means re-running the
-     * sweep, not adjusting the number.
+     * THE WHOLE TECHNIQUE OF THIS HERO, AND THE EASIEST THING TO UNDO.
+     *
+     * A flat overlay is one line of CSS and it makes every contrast number
+     * pass. It also dims the footage evenly, which is what the panel used to
+     * do, and it gives back nothing for having removed the panel. The point of
+     * a gradient is that the ink is spent where the words are.
+     *
+     * So: gradients, and stops that actually vary. A "gradient" from 0.9 to
+     * 0.88 is a flat wash with extra steps.
      */
-    expect((float) $match[1])->toBeGreaterThanOrEqual(0.93, 'The hero panel is more transparent than measurement allows.');
+    $markup = heroMarkup();
 
-    // And the blur, which is what stops one dark pixel dragging one glyph under.
-    expect(heroMarkup())->toContain('backdrop-blur');
+    expect(substr_count($markup, 'linear-gradient'))->toBeGreaterThanOrEqual(3);
+
+    preg_match_all('/rgb\(14 46 77 \/ ([0-9.]+)\)/', $markup, $match);
+
+    $alphas = array_map('floatval', $match[1]);
+
+    expect(max($alphas))->toBeGreaterThanOrEqual(0.88, 'The hero scrim is no longer dense enough where the copy is.');
+    expect(min($alphas))->toBeLessThanOrEqual(0.10, 'The hero scrim never fades. That is a flat wash, not a gradient.');
 });
 
-it('keeps the overlay at the density the footage was measured against', function () {
+it('anchors the scrim stops to the column and to the container, not to one of them', function () {
     /*
-     * IT WAS 0.38 AND IT IS NOW 0.52, BECAUSE THE FOOTAGE CHANGED.
-     *
-     * The old clip was a kitchen whose brightest beat measured 111 of 255. The
-     * consultation clip that replaced it opens on a pale room, a white shirt
-     * and daylight, and measures 146 — which matters here because everything
-     * in front of it is a near-white panel and a white card.
-     *
-     * Measured in Chrome against that beat, modal pixel to modal pixel:
-     *
-     *     overlay   panel/footage   card/footage
-     *       0.38        3.12            2.32   ← the card fails 1.4.11
-     *       0.52        4.09            3.30
-     *
-     * 0.52 is the SMALLEST value that gets the case card over the 3:1 wanted
-     * for a component boundary. It is not a round number chosen for looking
-     * about right, and it is a property of the clip rather than of the design:
-     * if the footage changes again, measure again rather than assuming this
-     * still holds.
+     * max(rem, %) at every interior stop, and both halves earned their place
+     * by failing a measurement — see the file header. A stop expressed in one
+     * unit alone passes at the width it was written for and fails at the other
+     * end of the range, silently, because nothing about it looks wrong.
      */
-    expect(overlayAlpha())->toBeGreaterThanOrEqual(0.52, 'The hero overlay is thinner than measurement allows.');
+    preg_match('/linear-gradient\(\{\{ \$scrimTravel \}\},(.*?)\)"/su', heroMarkup(), $match);
+
+    expect($match)->not->toBeEmpty('The directional scrim is gone.');
+
+    $stops = $match[1];
+
+    expect(substr_count($stops, 'max('))->toBeGreaterThanOrEqual(
+        4,
+        'The wide-screen scrim stops are no longer max(rem, %). One unit alone fails at one end of the range.'
+    );
 });
 
 it('keeps white header text legible over any possible frame, not just the sampled ones', function () {
@@ -168,8 +182,8 @@ it('keeps white header text legible over any possible frame, not just the sample
      * The bound rather than the sample.
      *
      * Worst case for white text is the brightest backdrop, and the brightest a
-     * pixel can be is white. So: white video pixel, then the ink overlay at
-     * whatever density the markup currently declares, then the scrim. If white text clears AA against THAT, it clears it
+     * pixel can be is white. So: white video pixel, then the hero scrim at its
+     * densest declared stop, then the header's own scrim. If white text clears AA against THAT, it clears it
      * against every frame of this clip and of any clip that replaces it.
      *
      * Checked at the scrim's weakest point over the header — its bottom edge,
@@ -178,7 +192,7 @@ it('keeps white header text legible over any possible frame, not just the sample
      */
     $ink = '#0E2E4D';
 
-    $overlaid = compositeHex($ink, overlayAlpha(), '#FFFFFF');
+    $overlaid = compositeHex($ink, scrimPeakAlpha(), '#FFFFFF');
 
     foreach ([
         'the top of the header, scrim near full' => 0.85,
@@ -208,7 +222,13 @@ it('computes its own composite and ratio correctly', function () {
 });
 
 it('keeps the scrim the header relies on', function () {
-    preg_match('/<div[^>]*data-hero-scrim[^>]*>/s', heroMarkup(), $scrim);
+    /*
+     * The negative lookahead matters: since 8.16 there are four scrims and
+     * three of them are named data-hero-scrim-SOMETHING, so a bare match finds
+     * the copy scrim and asserts the header's gradient against the wrong
+     * element.
+     */
+    preg_match('/<div[^>]*data-hero-scrim(?![-\w])[^>]*>/s', heroMarkup(), $scrim);
 
     expect($scrim)->not->toBeEmpty('The header scrim is gone. The transparent header has nothing to sit on.');
     expect($scrim[0])->toContain('from-ink/85');

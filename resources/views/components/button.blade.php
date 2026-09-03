@@ -27,6 +27,14 @@
         'primary' => 'bg-accent text-white shadow-sm hover:bg-accent-dark',
         'ghost' => 'bg-transparent text-ink ring-1 ring-line hover:bg-sage',
         'light' => 'bg-white text-ink shadow-sm hover:bg-sage',
+        /*
+         * For a dark or photographic backdrop, where `ghost` is invisible —
+         * its ink text and hairline ring are both tuned for paper.
+         *
+         * A tinted fill rather than pure transparency, because a ring on its
+         * own over moving footage flickers as the picture changes behind it.
+         */
+        'outline' => 'bg-white/10 text-white ring-1 ring-white/45 backdrop-blur-sm hover:bg-white/20',
     ];
 
     $sizes = [

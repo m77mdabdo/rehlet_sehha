@@ -248,18 +248,25 @@ it('offers real egyptian food across every group', function () {
 */
 
 /**
- * The hero section as rendered, so these assertions describe what a patient
- * actually sees rather than what a translation file happens to contain.
+ * The hero AND the case card, as rendered.
+ *
+ * They were one section until 8.16 and this file only had to look at the hero.
+ * The card is now its own section immediately below, and the rule follows the
+ * CARD rather than the position — a percentage is no more acceptable eighty
+ * pixels further down the page. Both are returned together so no future move
+ * can carry the card out from under these assertions again.
  */
 function heroSection(string $locale): string
 {
     $html = test()->get("/{$locale}")->assertOk()->getContent();
 
-    preg_match('/<section[^>]*data-hero\b.*?<\/section>/su', $html, $match);
+    preg_match('/<section[^>]*data-hero\b.*?<\/section>/su', $html, $hero);
+    preg_match('/<section[^>]*case-card-heading.*?<\/section>/su', $html, $card);
 
-    expect($match)->not->toBeEmpty('The hero section did not render.');
+    expect($hero)->not->toBeEmpty('The hero section did not render.');
+    expect($card)->not->toBeEmpty('The case card section did not render.');
 
-    return $match[0];
+    return $hero[0].$card[0];
 }
 
 it('shows no percentage anywhere in the hero', function (string $locale) {
