@@ -3,108 +3,59 @@
 {{--
     Hero.
 
-    THE CASE CARD SHOWS QUALITATIVE PROGRESS ONLY — energy, sleep consistency,
-    labs in range, plan adherence.
+    THE COPY SITS ON THE VIDEO. THERE IS NO PANEL, AND THAT IS THE POINT.
 
-    No weight, no BMI, no calorie counts, no body-fat percentage, here or
-    anywhere else on this site. That is a deliberate clinical and brand
-    decision, not an oversight, and it is not a detail to "improve" later:
+    Until 8.16 the copy sat on a translucent panel that covered a little over
+    half the frame at every width, with the case card straddling its edge. It
+    was legible and it was safe, and it meant the clip — which we vet frame by
+    frame, re-encode to a budget and pay for in bytes on Egyptian mobile data —
+    showed as a strip down one side. We were buying footage the visitor barely
+    saw.
 
-      - A number on a homepage becomes the thing a patient measures herself
-        against before she has ever spoken to a clinician, and the number that
-        makes her stop coming when it stalls for a fortnight — which is exactly
-        when a plan is usually working.
-      - Weight moves for reasons that have nothing to do with adherence: water,
-        cycle, illness, muscle. Publishing it as the progress metric teaches
-        the wrong causal story.
-      - The metrics shown here are the ones the clinic actually adjusts a plan
-        on, so the card doubles as an honest statement of method.
+    So the panel is gone and the legibility is now a job for a GRADIENT rather
+    than a surface: dense where the words are, near-nothing on the far side, so
+    the picture is actually present. The full argument, the stops and the
+    measurements are on the scrim elements below.
 
-    If a future task asks for weight anywhere, that is a conversation with the
-    clinician, not a ticket.
+    WHAT THAT COSTS, HONESTLY. On a panel the contrast question is answered once
+    — 93% opacity, one composite, done. On a gradient it has to be answered per
+    element, per breakpoint, per locale, against the brightest frame the clip
+    can produce, and re-answered whenever the footage changes. HeroContrastTest
+    holds the numbers and, for the cases where a sample is not good enough, a
+    bound against a pure white pixel.
 
-    The card is also explicitly labelled as an illustration. Presenting a
-    fabricated patient record as a real one would be a different problem again.
-
-    THERE IS NO ADHERENCE PERCENTAGE HERE ANY MORE, AND THERE MUST NOT BE ONE.
-
-    This card used to end on "86%" over a progress bar. It went for the same
-    reason the plate builder has no calorie count: a number attached to a
-    patient's own behaviour is something she can fail at, and a score with a bar
-    under it invites her to grade herself before she has spoken to anybody. It
-    also read as an app dashboard rather than as a clinic.
-
-    Adherence is now an ordinary row saying an ordinary thing, in the register
-    the rows around it already used — "better than at the start", "within
-    normal range". PlateFeedbackHasNoNumbersTest fails the build if a
-    percentage, a meter or a progress bar comes back.
-
-    ---------------------------------------------------------------------------
-    THE COMPOSITION
-    ---------------------------------------------------------------------------
-
-    ONE object, not two. A copy panel with the case card straddling its inner
-    edge, dropped low so the two read as a single thing with depth. They used to
-    be two rectangles of near-identical size, radius and elevation sitting side
-    by side, which is what flattened them into a pair of cards on a photo
-    instead of a hero.
-
-    They are now deliberately unlike each other: the panel is wide, softly
-    rounded, translucent and barely raised; the card is small, tightly rounded,
-    opaque and clearly lifted. Difference in radius and elevation is what makes
-    one read as behind and the other as in front.
-
-    THE PANEL SITS ON THE RIGHT IN BOTH LOCALES, WHICH IS DELIBERATE.
-
-    The strongest frame in the clip — the top-down plate that opens it — sits
-    left of centre, spanning roughly a tenth to seven tenths of the frame. Its
-    natural home is therefore the left of the composition, and the panel has to
-    be opposite it. Mirroring the panel with the text direction would put it
-    straight on top of the plate in English, and the only ways out are worse:
-    mirroring the footage is forbidden (a video that flips is a video that
-    lies about which hand somebody chops with), and shifting the frame far
-    enough to clear the panel needs about a 40% upscale of a 1280-wide source,
-    which softens the one genuinely sharp thing on the page.
-
-    So the image composition stays put and only the text alignment flips. For
-    an Arabic-first clinic whose canonical layout is the Arabic one, that is
-    the right thing to hold constant.
-
-    THE FOOTAGE IS FRAMED AROUND THE PLATE. object-position is set so the plate
-    is what fills the unobstructed area rather than a corner of it, and it
-    rhymes with the plate builder further down the page.
+    THE CASE CARD IS NO LONGER HERE. It is its own section immediately below —
+    see components/sections/case-card.blade.php, which carries the clinical
+    argument about what it may and may not show. It moved because it is content,
+    not decoration: a heading, a definition list and a disclaimer cannot sit on
+    moving footage without either an opaque background (which is the panel we
+    just removed, wearing a hat) or a fight with the picture that legibility
+    loses. Moving it out also ends its overlap with the stats strip
+    structurally, at every breakpoint, rather than by tuning offsets.
 
     ---------------------------------------------------------------------------
     THE BACKGROUND VIDEO
     ---------------------------------------------------------------------------
 
-    Full-bleed footage behind this section only, with the copy on its own panel
-    rather than laid directly over the picture.
+    WHAT THE CLIP IS ALLOWED TO SHOW. Two clips have been rejected here already
+    and both were rejected on a frame nobody would have looked at. The first
+    opened on a digital kitchen scale, filmed past a tailor's tape, and closed
+    on gym treadmills. The second passed its thumbnail and held a glucose meter,
+    an insulin diagram, a medication record and a printed list of named foods.
 
-    WHAT THE CLIP IS ALLOWED TO SHOW. The original 12.7s master opened on a
-    digital kitchen scale weighing a bowl of vegetables, filmed over the
-    shoulder of a woman with a tailor's measuring tape round her neck, and
-    closed on a rank of gym treadmills. Frame 0 was the scale — which meant the
-    poster was the scale, which meant the visitors we deliberately spare the
-    video (reduced motion, Save-Data, 2g/3g) were the only ones GUARANTEED to
-    see it. It is now trimmed to the two on-message scenes, cross-dissolved so
-    the loop has no cut. Every one of the 128 surviving frames was checked.
+    Frame 0 is the poster, and the poster is the ONE image that reaches the
+    visitors we deliberately spare the video — reduced motion, Save-Data, 2g and
+    3g. A scale, a tape measure, a numeric readout or anything that reads as a
+    doctor's surgery in this clinic's hero contradicts the whole offer, and it
+    contradicts it in the image shown to the people we were trying to protect.
 
-    If this file is ever replaced, check the new one the same way. A scale, a
-    tape measure or a numeric readout in the hero of this particular clinic
-    contradicts the whole offer, and it contradicts it in the one image that
-    reaches the people we were trying to protect.
+    If this file is ever replaced, open every frame of the new one. Not the
+    thumbnail, not frame 0 alone — a clip rejected in 8.16 had an innocuous hand
+    on a clipboard at frame 0 and a man watching two people on a bed at frame
+    400.
 
-    THE PANEL IS TRANSLUCENT, SO ITS CONTRAST IS MEASURED, NOT ASSUMED. The
-    text now composites against whatever is behind it. That is survivable only
-    because the trimmed clip is unusually even — luminance 120.4 to 129.1 out
-    of 255 across every frame — and because backdrop-blur flattens what is left,
-    so an isolated dark pixel cannot drag a glyph below threshold. The opacity
-    below is the value the measurement supports, not a value that looked nice.
-    HeroContrastTest pins it.
-
-    LAYER ORDER. Section background colour, then poster, then video, then
-    overlay, then the header scrim, then content. `isolate` keeps the negative
+    LAYER ORDER. Section background colour, then poster, then video, then the
+    scrims, then the header scrim, then content. `isolate` keeps the negative
     z-indices inside this section instead of sliding behind the page.
 
     ONE POSTER SIZE, NOT A RESPONSIVE SET, AND THAT IS A MEASUREMENT.
@@ -123,11 +74,13 @@
     painted underneath forever — the video fades in on top of it and never
     replaces it. Every failure path therefore lands on the poster rather than on
     a black box: no JS, reduced motion, Save-Data, a 404, a codec the browser
-    will not decode.
+    will not decode. The scrims sit above the poster, so they work over it too
+    and those visitors get the same composition rather than a bare photograph.
 
     NOTHING ABOUT THE VIDEO CAN SHIFT THE LAYOUT. Both the poster and the video
-    are absolutely positioned and out of flow, so the section is sized by its
-    content exactly as it was before the video existed.
+    are absolutely positioned and out of flow, and the section carries a fixed
+    minimum height per breakpoint, so it is sized identically whether the video
+    ever arrives or not.
 --}}
 
 @php
@@ -143,13 +96,38 @@
     $showVideo = $media && ! $saveData;
 
     /*
-     * Where the plate sits in the frame. Everything about the framing is
-     * derived from this one measurement rather than eyeballed per breakpoint.
+     * WHERE THE CROP IS ANCHORED, AND WHY IT IS ONE NUMBER RATHER THAN FOUR.
      *
-     * Restored with the footage in 8.14. A brief detour onto other footage
-     * moved this to 50% 75%; the plate that number was tuned for is back.
+     * There is one <video> element and four beats, so there is one crop for all
+     * of them. It has to keep every beat's subject in frame at the tightest
+     * crop on the site, which is the phone: a 16:9 source in a 390x576 box
+     * shows about 35% of the source width, and the wrong anchor cuts the hands
+     * out of a shot whose whole subject is a pair of hands.
+     *
+     * Measured off the four beats, as a fraction of source width:
+     *
+     *     talk    hands and paper   25-55%
+     *     write   hand and pen      28-75%
+     *     notes   hand and pen      25-45%
+     *     plan    hand and pen      30-60%
+     *
+     * 42% puts the visible window at 27-62% on a phone, which contains all four.
+     * The vertical 45% is for the other extreme: at 1920 the box is 2.7:1 against
+     * a 1.78:1 source, so a third of the frame height is cropped, and 45% is what
+     * keeps the hands in `talk` — the highest of the four in frame — off the top
+     * edge.
+     *
+     * IF THE FOOTAGE CHANGES, RE-MEASURE. This is a property of the clip.
      */
-    $plateFocus = '38% 50%';
+    $focus = '42% 45%';
+
+    /*
+     * THE SCRIM RUNS FROM THE SIDE THE COPY IS ON, so it has to know which side
+     * that is. `to left` means the gradient TRAVELS left, which puts its opaque
+     * end on the right — where Arabic copy sits.
+     */
+    $rtl = in_array(app()->getLocale(), ['ar'], true);
+    $scrimTravel = $rtl ? 'to left' : 'to right';
 @endphp
 
 @if ($media)
@@ -164,8 +142,8 @@
             rel="preload"
             as="image"
             fetchpriority="high"
-            href="{{ asset('brand/hero-poster.jpg') }}"
-            imagesrcset="{{ asset('brand/hero-poster-1280.webp') }} 1280w"
+            href="{{ asset(config('hero.poster')) }}"
+            imagesrcset="{{ asset(config('hero.poster_webp')) }} 1280w"
             imagesizes="100vw"
             type="image/webp"
         >
@@ -178,15 +156,18 @@
     The header is position:sticky, which means it OCCUPIES FLOW SPACE — it is
     not an overlay. Without this the hero starts below it, "transparent" header
     shows the page background rather than the footage, and the white nav ends up
-    on paper where it is close to invisible. The top padding below already
-    clears the header's own height, so nothing lands underneath it.
+    on paper where it is close to invisible.
 
-    Only when there is media to be transparent over: on a hero without it the
-    header stays solid and there is nothing to slide under.
+    THE HEIGHT IS FIXED PER BREAKPOINT so nothing reflows when the webfont swaps
+    or a line of copy changes length. It is min-h rather than h: content that
+    somehow grew past it would push the section taller instead of spilling out
+    of it, which is the failure mode you want of the two.
 --}}
 <section
     @class([
-        'relative isolate overflow-hidden bg-ink pt-28 pb-16 sm:pt-32 sm:pb-24 lg:min-h-[42rem] lg:pt-40 lg:pb-32',
+        'relative isolate flex items-end overflow-hidden bg-ink pt-28 pb-12',
+        'min-h-[48rem] sm:min-h-[48rem] lg:min-h-[44rem]',
+        'sm:pb-16 lg:items-center lg:pt-40 lg:pb-24',
         '-mt-18' => $media,
     ])
     data-hero
@@ -205,7 +186,7 @@
                 aria-hidden="true"
                 fetchpriority="high"
                 decoding="async"
-                style="object-position: {{ $plateFocus }}"
+                style="object-position: {{ $focus }}"
                 class="absolute inset-0 -z-20 size-full object-cover"
                 data-hero-poster
             />
@@ -226,7 +207,7 @@
             --}}
             <video
                 class="absolute inset-0 -z-20 size-full object-cover opacity-0 transition-opacity duration-1000 ease-out motion-reduce:transition-none"
-                style="object-position: {{ $plateFocus }}"
+                style="object-position: {{ $focus }}"
                 muted
                 loop
                 playsinline
@@ -237,13 +218,17 @@
                 controlslist="nodownload noplaybackrate noremoteplayback"
                 data-hero-video
                 data-src="{{ asset(config('hero.video')) }}"
-                {{-- Plain JSON, and NOT Js::from(), which emits a
-                     `JSON.parse('…')` EXPRESSION meant for an inline script.
-                     In an attribute that arrives at dataset as those literal
-                     characters and throws on parse — which the script catches,
-                     so the page keeps its static line and the feature silently
-                     never runs. Only the keys the script needs, so the payload
-                     is three fields rather than the whole scene map. --}}
+                {{-- Plain JSON, NOT Js::from(). Js::from renders JavaScript
+                     source — literally `JSON.parse('...')` — which is right
+                     inside a <script> and wrong in an attribute, where the
+                     value is read as data. Putting it here parses to the
+                     string "JSON.parse(..." and the cycle silently never
+                     starts: every line stays at opacity 0 and the static one
+                     is left showing, which looks exactly like the intended
+                     no-JS fallback. It cost a rebuild to notice.
+
+                     Only the three fields the script needs, so the payload is
+                     not the whole scene map. --}}
                 data-hero-beats-source="{{ json_encode(array_map(
                     fn (array $beat): array => [
                         'key' => $beat['key'],
@@ -256,42 +241,94 @@
         @endif
 
         {{--
-            The overlay. 52% ink.
+            THE SCRIM. This is what replaced the panel, and it is the whole
+            technique of this hero.
 
-            IT WAS 38%, AND 38% STOPPED WORKING WHEN THE FOOTAGE CHANGED. The
-            old clip was a kitchen and its brightest beat measured 111 of 255.
-            The consultation clip that replaced it opens on a pale room, a white
-            shirt and daylight, and its brightest beat measures 146 — which is
-            not a small difference in the only direction that matters here,
-            because everything in front of it is a near-white panel and a white
-            card.
+            A flat overlay dims the picture evenly, which means paying for
+            footage nobody can see in order to make text readable over the part
+            of it nobody is looking at. These gradients spend the ink where the
+            copy is and almost none where it is not, so the far side of the
+            frame stays bright and the clip is actually visible.
 
-            Measured in Chrome against that beat, modal pixel to modal pixel:
+            TWO OF THEM, BECAUSE THE LAYOUT HAS TWO SHAPES.
 
-                overlay   panel/footage   card/footage
-                  0.38        3.12            2.32   ← the card fails
-                  0.52        4.09            3.30
+            Below lg the copy is full-width and sits at the bottom, so a
+            sideways gradient would mean nothing: this one runs bottom-to-top
+            and leaves the top of the frame almost untouched. That top third is
+            where the phone visitor actually sees the video.
 
-            WCAG 1.4.11 wants 3:1 for the boundary of a component you are meant
-            to perceive as a component. At 0.38 the case card sat at 2.32
-            against the picture behind it and stopped reading as a card at all;
-            the panel scraped through at 3.12. 0.52 is the smallest value that
-            clears the card, so that is what it is — not a round number chosen
-            for looking about right.
+            At lg and up the copy is a column on one side, so the gradient runs
+            from that side. It is DIRECTION-AWARE rather than mirrored with a
+            transform: `to left` puts the opaque end on the right, where Arabic
+            copy is; English gets `to right`.
 
-            It costs nothing at the other end. The caption inside the panel
-            measures 4.83:1 at 0.52 against 4.84:1 at 0.38, because the panel
-            is 93% opaque and the change barely reaches through it. On the
-            darkest beat the same ratios are 8.85 and 5.91.
+            THE STOPS ARE max(rem, %), AND BOTH HALVES EARNED THEIR PLACE.
 
-            IF THE FOOTAGE CHANGES AGAIN, MEASURE AGAIN. This number is a
-            property of the clip, not of the design.
+            Percent alone failed at 1024: the copy column is a fixed 36rem, so
+            it is 56% of a 1024 frame and 30% of a 1920 one, and a gradient
+            dense for "the first 26%" left the lead on bare picture at the
+            small end. Measured 3.63:1 against a needed 4.5.
+
+            Rem alone then failed at 1920, for the opposite reason. The column
+            is not at the window's edge — the container centres it, and that
+            inset GROWS with the window: 0 at 1152 and 24rem at 1920. A dense
+            zone measured from the viewport edge had already faded to 0.2 by
+            the time it reached the copy. Measured 1.44:1 on the lead.
+
+            So each stop takes whichever is larger. The rem term holds the
+            narrow end where the column touches the gutter; the percent term
+            tracks the container's centring at the wide end. What stays roughly
+            constant either way is the fraction of the frame left clean —
+            about a sixth at 1440 and 1920, less at 1024, where there is
+            honestly not room for both.
+
+            THE STOPS ARE MEASURED, NOT CHOSEN. See HeroContrastTest for the
+            numbers and the bound. The short version: white body copy needs
+            4.5:1 against the worst pixel that can appear behind it, the
+            brightest beat of this clip measures 146 of 255, and the densities
+            below are the least ink that clears it.
         --}}
-        <div class="absolute inset-0 -z-10 bg-ink/[0.52]" aria-hidden="true" data-hero-overlay></div>
+        <div
+            aria-hidden="true"
+            data-hero-scrim-copy
+            class="absolute inset-0 -z-10 lg:hidden"
+            style="background: linear-gradient(to top,
+                rgb(14 46 77 / 0.94) 0,
+                rgb(14 46 77 / 0.93) 30rem,
+                rgb(14 46 77 / 0.89) 38rem,
+                rgb(14 46 77 / 0.35) 44rem,
+                rgb(14 46 77 / 0.04) 48rem)"
+        ></div>
+
+        <div
+            aria-hidden="true"
+            data-hero-scrim-copy-lg
+            class="absolute inset-0 -z-10 hidden lg:block"
+            style="background: linear-gradient({{ $scrimTravel }},
+                rgb(14 46 77 / 0.94) 0,
+                rgb(14 46 77 / 0.93) max(26rem, 30%),
+                rgb(14 46 77 / 0.88) max(38rem, 53%),
+                rgb(14 46 77 / 0.50) max(44rem, 62%),
+                rgb(14 46 77 / 0.16) max(50rem, 72%),
+                rgb(14 46 77 / 0.00) max(56rem, 82%))"
+        ></div>
+
+        {{--
+            And a floor. The credential chips sit at the bottom of the column
+            and, at lg and up, reach further across the frame than anything
+            above them — far enough to run out from under the directional
+            gradient. This is the second line under exactly those.
+        --}}
+        <div
+            aria-hidden="true"
+            data-hero-scrim-floor
+            class="absolute inset-x-0 bottom-0 -z-10 h-56"
+            style="background: linear-gradient(to top, rgb(14 46 77 / 0.55), rgb(14 46 77 / 0.00))"
+        ></div>
 
         {{--
             The header scrim. The header is transparent over this section, and
-            white nav links over a near-white plate would fail on their own —
+            white nav links over a bright frame would fail on their own —
             measured, not guessed. A gradient rather than a bar because the
             point of the transparent header is that it has no edge.
         --}}
@@ -302,162 +339,120 @@
         ></div>
     @endif
 
-    <x-container class="relative">
+    <x-container class="relative w-full">
         {{--
-            The composition. One relative box; the panel sits in it and the
-            card is positioned against the same coordinates, so the overlap is
-            a property of the layout rather than of two margins that have to be
-            kept in step.
+            THE COPY, ON THE PICTURE.
+
+            The column is capped rather than half-width: a measure that runs the
+            full side of a 1920 frame is unreadable however good the contrast is,
+            and capping it is also what leaves the far side of the frame clear.
+
+            THERE IS NO AUTO MARGIN ON IT, and that is the fix rather than the
+            omission. A capped block with no margin sits at its INLINE-START
+            edge on its own: the right in Arabic, the left in English. The first
+            attempt used ms-auto, which sets margin-inline-start:auto and
+            therefore pushes the column AWAY from the start — it put the Arabic
+            copy on the left, under the hands, with the scrim on the right.
+
+            TEXT-SHADOW AS A SECOND LINE, NOT AS THE FIRST. The gradient is what
+            makes this legible; the shadow is insurance for the worst pixel in a
+            frame nobody has measured yet. It is tight and dark — 1px and 2px
+            offsets, small blurs — because that reads as depth. The version with
+            a wide soft blur reads as a glow, which looks like a mistake and
+            fattens every glyph.
         --}}
-        <div class="relative lg:pb-[15rem]">
+        <div class="max-w-xl lg:max-w-[36rem] [text-shadow:0_1px_2px_rgb(2_12_24_/_0.55),0_2px_10px_rgb(2_12_24_/_0.30)]">
+            <p class="text-sm font-medium tracking-wide text-teal uppercase">
+                {{ __('home.hero.eyebrow') }}
+            </p>
+
             {{--
-                The panel. ml-auto is PHYSICAL on purpose — see the composition
-                note above. The text inside stays logical, so Arabic aligns
-                right and English aligns left within the same shape.
+                Heavier and tighter than the same heading would be on paper.
+                Type on moving footage loses apparent weight to the picture
+                behind it, and a line-height tuned for a white page opens gaps
+                the video shows through.
             --}}
-            <div class="lg:ml-auto lg:w-[52%]">
-                <div data-hero-panel data-enter="panel" class="rounded-[1.75rem] bg-paper/[0.93] p-6 shadow-md ring-1 ring-white/50 backdrop-blur-xl sm:rounded-[2rem] sm:p-9 lg:pb-44">
-                    <x-section-heading
-                        level="h1"
-                        :eyebrow="__('home.hero.eyebrow')"
-                        :title="__('home.hero.title')"
-                        :lead="__('home.hero.lead')"
-                    >
-                        <div class="mt-7 flex flex-wrap items-center gap-3">
-                            <x-button :href="route('booking')" size="lg">
-                                {{ __('home.hero.cta') }}
-                            </x-button>
+            <h1 class="mt-3 font-display text-[1.875rem] leading-[1.08] font-bold text-balance text-white sm:text-5xl lg:text-[3.25rem]">
+                {{ __('home.hero.title') }}
+            </h1>
 
-                            <x-button variant="ghost" size="lg" href="#packages">
-                                {{ __('home.hero.secondary_cta') }}
-                            </x-button>
-                        </div>
+            {{-- Looser than the title, and capped short of the column so the
+                 two do not read as one block of text. --}}
+            <p class="mt-4 max-w-lg text-base leading-7 text-pretty text-white/85 sm:mt-5 sm:text-lg sm:leading-8">
+                {{ __('home.hero.lead') }}
+            </p>
 
-                        {{--
-                            THE SCENE-SYNCED LINE.
+            <div class="mt-6 flex flex-wrap items-center gap-3 sm:mt-8">
+                <x-button :href="route('booking')" size="lg">
+                    {{ __('home.hero.cta') }}
+                </x-button>
 
-                            Inside the panel, at caption weight, beneath the
-                            buttons: it must not compete with the h1 and it must
-                            not sit over moving footage, where a line that
-                            changes on a cut would be unreadable.
-
-                            HOW THIS COSTS NOTHING IN LAYOUT SHIFT — and it is
-                            worth reading, because the obvious implementation
-                            does not.
-
-                            Every line, including the static one, is stacked in
-                            the SAME grid cell. The grid is therefore exactly as
-                            tall as its tallest child, the browser works that out
-                            from the real strings during normal layout, and
-                            nothing ever resizes when a line swaps. There is no
-                            reserved pixel height, no measurement in JavaScript
-                            and no magic number — which matters because Arabic
-                            and English wrap differently and a number correct for
-                            one locale would be wrong for the other. Each locale
-                            reserves its own height because each lays out its own
-                            words.
-
-                            WHAT A SCREEN READER GETS IS ONE SENTENCE. The static
-                            line is real markup, present before any JavaScript
-                            runs, and is the only one in the accessibility tree.
-                            The four cycling lines are decorative duplicates of a
-                            picture that is itself decorative, so they are
-                            aria-hidden — announcing a line change every five
-                            seconds would be an interruption, not information.
-
-                            AND WITH NO JAVASCRIPT, NOTHING MOVES. The cycling
-                            lines ship at opacity-0 and are only ever revealed by
-                            hero-beats.js, which starts only once the video is
-                            actually playing. Reduced motion, Save-Data, 2g/3g,
-                            no JS and a failed video therefore all land in the
-                            same place with no special case: the poster, and this
-                            one sentence.
-                        --}}
-                        <div
-                            class="mt-7 grid border-s-2 border-line ps-4 text-sm leading-relaxed text-balance text-muted sm:text-base"
-                            data-hero-beats
-                        >
-                            {{-- The one sentence. Never removed, never hidden
-                                 from assistive technology. --}}
-                            <p
-                                class="col-start-1 row-start-1 transition-opacity duration-500 motion-reduce:transition-none"
-                                data-hero-beat-static
-                            >{{ __('home.hero.beats.'.config('hero.static_beat')) }}</p>
-
-                            @foreach (config('hero.beats') as $beat)
-                                <p
-                                    class="col-start-1 row-start-1 opacity-0 transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none"
-                                    aria-hidden="true"
-                                    data-hero-beat="{{ $beat['key'] }}"
-                                >{{ __('home.hero.beats.'.$beat['key']) }}</p>
-                            @endforeach
-                        </div>
-
-                        {{-- Credential chips: what the clinic is, never what it promises. --}}
-                        <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-3">
-                            @foreach (__('home.hero.chips') as $chip)
-                                <li class="flex items-center gap-2 text-sm text-muted">
-                                    <svg class="size-4 text-accent" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                        <path d="m4 10.5 4 4 8-9" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    {{ $chip }}
-                                </li>
-                            @endforeach
-                        </ul>
-                    </x-section-heading>
-                </div>
+                <x-button variant="outline" size="lg" href="#packages">
+                    {{ __('home.hero.secondary_cta') }}
+                </x-button>
             </div>
 
             {{--
-                The case card, straddling the panel's inner edge and dropped
-                below its baseline. Tighter radius and a heavier shadow than the
-                panel, and opaque where the panel is not: that difference is
-                what gives the pair depth instead of making them a matched set.
+                THE SCENE-SYNCED LINE. Caption weight, still beneath the CTAs.
 
-                Positioned with PHYSICAL left, to match the panel's physical
-                ml-auto. Logical positioning would mirror the card while the
-                panel stayed put, giving the two locales different overlaps.
+                HOW THIS COSTS NOTHING IN LAYOUT SHIFT — and it is worth reading,
+                because the obvious implementation does not.
 
-                The panel carries extra bottom padding on large screens so this
-                corner is empty before the card lands on it. Overlapping live
-                copy would clip a credential chip, which is content, not
-                decoration.
+                Every line, including the static one, is stacked in the SAME grid
+                cell. The grid is therefore exactly as tall as its tallest child,
+                the browser works that out from the real strings during normal
+                layout, and nothing ever resizes when a line swaps. There is no
+                reserved pixel height, no measurement in JavaScript and no magic
+                number — which matters because Arabic and English wrap
+                differently and a number correct for one locale would be wrong
+                for the other. Each locale reserves its own height because each
+                lays out its own words.
 
-                Stacked underneath on small screens, where there is no room for
-                an overlap and pretending otherwise would just crush both.
+                WHAT A SCREEN READER GETS IS ONE SENTENCE. The static line is
+                real markup, present before any JavaScript runs, and is the only
+                one in the accessibility tree. The four cycling lines are
+                decorative duplicates of a picture that is itself decorative, so
+                they are aria-hidden — announcing a line change every five
+                seconds would be an interruption, not information.
+
+                AND WITH NO JAVASCRIPT, NOTHING MOVES. The cycling lines ship at
+                opacity-0 and are only ever revealed by hero-beats.js, which
+                starts only once the video is actually playing. Reduced motion,
+                Save-Data, 2g/3g, no JS and a failed video therefore all land in
+                the same place with no special case: the poster, and this one
+                sentence.
             --}}
-            <div class="mt-6 lg:absolute lg:left-[24%] lg:top-[calc(100%-15rem-7rem)] lg:mt-0 lg:w-[21rem]">
-                <x-card class="rounded-xl shadow-2xl ring-black/5" :padding="false" data-hero-card data-enter="card">
-                    <div class="p-6">
-                        <div class="flex items-start justify-between gap-4">
-                            <div>
-                                <p class="text-xs font-medium tracking-wide text-accent-dark uppercase">
-                                    {{ __('home.hero.case_card.label') }}
-                                </p>
-                                <h2 class="mt-1 font-display text-lg font-semibold text-ink">
-                                    {{ __('home.hero.case_card.title') }}
-                                </h2>
-                                <p class="text-sm text-muted">{{ __('home.hero.case_card.subtitle') }}</p>
-                            </div>
+            <div
+                class="mt-6 grid border-s-2 border-white/30 ps-4 text-sm leading-relaxed text-balance text-white/80 sm:mt-7 sm:text-base"
+                data-hero-beats
+            >
+                {{-- The one sentence. Never removed, never hidden from
+                     assistive technology. --}}
+                <p
+                    class="col-start-1 row-start-1 transition-opacity duration-500 motion-reduce:transition-none"
+                    data-hero-beat-static
+                >{{ __('home.hero.beats.'.config('hero.static_beat')) }}</p>
 
-                            <x-logo.mark-full :size="34" class="text-ink/25" />
-                        </div>
-
-                        <dl class="mt-5 space-y-3">
-                            @foreach (__('home.hero.case_card.metrics') as $metric)
-                                <div class="flex items-center justify-between gap-4 border-b border-line pb-2.5 last:border-0">
-                                    <dt class="text-sm text-muted">{{ $metric['label'] }}</dt>
-                                    <dd class="text-end text-sm font-medium text-ink">{{ $metric['value'] }}</dd>
-                                </div>
-                            @endforeach
-                        </dl>
-
-                        <p class="mt-4 text-xs leading-relaxed text-muted">
-                            {{ __('home.hero.case_card.note') }}
-                        </p>
-                    </div>
-                </x-card>
+                @foreach (config('hero.beats') as $beat)
+                    <p
+                        class="col-start-1 row-start-1 opacity-0 transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none"
+                        aria-hidden="true"
+                        data-hero-beat="{{ $beat['key'] }}"
+                    >{{ __('home.hero.beats.'.$beat['key']) }}</p>
+                @endforeach
             </div>
+
+            {{-- Credential chips: what the clinic is, never what it promises. --}}
+            <ul class="mt-6 flex flex-wrap gap-x-6 gap-y-3 sm:mt-8">
+                @foreach (__('home.hero.chips') as $chip)
+                    <li class="flex items-center gap-2 text-sm text-white/85">
+                        <svg class="size-4 text-teal" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="m4 10.5 4 4 8-9" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        {{ $chip }}
+                    </li>
+                @endforeach
+            </ul>
         </div>
     </x-container>
 </section>

@@ -10,6 +10,12 @@
 >
     <x-sections.hero />
 
+    {{-- Was inside the hero until 8.16, straddling the copy panel. See the
+         section itself for why it could not stay once the copy moved onto the
+         video, and why being in normal flow is what stops it overlapping the
+         stats strip. --}}
+    <x-sections.case-card />
+
     <x-sections.stats />
 
     <x-sections.specialties :specialties="$specialties" />

@@ -206,26 +206,28 @@ it('positions the video and poster so they cannot move the layout', function () 
     expect($poster[0])->toContain('absolute');
 });
 
-it('keeps the hero copy on a panel rather than over the bare picture', function () {
+it('lights the copy with a gradient rather than hiding the picture behind a panel', function () {
     /*
-     * The panel is TRANSLUCENT since Task 8.6, which means the hero's contrast
-     * genuinely depends on the frame behind it. That is a deliberate trade and
-     * it is only safe because of three things together, all of which this file
-     * or HeroContrastTest pins:
+     * THE PANEL IS GONE AS OF 8.16, AND THIS TEST INVERTED WITH IT.
      *
-     *   1. The clip is unusually even — 120.4 to 129.1 luminance out of 255
-     *      across all 128 frames — so there is no bright or dark extreme to
-     *      fall off.
-     *   2. backdrop-blur flattens what variation is left, so a single dark
-     *      pixel cannot drag one glyph under threshold while its neighbours
-     *      pass.
-     *   3. The opacity is high enough that measurement says every glyph clears
-     *      AA against the worst pixel actually behind it, at three widths, in
-     *      both locales, on three different frames.
+     * It used to assert the opposite — that a translucent panel existed and
+     * carried backdrop-blur — because until then the copy sat on a surface and
+     * the contrast question was answered once for the whole block. The panel
+     * covered a little over half the frame at every width, which meant the clip
+     * we vet frame by frame and pay for in bytes showed as a strip.
      *
-     * What must not happen is the panel quietly losing more opacity because it
-     * "looks better" — hence the floor below. The number came from measuring,
-     * not from taste, and lowering it means re-running that measurement.
+     * What replaced it is a directional gradient, and the rules it has to obey
+     * are different in kind rather than in degree:
+     *
+     *   1. There must still be a scrim. Copy on bare video is not a design
+     *      decision anybody gets to make quietly.
+     *   2. It must be DIRECTIONAL, not flat. A flat wash dims the whole frame
+     *      and gives back none of what removing the panel bought.
+     *   3. Its density is measured, not chosen, and the measurements live in
+     *      HeroContrastTest so the numbers have one home.
+     *
+     * The floor test is (1) and (2). Nobody can replace the gradient with a
+     * flat overlay without this failing.
      */
     $html = $this->get('/ar')->assertOk()->getContent();
 
@@ -235,14 +237,70 @@ it('keeps the hero copy on a panel rather than over the bare picture', function 
 
     $hero = $match[0];
 
-    expect($hero)->toContain('data-hero-panel');
-    expect($hero)->toContain('backdrop-blur');
+    // The panel must not come back without somebody reading the argument.
+    expect(str_contains($hero, 'data-hero-panel'))->toBeFalse(
+        'The copy panel is back. Read the argument above before deciding that is right.'
+    );
 
+    // A scrim for the copy at each of the two layout shapes, plus the floor
+    // under the chips and the one the transparent header sits on.
     /*
-     * The opacity FLOOR and the measurement behind it live in
-     * HeroContrastTest, so the threshold has one home. What matters here is
-     * only that the panel is still a panel.
+     * str_contains + toBeTrue, NOT toContain($needle, $message). Pest reads a
+     * second argument to toContain as ANOTHER NEEDLE, so the message would be
+     * searched for in the markup and the assertion would fail on its own
+     * explanation. ExpectationMessagesTest scans for that mistake.
      */
+    foreach (['data-hero-scrim-copy', 'data-hero-scrim-copy-lg', 'data-hero-scrim-floor', 'data-hero-scrim'] as $part) {
+        expect(str_contains($hero, $part))->toBeTrue("The hero lost its {$part}.");
+    }
+
+    expect(substr_count($hero, 'linear-gradient'))->toBeGreaterThanOrEqual(
+        3,
+        'A hero scrim stopped being a gradient. A flat wash dims the whole frame and gives back nothing.'
+    );
+});
+
+it('keeps the copy column on the side the scrim is dense on', function () {
+    /*
+     * The bug this exists for shipped once and was invisible in a code review.
+     *
+     * The column was written with ms-auto, which sets margin-inline-start:auto
+     * and therefore pushes a block AWAY from the inline start — so the Arabic
+     * copy went to the LEFT while the scrim stayed dense on the right, and the
+     * headline sat on bare picture. It reads as a styling nicety and it is
+     * actually the whole legibility of the section.
+     *
+     * A capped block with no auto margin sits at its inline-start edge on its
+     * own: right in Arabic, left in English, matching the gradient.
+     */
+    $markup = file_get_contents(resource_path('views/components/sections/hero.blade.php'));
+
+    expect(str_contains($markup, 'lg:ms-auto'))->toBeFalse(
+        'The hero copy column has an inline-start auto margin again, which pushes it away from the scrim.'
+    );
+});
+
+it('hands the beat timings to the browser as data rather than as javascript', function () {
+    /*
+     * ANOTHER ONE THAT SHIPPED AND LOOKED LIKE A FEATURE.
+     *
+     * Js::from() renders JavaScript source — literally JSON.parse('...') — and
+     * in an HTML attribute that is read as a string. The script's try/catch
+     * then swallowed it, no line ever became visible, and the static line was
+     * left showing: which is EXACTLY what the intended no-JS fallback looks
+     * like. Nothing errored and nothing looked broken.
+     */
+    $html = $this->get('/ar')->assertOk()->getContent();
+
+    preg_match('/data-hero-beats-source="([^"]*)"/', $html, $match);
+
+    expect($match)->not->toBeEmpty('The beat timings never reached the page.');
+
+    $decoded = json_decode(html_entity_decode($match[1], ENT_QUOTES | ENT_HTML5, 'UTF-8'), true);
+
+    expect($decoded)->toBeArray('The beat payload is not JSON. Js::from() is not what this attribute wants.');
+    expect($decoded)->toHaveCount(count(config('hero.beats')));
+    expect(array_column($decoded, 'key'))->toBe(array_column(config('hero.beats'), 'key'));
 });
 
 it('keeps the reduced-motion and slow-connection gates in the shipped script', function () {

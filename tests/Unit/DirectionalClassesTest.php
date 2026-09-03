@@ -61,29 +61,23 @@ function directionalReplacements(): array
 function exemptDirectionalUsages(): array
 {
     return [
-        [
-            'components/sections/hero.blade.php', 'lg:ml-auto',
-            'The hero copy panel is pinned to the physical RIGHT in both '
-            .'locales, because it is positioned against the FOOTAGE rather than '
-            .'against the text. The strongest frame in the clip is a top-down '
-            .'plate sitting left of centre, and the panel has to be opposite it. '
-            .'Mirroring the panel with the reading direction would drop it '
-            .'straight on top of the plate in English, and both ways out are '
-            .'worse: mirroring the footage is forbidden, and shifting the frame '
-            .'far enough to clear the panel needs roughly a 40% upscale of a '
-            .'1280-wide source, which softens the sharpest image on the page. '
-            .'The text alignment inside the panel is still fully logical, so '
-            .'Arabic reads right and English reads left within the same shape.',
-        ],
-        [
-            'components/sections/hero.blade.php', 'lg:left-[24%]',
-            'The hero case card straddles the panel, so it has to use the same '
-            .'coordinate system the panel does — see the exemption above. If '
-            .'this were logical while the panel stayed physical, the two would '
-            .'mirror independently and the overlap that makes them read as one '
-            .'object would land on opposite corners in the two languages. It is '
-            .'physical for consistency with what it overlaps, not for taste.',
-        ],
+        /*
+         * THE HERO'S TWO PHYSICAL EXEMPTIONS ARE BOTH GONE AS OF 8.16, and
+         * this list is deliberately empty rather than deleted.
+         *
+         * They existed because the copy sat on a panel pinned to the physical
+         * right in both locales — positioned against the FOOTAGE rather than
+         * against the text — and the case card had to straddle that panel in
+         * the same coordinate system.
+         *
+         * The panel is gone. The copy now sits directly on the video in a
+         * capped column with no auto margin at all, which lands on the
+         * inline-start edge by itself: right in Arabic, left in English. The
+         * case card is a section in normal flow. Neither needs a physical
+         * utility, so neither has one, and the test above now covers the hero
+         * with no exception at all — which is the outcome this list was always
+         * meant to be working towards.
+         */
     ];
 }
 
@@ -203,6 +197,22 @@ function isExemptDirectionalUsage(string $relativePath, string $token): bool
 }
 
 it('gives a written reason for every physical utility it allows', function () {
+    /*
+     * THE LIST IS CURRENTLY EMPTY, AND THAT IS A RESULT RATHER THAN A GAP.
+     *
+     * Asserted explicitly so the empty case is a passing statement instead of
+     * a loop that runs zero times — a test with no assertions is reported as
+     * risky, and "risky" is the wrong word for a codebase that has stopped
+     * needing an exception.
+     *
+     * If an exemption is ever added back, this assertion is what makes the
+     * count deliberate: change the number and say why in the same commit.
+     */
+    expect(exemptDirectionalUsages())->toHaveCount(
+        0,
+        'The number of physical-direction exemptions changed. That is a decision, not a detail.'
+    );
+
     foreach (exemptDirectionalUsages() as [$file, $class, $reason]) {
         $path = resource_path('views/'.$file);
 
