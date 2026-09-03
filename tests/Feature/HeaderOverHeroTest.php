@@ -60,7 +60,12 @@ it('gives the header a hero to observe and something to be transparent over', fu
      * logo sits. A gradient rather than a bar, because a transparent header
      * with a visible edge is just a solid header that is hard to read.
      */
-    preg_match('/<div[^>]*data-hero-scrim[^>]*>/s', $html, $scrim);
+    /*
+     * The negative lookahead matters: since 8.16 there are four scrims and
+     * three of them are named data-hero-scrim-SOMETHING. Without it this finds
+     * the copy scrim, which is a different gradient for a different job.
+     */
+    preg_match('/<div[^>]*data-hero-scrim(?![-\w])[^>]*>/s', $html, $scrim);
 
     expect($scrim)->not->toBeEmpty();
     expect($scrim[0])->toContain('bg-linear-to-b');
