@@ -19,6 +19,7 @@ declare(strict_types=1);
 */
 
 return [
+    'read_more' => 'Read the article',
     'meta_title' => 'Articles — Rehlet Sehha',
     'meta_description' => 'Writing from the clinic on therapeutic nutrition, habits and lab results — in plain language, without promises.',
 

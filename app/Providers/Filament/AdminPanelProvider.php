@@ -18,6 +18,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -61,6 +62,22 @@ class AdminPanelProvider extends PanelProvider
              */
             ->path('admin')
             ->login()
+            /*
+             * The sign-in screen's appearance, and NOTHING ELSE.
+             *
+             * A render hook rather than an overridden view, deliberately.
+             * Filament's login view renders the multi-factor challenge and the
+             * password-reset link from the page object; a copy of it in this
+             * repository stops matching the package on the next upgrade, and
+             * the way that surfaces is somebody with 2FA enabled being unable
+             * to get in. This adds markup and CSS beside the form and touches
+             * no part of it — the validation, the throttle, the session guard
+             * and the 2FA challenge are all still Filament's.
+             */
+            ->renderHook(
+                PanelsRenderHook::SIMPLE_LAYOUT_START,
+                fn (): string => view('filament.auth.login-brand')->render(),
+            )
             ->passwordReset()
             ->profile(isSimple: false)
             ->brandName('رحلة صحة')
