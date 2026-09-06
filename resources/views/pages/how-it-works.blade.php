@@ -108,7 +108,7 @@
         <x-container size="narrow">
             <h2 id="privacy-heading" class="font-display text-xl font-semibold text-ink">{{ __('how-it-works.privacy.title') }}</h2>
             <p class="mt-3 leading-relaxed text-pretty text-muted">{{ __('how-it-works.privacy.body') }}</p>
-            <a href="{{ route('privacy') }}" class="mt-4 inline-flex text-sm font-medium text-accent-dark underline-offset-4 hover:underline">
+            <a href="{{ route('privacy') }}" class="tap-target mt-4 text-sm font-medium text-accent-dark underline-offset-4 hover:underline">
                 {{ __('how-it-works.privacy.link') }}
             </a>
         </x-container>

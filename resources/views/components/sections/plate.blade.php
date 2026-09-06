@@ -95,7 +95,7 @@
                                             data-plate-group="{{ $food->group->value }}"
                                             data-plate-name="{{ $food->name }}"
                                             aria-pressed="false"
-                                            class="inline-flex items-center gap-2 rounded-pill bg-sage/60 px-3 py-2 text-sm text-ink ring-1 ring-line transition hover:ring-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-dark aria-pressed:bg-accent aria-pressed:text-white aria-pressed:ring-accent"
+                                            class="tap-target gap-2 rounded-pill bg-sage/60 px-3 text-sm text-ink ring-1 ring-line transition hover:ring-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-dark aria-pressed:bg-accent aria-pressed:text-white aria-pressed:ring-accent"
                                         >
                                             <span aria-hidden="true">{{ $food->emoji }}</span>
                                             <span>{{ $food->name }}</span>
@@ -139,7 +139,7 @@
                         <button
                             type="button"
                             data-plate-reset
-                            class="mt-4 w-full rounded-pill px-4 py-2 text-sm font-medium text-accent-dark ring-1 ring-line transition hover:bg-sage/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-dark"
+                            class="tap-target mt-4 w-full justify-center rounded-pill px-4 text-sm font-medium text-accent-dark ring-1 ring-line transition hover:bg-sage/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-dark"
                         >
                             {{ __('plate.reset') }}
                         </button>

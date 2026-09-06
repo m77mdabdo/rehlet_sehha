@@ -63,7 +63,15 @@
         .ghost { border: 1px solid var(--line); color: var(--ink); }
         .contact { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 14px; }
         .contact a { color: var(--accent); }
-        .num { unicode-bidi: isolate; direction: ltr; display: inline-block; }
+        /* Self-contained, so `tap-target` from the app stylesheet does not
+           exist here — this page deliberately ships no Vite bundle. The 44px
+           floor is stated locally instead. The phone number is the one control
+           on an error page that somebody in trouble actually needs to hit. */
+        .num {
+            unicode-bidi: isolate; direction: ltr;
+            display: inline-flex; align-items: center;
+            min-height: 44px; min-width: 44px;
+        }
     </style>
 </head>
 <body>

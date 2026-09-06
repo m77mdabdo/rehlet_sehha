@@ -56,7 +56,7 @@
                                      and the rest is text. --}}
                                 <a
                                     href="{{ route('posts.show', ['slug' => $post->slug]) }}"
-                                    class="rounded-sm transition-colors hover:text-accent"
+                                    class="tap-target rounded-sm transition-colors hover:text-accent"
                                 >
                                     {{ $post->title }}
                                 </a>

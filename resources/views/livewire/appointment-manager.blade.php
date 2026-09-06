@@ -119,7 +119,7 @@
                     </div>
                 @endif
 
-                <div class="mt-4 -mx-1 flex gap-2 overflow-x-auto px-1 pb-2" role="group" aria-label="{{ __('booking.fields.date') }}">
+                <div class="relative mt-4 -mx-1 flex gap-2 overflow-x-auto px-1 pb-2" role="group" aria-label="{{ __('booking.fields.date') }}">
                     @foreach ($days as $day)
                         <button
                             type="button"

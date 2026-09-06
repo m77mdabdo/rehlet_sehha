@@ -67,10 +67,10 @@
                         obviously scrollable rather than looking clipped.
                     --}}
                     <nav
-                        class="-mx-5 mb-12 flex snap-x snap-mandatory gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:-mx-8 sm:px-8 [&::-webkit-scrollbar]:hidden"
+                        class="relative -mx-5 mb-12 flex snap-x snap-mandatory gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:-mx-8 sm:px-8 [&::-webkit-scrollbar]:hidden"
                         aria-label="{{ __('articles.filter_heading') }}"
                     >
-                        <span class="shrink-0 snap-start rounded-pill bg-ink px-4 py-2 text-sm font-medium text-white">
+                        <span class="tap-target shrink-0 snap-start rounded-pill bg-ink px-4 text-sm font-medium text-white">
                             {{ __('articles.filter_all') }}
                         </span>
 
@@ -79,7 +79,7 @@
 
                             <a
                                 href="{{ route('articles.category', ['slug' => $category->slug]) }}"
-                                class="shrink-0 snap-start rounded-pill px-4 py-2 text-sm font-medium text-ink ring-1 ring-line transition hover:bg-sage/60"
+                                class="tap-target shrink-0 snap-start rounded-pill px-4 text-sm font-medium text-ink ring-1 ring-line transition hover:bg-sage/60"
                             >
                                 {{ $category->name }}
                                 <span class="text-muted">({{ $category->posts_count }})</span>

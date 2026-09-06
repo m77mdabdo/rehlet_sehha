@@ -213,7 +213,7 @@
             <ul class="mt-8 flex flex-wrap gap-3">
                 @foreach ($footerServices as $service)
                     <li>
-                        <a href="{{ route('services') }}" class="inline-flex rounded-pill bg-white px-4 py-2 text-sm text-ink ring-1 ring-line transition hover:ring-accent">{{ $service->name }}</a>
+                        <a href="{{ route('services') }}" class="tap-target rounded-pill bg-white px-4 text-sm text-ink ring-1 ring-line transition hover:ring-accent">{{ $service->name }}</a>
                     </li>
                 @endforeach
             </ul>

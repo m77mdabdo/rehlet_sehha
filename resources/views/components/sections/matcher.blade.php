@@ -114,7 +114,7 @@
                         <button
                             type="button"
                             data-matcher-back
-                            class="rounded-pill px-4 py-2 text-sm font-medium text-accent-dark ring-1 ring-line hover:bg-sage/60 disabled:cursor-not-allowed disabled:opacity-40"
+                            class="tap-target rounded-pill px-4 text-sm font-medium text-accent-dark ring-1 ring-line hover:bg-sage/60 disabled:cursor-not-allowed disabled:opacity-40"
                             disabled
                         >
                             {{ __('matcher.back') }}

@@ -172,7 +172,7 @@
 
                         <button
                             type="button"
-                            class="rounded-pill px-4 py-2 text-sm font-medium text-accent-dark ring-1 ring-line hover:bg-sage/60"
+                            class="tap-target rounded-pill px-4 text-sm font-medium text-accent-dark ring-1 ring-line hover:bg-sage/60"
                             data-copy="{{ $appointment->reference }}"
                             data-idle-label="{{ __('booking.keepsake.copy') }}"
                             data-copied-label="{{ __('booking.keepsake.copied') }}"
@@ -201,7 +201,7 @@
                     <div class="mt-3 flex flex-wrap gap-3">
                         <button
                             type="button"
-                            class="rounded-pill px-4 py-2 text-sm font-medium text-accent-dark ring-1 ring-line hover:bg-sage/60"
+                            class="tap-target rounded-pill px-4 text-sm font-medium text-accent-dark ring-1 ring-line hover:bg-sage/60"
                             data-copy="{{ $manageUrl }}"
                             data-idle-label="{{ __('booking.keepsake.copy') }}"
                             data-copied-label="{{ __('booking.keepsake.copied') }}"

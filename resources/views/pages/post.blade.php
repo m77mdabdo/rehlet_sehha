@@ -296,7 +296,7 @@
                             <li>
                                 <a
                                     href="{{ route('articles.tag', ['slug' => $tag->slug]) }}"
-                                    class="inline-block rounded-pill px-3 py-1.5 text-sm text-ink ring-1 ring-line transition hover:bg-sage/60"
+                                    class="tap-target rounded-pill px-3 text-sm text-ink ring-1 ring-line transition hover:bg-sage/60"
                                 >{{ $tag->name }}</a>
                             </li>
                         @endforeach
@@ -322,14 +322,14 @@
                         href="https://wa.me/?text={{ rawurlencode($post->title.' — '.$url) }}"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="inline-flex items-center rounded-pill px-4 py-2 text-sm font-medium text-ink ring-1 ring-line transition hover:bg-sage"
+                        class="tap-target rounded-pill px-4 text-sm font-medium text-ink ring-1 ring-line transition hover:bg-sage"
                     >{{ __('articles.share_whatsapp') }}</a>
 
                     <button
                         type="button"
                         data-copy="{{ $url }}"
                         data-copy-label-copied="{{ __('articles.share_copied') }}"
-                        class="inline-flex items-center rounded-pill px-4 py-2 text-sm font-medium text-ink ring-1 ring-line transition hover:bg-sage"
+                        class="tap-target rounded-pill px-4 text-sm font-medium text-ink ring-1 ring-line transition hover:bg-sage"
                     >
                         <span data-copy-label>{{ __('articles.share_copy') }}</span>
                     </button>
@@ -340,7 +340,7 @@
 
             <a
                 href="{{ route('articles') }}"
-                class="mt-10 inline-flex items-center gap-1.5 text-sm font-medium text-accent-dark underline-offset-4 hover:underline"
+                class="tap-target mt-10 gap-1.5 text-sm font-medium text-accent-dark underline-offset-4 hover:underline"
             >
                 <svg class="size-4 rtl:-scale-x-100" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M13 4l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round" />

@@ -94,12 +94,12 @@
                     @if ($post->category)
                         <a
                             href="{{ route('articles.category', ['slug' => $post->category->slug]) }}"
-                            class="text-xs font-semibold tracking-wide text-accent-dark uppercase hover:underline"
+                            class="tap-target text-xs font-semibold tracking-wide text-accent-dark uppercase hover:underline"
                         >{{ $post->category->name }}</a>
                     @endif
 
                     <h3 class="mt-2 font-display text-xl font-semibold text-balance text-ink">
-                        <a href="{{ route('posts.show', ['slug' => $post->slug]) }}" class="rounded-sm transition-colors hover:text-accent-dark">
+                        <a href="{{ route('posts.show', ['slug' => $post->slug]) }}" class="tap-target rounded-sm transition-colors hover:text-accent-dark">
                             {{ $post->title }}
                         </a>
                     </h3>
