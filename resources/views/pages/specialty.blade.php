@@ -13,37 +13,32 @@
     :description="$specialty->description"
     :schema="$schema"
 >
-    <section class="bg-linear-to-b from-sage to-paper py-16 sm:py-20">
-        <x-container>
-            {{-- Breadcrumb: this is a landing page, so a visitor may have no
-                 idea what the rest of the site is. --}}
-            <nav aria-label="{{ __('specialties.breadcrumb') }}" class="text-sm text-muted">
-                <a href="{{ route('home') }}" class="hover:text-accent-dark">{{ __('nav.home') }}</a>
-                <span class="mx-2" aria-hidden="true">/</span>
-                <a href="{{ route('home') }}#specialties" class="hover:text-accent-dark">{{ __('nav.services') }}</a>
-            </nav>
+    {{-- The same header every standalone page gets. The icon and the two
+         buttons that used to sit inside it now follow it on paper: a coloured
+         icon tile and two solid pills fight a photograph, and the header's job
+         is the title. --}}
+    <x-page-header
+        page="specialties"
+        :title="$specialty->name"
+        :lead="$specialty->description"
+        :trail="[
+            ['label' => __('nav.home'), 'url' => route('home')],
+            ['label' => __('nav.services'), 'url' => route('home').'#specialties'],
+            ['label' => $specialty->name],
+        ]"
+    />
 
-            <div class="mt-6 flex flex-wrap items-start gap-5">
-                <span class="inline-flex size-14 items-center justify-center rounded-md bg-sage text-accent">
+    <section class="border-b border-line bg-paper py-10">
+        <x-container>
+            <div class="flex flex-wrap items-center gap-5">
+                <span class="inline-flex size-14 shrink-0 items-center justify-center rounded-md bg-sage text-accent">
                     <x-icon :name="$specialty->icon" :size="28" />
                 </span>
 
-                <div class="flex-1">
-                    <h1 class="font-display text-3xl font-semibold text-balance text-ink sm:text-4xl">
-                        {{ $specialty->name }}
-                    </h1>
-
-                    @if ($specialty->description)
-                        <p class="mt-4 max-w-2xl text-base leading-relaxed text-pretty text-muted sm:text-lg">
-                            {{ $specialty->description }}
-                        </p>
-                    @endif
+                <div class="flex flex-wrap gap-3">
+                    <x-button :href="route('booking')" size="lg">{{ __('home.hero.cta') }}</x-button>
+                    <x-button variant="ghost" size="lg" href="#packages">{{ __('specialties.see_packages') }}</x-button>
                 </div>
-            </div>
-
-            <div class="mt-8 flex flex-wrap gap-3">
-                <x-button :href="route('booking')" size="lg">{{ __('home.hero.cta') }}</x-button>
-                <x-button variant="ghost" size="lg" href="#packages">{{ __('specialties.see_packages') }}</x-button>
             </div>
         </x-container>
     </section>

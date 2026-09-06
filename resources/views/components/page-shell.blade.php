@@ -19,6 +19,14 @@
      * the trail, which is all a service or FAQ page has to say about itself.
      */
     'article' => null,
+
+    /**
+     * Which entry in config('page-headers.pages') this page's header uses.
+     *
+     * Null means the navy ground rather than a borrowed photograph — see
+     * components/page-header.blade.php for why that is a design and not a gap.
+     */
+    'headerPage' => null,
 ])
 
 {{--
@@ -29,18 +37,9 @@
     needs a different shape, that is a conversation about the page, not a
     reason to fork this.
 
-    WHY A HEADER THIS LARGE. The h1 here is deliberately bigger than the h2s
-    that open homepage sections. On the homepage a section heading is one of
-    nine and has to sit in a rhythm; on a page of its own the heading IS the
-    page's opening, and hedging its size makes a standalone page read like a
-    fragment that escaped from somewhere else.
-
-    THE BREADCRUMB IS UNDERSTATED ON PURPOSE. It is wayfinding for someone who
-    arrived from a search and does not yet know what the rest of the site is —
-    not navigation we are inviting anybody to use. It gets small muted text and
-    no decoration, and the trail it shows is the same trail the page emits as
-    BreadcrumbList data, because a visible path that disagrees with the markup
-    is worse than neither.
+    THE HEADER ITSELF LIVES IN ITS OWN COMPONENT as of Task 12, because the
+    specialty page needs the same header and does not use this shell. The
+    argument for its size, its scrim and its breadcrumb is there.
 --}}
 
 @php
@@ -85,58 +84,15 @@
     :og-image-alt="$shellOgAlt"
     :schema="\App\Support\PageSchema::toJson($trail, $article)"
 >
-    <header class="border-b border-line bg-linear-to-b from-sage to-paper pt-10 pb-16 sm:pt-14 sm:pb-24">
-        <x-container>
-            @if ($trail !== [])
-                <nav aria-label="{{ __('common.breadcrumb') }}">
-                    {{-- An ordered list, because the order is the meaning. --}}
-                    <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
-                        @foreach ($trail as $index => $crumb)
-                            <li class="flex items-center gap-2">
-                                @if ($index > 0)
-                                    {{-- Decorative for a screen reader — the list
-                                         already carries the relationship — but it
-                                         is still a visible boundary between two
-                                         links, so it takes muted rather than a
-                                         hairline colour that measured 1.30:1. --}}
-                                    <span aria-hidden="true" class="text-muted">/</span>
-                                @endif
-
-                                @if (($crumb['url'] ?? null) !== null)
-                                    <a href="{{ $crumb['url'] }}" class="rounded-sm hover:text-accent-dark">
-                                        {{ $crumb['label'] }}
-                                    </a>
-                                @else
-                                    {{-- The current page. aria-current tells a
-                                         screen reader where the trail stops. --}}
-                                    <span aria-current="page" class="text-ink">{{ $crumb['label'] }}</span>
-                                @endif
-                            </li>
-                        @endforeach
-                    </ol>
-                </nav>
-            @endif
-
-            <div class="mt-8 max-w-4xl sm:mt-10">
-                @if ($eyebrow)
-                    <p class="text-sm font-medium tracking-wide text-accent-dark uppercase">{{ $eyebrow }}</p>
-                @endif
-
-                {{-- The one h1 on the page. Sections below use h2. --}}
-                <h1 class="mt-4 font-display text-4xl leading-[1.08] font-semibold text-balance text-ink sm:text-5xl lg:text-6xl">
-                    {{ $title }}
-                </h1>
-
-                @if ($lead)
-                    <p class="mt-6 max-w-2xl text-lg leading-relaxed text-pretty text-muted sm:text-xl">
-                        {{ $lead }}
-                    </p>
-                @endif
-
-                {{ $actions ?? '' }}
-            </div>
-        </x-container>
-    </header>
+    <x-page-header
+        :page="$headerPage"
+        :eyebrow="$eyebrow"
+        :title="$title"
+        :lead="$lead"
+        :trail="$trail"
+    >
+        {{ $actions ?? '' }}
+    </x-page-header>
 
     {{ $slot }}
 

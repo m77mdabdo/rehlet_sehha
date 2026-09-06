@@ -24,6 +24,8 @@ declare(strict_types=1);
 */
 
 return [
+    'index_heading' => 'The areas we cover',
+    'index_jump' => 'Jump to section',
     'meta_title' => 'What we treat — Rehlet Sehha',
     'meta_description' => 'The clinical areas this practice works in, in full: medical nutrition, weight management, pregnancy and breastfeeding, child nutrition, PCOS and hormones, lab review, sports nutrition and corporate programmes.',
 

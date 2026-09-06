@@ -409,9 +409,29 @@ it('gives every image a real alt, a size, and lazy loading', function (string $l
 
         foreach ($images[0] as $tag) {
             // The logo and other decorative marks are SVG, so anything that
-            // reaches here is a photograph and must carry all three.
+            // reaches here is a photograph and must carry both dimensions.
             expect(preg_match('/\swidth="\d+"/', $tag))->toBe(1, "{$name}: an image has no width, which is a layout shift.");
             expect(preg_match('/\sheight="\d+"/', $tag))->toBe(1, "{$name}: an image has no height, which is a layout shift.");
+
+            /*
+             * AN aria-hidden IMAGE IS EXEMPT FROM THE ALT RULE, AND ONLY FROM
+             * THAT ONE.
+             *
+             * Since Task 12 the page header carries a full-bleed photograph
+             * behind the title. It is decoration: the heading in front of it
+             * already says what the page is, and describing it would announce
+             * "hands slicing a tomato on a board" ahead of the page title on
+             * every specialty page. An empty alt on a decorative image is the
+             * correct answer, not a missing one — and aria-hidden is the
+             * author stating that on the record.
+             *
+             * The dimensions above are still required of it, because those are
+             * about layout rather than about access.
+             */
+            if (str_contains($tag, 'aria-hidden="true"')) {
+                continue;
+            }
+
             expect(preg_match('/\salt="[^"]/', $tag))->toBe(1, "{$name}: an image has an empty alt.");
 
             /*
