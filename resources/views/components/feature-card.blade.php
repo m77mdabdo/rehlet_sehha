@@ -57,7 +57,7 @@
         'text-ink group-hover:text-white' => ! $promoted,
     ])>
         @if ($href)
-            <a href="{{ $href }}" class="rounded-sm">{{ $title }}</a>
+            <a href="{{ $href }}" class="tap-target rounded-sm">{{ $title }}</a>
         @else
             {{ $title }}
         @endif

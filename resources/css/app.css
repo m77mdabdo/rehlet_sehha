@@ -556,3 +556,47 @@
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
 }
+
+/*
+|------------------------------------------------------------------------------
+| Tap targets
+|------------------------------------------------------------------------------
+|
+| A link that is 20px tall is a link a thumb misses. WCAG 2.5.8 asks for 44x44,
+| and the sweep in Task 13 found sixteen element classes under it at 320 — the
+| worst being the locale switcher at 32x36 on 46 pages and the footer service
+| links at 64x14.
+|
+| THE FIX IS PADDING, NEVER FONT SIZE. The type must look identical; only the
+| box grows. inline-flex + a minimum height does that without touching the
+| glyphs, and it works on an inline anchor where a plain min-height would not,
+| because an inline box ignores height entirely.
+|
+| `tap-target` is for a link that stands alone or sits in a vertical list: it
+| honestly gets taller, which is the point.
+|
+| `tap-target-row` is for links sitting side by side in a horizontal row — a
+| breadcrumb, a chip row. It claws the added height back with a negative block
+| margin so the row does not grow. That is SAFE ONLY HORIZONTALLY: applied to
+| stacked links the 44px boxes would overlap each other by the same amount they
+| were pulled in, and the upper link would swallow taps meant for the lower one.
+*/
+@utility tap-target {
+    display: inline-flex;
+    align-items: center;
+    justify-content: inherit;
+    min-height: 2.75rem;
+    /* A width floor too: a two-letter breadcrumb link cleared 44 tall and was
+       still only 40 across. */
+    min-width: 2.75rem;
+}
+
+@utility tap-target-row {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    /* Half the difference between 44px and a ~20px line box, top and bottom. */
+    margin-block: -0.75rem;
+}

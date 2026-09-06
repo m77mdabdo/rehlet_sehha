@@ -26,10 +26,10 @@
 --}}
 
 @if ($phoneHref || $whatsappHref || $email || $address)
-    <ul {{ $attributes->merge(['class' => 'space-y-3 text-sm']) }}>
+    <ul {{ $attributes->merge(['class' => 'space-y-1 text-sm']) }}>
         @if ($phoneHref)
             <li>
-                <a href="{{ $phoneHref }}" class="inline-flex items-center gap-2 transition-opacity hover:opacity-100 opacity-90">
+                <a href="{{ $phoneHref }}" class="tap-target gap-2 opacity-90 transition-opacity hover:opacity-100">
                     <span class="sr-only">{{ __('footer.phone') }}</span>
                     {{--
                         dir="ltr" is not optional. Inside an Arabic paragraph the
@@ -50,7 +50,7 @@
                     href="{{ $whatsappHref }}"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="inline-flex items-center gap-2 opacity-90 transition-opacity hover:opacity-100"
+                    class="tap-target gap-2 opacity-90 transition-opacity hover:opacity-100"
                 >
                     {{ __('footer.whatsapp') }}
                 </a>
@@ -59,7 +59,7 @@
 
         @if ($email)
             <li>
-                <a href="mailto:{{ $email }}" class="inline-flex items-center gap-2 opacity-90 transition-opacity hover:opacity-100">
+                <a href="mailto:{{ $email }}" class="tap-target gap-2 opacity-90 transition-opacity hover:opacity-100">
                     <span class="sr-only">{{ __('footer.email') }}</span>
                     <bdi dir="ltr">{{ $email }}</bdi>
                 </a>

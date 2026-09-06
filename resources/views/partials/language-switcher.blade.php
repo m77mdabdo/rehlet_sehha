@@ -34,7 +34,7 @@
     lang="{{ $other }}"
     dir="{{ Locales::direction($other) }}"
     {{ $attributes->merge([
-        'class' => 'inline-flex items-center justify-center rounded-pill px-3 py-2 text-sm font-medium ring-1 ring-line transition-colors hover:bg-sage group-data-transparent:ring-white/60 group-data-transparent:hover:bg-white/15',
+        'class' => 'tap-target min-w-11 justify-center rounded-pill px-3 text-sm font-medium ring-1 ring-line transition-colors hover:bg-sage group-data-transparent:ring-white/60 group-data-transparent:hover:bg-white/15',
     ]) }}
 >
     <span class="sr-only">{{ __('nav.switch_language') }}</span>
