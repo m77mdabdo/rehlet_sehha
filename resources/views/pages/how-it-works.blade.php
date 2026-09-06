@@ -1,4 +1,5 @@
 <x-page-shell
+    header-page="how-it-works"
     :eyebrow="__('how-it-works.eyebrow')"
     :title="__('how-it-works.title')"
     :lead="__('how-it-works.lead')"

@@ -1,4 +1,5 @@
 <x-page-shell
+    header-page="faq"
     :eyebrow="__('faq.eyebrow')"
     :title="__('faq.title')"
     :lead="__('faq.lead')"

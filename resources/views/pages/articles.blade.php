@@ -3,6 +3,7 @@
 @endphp
 
 <x-page-shell
+    header-page="articles"
     :eyebrow="__('articles.eyebrow')"
     :title="__('articles.title')"
     :lead="__('articles.lead')"
@@ -38,8 +39,38 @@
                 <p class="text-muted">{{ __('articles.empty') }}</p>
             @else
                 @if ($paginated && $categories->isNotEmpty())
-                    <nav class="mb-12 flex flex-wrap gap-2" aria-label="{{ __('articles.filter_heading') }}">
-                        <span class="rounded-pill bg-ink px-4 py-2 text-sm font-medium text-white">
+                    {{--
+                        ONE ROW THAT SCROLLS, NOT A BLOCK THAT WRAPS.
+
+                        This was flex-wrap and it was the largest layout shift
+                        on the site: 0.16 measured at 1440, and 0.24 in Arabic.
+                        The pills get wider when the webfont swaps in, the row
+                        wraps one filter onto a second line, and the entire
+                        article grid below drops by a row's height while
+                        somebody is looking at it.
+
+                        Nothing about reserving a height fixes that honestly —
+                        the wrapped height differs per locale and per category
+                        count, so any number here would be right for one page
+                        and wrong for the next. A single non-wrapping row cannot
+                        change height at all, whatever the font does to the
+                        words inside it.
+
+                        It is also the better mobile pattern: a scrollable chip
+                        row rather than three stacked lines of pills. The
+                        scroll is INSIDE this element, so it never becomes a
+                        horizontal scrollbar on the page.
+
+                        -mx-* and matching px-* let the row bleed to the screen
+                        edges while its first and last chips still align with
+                        the container, so a chip scrolled half out of view is
+                        obviously scrollable rather than looking clipped.
+                    --}}
+                    <nav
+                        class="-mx-5 mb-12 flex snap-x snap-mandatory gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:-mx-8 sm:px-8 [&::-webkit-scrollbar]:hidden"
+                        aria-label="{{ __('articles.filter_heading') }}"
+                    >
+                        <span class="shrink-0 snap-start rounded-pill bg-ink px-4 py-2 text-sm font-medium text-white">
                             {{ __('articles.filter_all') }}
                         </span>
 
@@ -48,7 +79,7 @@
 
                             <a
                                 href="{{ route('articles.category', ['slug' => $category->slug]) }}"
-                                class="rounded-pill px-4 py-2 text-sm font-medium text-ink ring-1 ring-line transition hover:bg-sage/60"
+                                class="shrink-0 snap-start rounded-pill px-4 py-2 text-sm font-medium text-ink ring-1 ring-line transition hover:bg-sage/60"
                             >
                                 {{ $category->name }}
                                 <span class="text-muted">({{ $category->posts_count }})</span>
