@@ -16,23 +16,33 @@
             :lead="__('home.how_it_works.lead')"
         />
 
-        <ol class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        @php
+            /*
+             * The step icons, in order. Held here rather than in the
+             * translation files because a glyph is not copy — the Arabic and
+             * English steps are the same four steps and must not be able to
+             * drift onto different pictures.
+             */
+            $stepIcons = ['calendar-check', 'listening', 'plan-document', 'adjust'];
+
+            /*
+             * The FIRST step is the filled one. Booking is what this section
+             * exists to lead to, and it is the only one of the four a visitor
+             * can act on from here — the rest describe what happens after.
+             * Derived from position, never hardcoded to a key.
+             */
+            $promotedStep = 0;
+        @endphp
+
+        <ol class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             @foreach (__('home.how_it_works.steps') as $index => $step)
-                <li class="reveal">
-                    <span
-                        class="inline-flex size-11 items-center justify-center rounded-pill bg-ink font-display text-lg font-semibold text-white"
-                        aria-hidden="true"
-                    >
-                        {{ $loop->iteration }}
-                    </span>
-
-                    <h3 class="mt-4 font-display text-lg font-semibold text-ink">
-                        {{ $step['title'] }}
-                    </h3>
-
-                    <p class="mt-2 text-sm leading-relaxed text-muted">
-                        {{ $step['body'] }}
-                    </p>
+                <li class="reveal flex">
+                    <x-feature-card
+                        :icon="$stepIcons[$loop->index] ?? 'target'"
+                        :title="$step['title']"
+                        :body="$step['body']"
+                        :promoted="$loop->index === $promotedStep"
+                    />
                 </li>
             @endforeach
         </ol>
