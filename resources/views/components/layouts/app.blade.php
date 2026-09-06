@@ -354,10 +354,10 @@
                     <h2 class="font-display text-base font-semibold text-white">
                         {{ __('footer.services_heading') }}
                     </h2>
-                    <ul class="mt-4 space-y-3 text-sm">
+                    <ul class="mt-4 space-y-1 text-sm">
                         @foreach ($footerServices ?? [] as $service)
                             <li>
-                                <a href="{{ route('home') }}#packages" class="transition-colors hover:text-white">
+                                <a href="{{ route('home') }}#packages" class="tap-target transition-colors hover:text-white">
                                     {{ $service->name }}
                                 </a>
                             </li>

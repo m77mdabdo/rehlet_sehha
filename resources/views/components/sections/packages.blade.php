@@ -25,7 +25,7 @@
                  terms and the buying questions, and all three are there. --}}
             <a
                 href="{{ route('packages') }}"
-                class="mt-1 inline-flex items-center gap-1.5 text-sm font-medium text-accent-dark underline-offset-4 hover:underline"
+                class="tap-target mt-1 gap-1.5 text-sm font-medium text-accent-dark underline-offset-4 hover:underline"
             >
                 {{ __('home.packages.see_all') }}
                 <svg class="size-4 rtl:-scale-x-100" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">

@@ -145,7 +145,7 @@
                         <li>
                             <a
                                 href="{{ route('specialties.show', ['slug' => $other->slug]) }}"
-                                class="inline-flex items-center gap-2 rounded-pill bg-white px-4 py-2 text-sm font-medium text-ink ring-1 ring-line transition-colors hover:bg-sage"
+                                class="tap-target gap-2 rounded-pill bg-white px-4 text-sm font-medium text-ink ring-1 ring-line transition-colors hover:bg-sage"
                             >
                                 <x-icon :name="$other->icon" :size="16" class="text-accent-dark" />
                                 {{ $other->name }}

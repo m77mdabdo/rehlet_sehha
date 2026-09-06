@@ -135,7 +135,7 @@
                             @endif
 
                             @if (($crumb['url'] ?? null) !== null)
-                                <a href="{{ $crumb['url'] }}" class="rounded-sm underline-offset-4 transition-colors hover:text-white hover:underline">
+                                <a href="{{ $crumb['url'] }}" class="tap-target-row rounded-sm underline-offset-4 transition-colors hover:text-white hover:underline">
                                     {{ $crumb['label'] }}
                                 </a>
                             @else

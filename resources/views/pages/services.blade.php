@@ -141,7 +141,7 @@
 
                                     <a
                                         href="{{ route('specialties.show', ['slug' => $specialty->slug]) }}"
-                                        class="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-accent-dark underline-offset-4 hover:underline"
+                                        class="tap-target mt-6 gap-1.5 text-sm font-medium text-accent-dark underline-offset-4 hover:underline"
                                     >
                                         {{ __('services.more', ['name' => $specialty->name]) }}
                                         <svg class="size-4 rtl:-scale-x-100" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">

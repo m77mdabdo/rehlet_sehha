@@ -28,7 +28,7 @@
             <button
                 type="button"
                 wire:click="back"
-                class="rounded-sm text-sm font-medium text-accent-dark underline"
+                class="tap-target rounded-sm text-sm font-medium text-accent-dark underline"
             >
                 {{ __('booking.actions.change') }}
             </button>
@@ -39,8 +39,26 @@
         <p class="mt-8 text-muted">{{ __('booking.time.no_days') }}</p>
     @else
         {{-- Day strip. overflow-x-auto with logical scroll padding so it works
-             identically in both directions. --}}
-        <div class="mt-8 -mx-1 flex gap-2 overflow-x-auto px-1 pb-2" role="group" aria-label="{{ __('booking.fields.date') }}">
+             identically in both directions.
+
+             `relative` IS LOad-BEARING AND IT IS NOT DECORATION. Without it this
+             strip put 806px of horizontal scroll on the whole page at 320 —
+             invisible in the markup, and invisible to overflow-x:hidden.
+
+             Tailwind's .sr-only is position:absolute. The "closed" span inside
+             an unavailable day button is therefore laid out against the nearest
+             POSITIONED ancestor, and there wasn't one — so its containing block
+             was the initial containing block, its static position was its offset
+             inside this strip's 1246px of scroll content, and the document grew
+             to fit it. An ancestor's overflow cannot clip a box whose containing
+             block is outside that ancestor, which is why the obvious fix did
+             nothing.
+
+             Making the scroller a containing block fixes it for every absolutely
+             positioned descendant, present and future. The two sibling scrollers
+             carry the same line for the same reason, though neither holds an
+             sr-only today. --}}
+        <div class="relative mt-8 -mx-1 flex gap-2 overflow-x-auto px-1 pb-2" role="group" aria-label="{{ __('booking.fields.date') }}">
             @foreach ($days as $day)
                 <button
                     type="button"

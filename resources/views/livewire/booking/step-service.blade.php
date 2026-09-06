@@ -67,7 +67,7 @@
                 @foreach ($modes as $value => $label)
                     <label class="cursor-pointer">
                         <input type="radio" wire:model="mode" value="{{ $value }}" class="peer sr-only">
-                        <span class="inline-flex items-center rounded-pill px-4 py-2 text-sm ring-1 ring-line peer-checked:bg-accent peer-checked:text-white">
+                        <span class="tap-target rounded-pill px-4 text-sm ring-1 ring-line peer-checked:bg-accent peer-checked:text-white">
                             {{ $label }}
                         </span>
                     </label>
