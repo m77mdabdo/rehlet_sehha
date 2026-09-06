@@ -298,7 +298,7 @@
                     {{-- The confirmation states what goes and what stays. An
                          "are you sure?" that does not say what it deletes is
                          not informed consent to deletion. --}}
-                    <x-card class="mt-5 ring-2 ring-gold">
+                    <x-card tone="warning" class="mt-5">
                         <h3 class="font-display text-base font-semibold text-ink">{{ __('booking.rights.erase_confirm_title') }}</h3>
 
                         <p class="mt-3 text-sm font-medium text-ink">{{ __('booking.rights.erase_removes_heading') }}</p>

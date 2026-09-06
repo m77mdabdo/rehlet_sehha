@@ -56,7 +56,7 @@
                 {{-- Booking first and largest, because it is the thing that
                      actually gets a patient an answer. --}}
                 <div class="lg:col-span-7">
-                    <x-card class="reveal bg-ink text-white ring-0">
+                    <x-card tone="ink" class="reveal">
                         <h3 class="font-display text-2xl font-semibold sm:text-3xl">{{ __('contact.book_first.title') }}</h3>
                         <p class="mt-3 leading-relaxed text-pretty text-white/75">{{ __('contact.book_first.body') }}</p>
 
