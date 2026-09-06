@@ -22,7 +22,17 @@
     ];
 @endphp
 
+@php
+    use App\Support\PromotedSpecialty;
+
+    // Computed in one place, exactly as the homepage grid and the packages
+    // table do it. See the class for what promotion means on a grid with no
+    // prices on it.
+    $promotedIndex = PromotedSpecialty::indexIn($specialties);
+@endphp
+
 <x-page-shell
+    header-page="services"
     :eyebrow="__('services.eyebrow')"
     :title="__('services.title')"
     :lead="__('services.lead')"
@@ -36,6 +46,43 @@
 >
     <x-slot:cta-title>{{ __('services.cta.title') }}</x-slot:cta-title>
     <x-slot:cta-lead>{{ __('services.cta.lead') }}</x-slot:cta-lead>
+
+    {{--
+        AN INDEX, ADDED IN TASK 12, and it earns its place twice over.
+
+        It is where the promoted-card pattern lives on this page — the sections
+        below are long alternating prose rows, and filling one of them with navy
+        would read as an advertisement wedged into a reference document rather
+        than as hierarchy.
+
+        It is also the map this page did not have. Eight areas at roughly a
+        screen each means a visitor who arrives looking for one of them scrolls
+        past six others first; these jump straight down.
+
+        NAMES ONLY, NO DESCRIPTIONS. The description sits fifty pixels below in
+        the section itself, and printing it twice would be padding. The homepage
+        grid shows them because there is no section underneath it to repeat.
+    --}}
+    @if ($specialties->isNotEmpty())
+        <div class="border-b border-line bg-paper py-12 sm:py-16">
+            <x-container>
+                <h2 class="sr-only">{{ __('services.index_heading') }}</h2>
+
+                <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    @foreach ($specialties as $index => $specialty)
+                        <li>
+                            <x-specialty-card
+                                :specialty="$specialty"
+                                :promoted="$index === $promotedIndex"
+                                :href="'#'.$specialty->slug"
+                                :show-description="false"
+                            >{{ __('services.index_jump') }}</x-specialty-card>
+                        </li>
+                    @endforeach
+                </ul>
+            </x-container>
+        </div>
+    @endif
 
     <div class="py-20 sm:py-28">
         <x-container>

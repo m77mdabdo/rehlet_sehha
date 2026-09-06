@@ -52,6 +52,7 @@
 @endphp
 
 <x-page-shell
+    header-page="packages"
     :eyebrow="__('packages.eyebrow')"
     :title="__('packages.title')"
     :lead="__('packages.lead')"

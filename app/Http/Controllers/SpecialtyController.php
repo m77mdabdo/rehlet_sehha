@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Specialty;
 use App\Support\ClinicSchema;
+use App\Support\PageSchema;
 use Illuminate\Contracts\View\View;
 
 class SpecialtyController extends Controller
@@ -34,7 +35,22 @@ class SpecialtyController extends Controller
             // that should be missing structured data. Same clinic entity as the
             // homepage — one practice, described identically wherever it is
             // described, which is what @id is for.
-            'schema' => ClinicSchema::toJson(),
+            /*
+             * PageSchema, not ClinicSchema, since Task 12 gave this page a
+             * visible breadcrumb. It still emits the same clinic entity — that
+             * is the first node in PageSchema's graph — and now also emits the
+             * trail the header shows.
+             *
+             * The two must agree. Google treats a BreadcrumbList that
+             * contradicts the visible path as a reason to distrust both, and
+             * a page with a trail on screen and none in the markup is the same
+             * mistake in the other direction.
+             */
+            'schema' => PageSchema::toJson([
+                ['label' => __('nav.home'), 'url' => route('home')],
+                ['label' => __('nav.services'), 'url' => route('home').'#specialties'],
+                ['label' => $specialty->name, 'url' => null],
+            ]),
             'specialty' => $specialty,
             'services' => $specialty->services,
             // The other areas, for the "we also cover" strip. Excluding the

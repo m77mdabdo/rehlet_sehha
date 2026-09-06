@@ -33,6 +33,7 @@
 @endphp
 
 <x-page-shell
+    header-page="contact"
     :eyebrow="__('contact.eyebrow')"
     :title="__('contact.title')"
     :lead="__('contact.lead')"

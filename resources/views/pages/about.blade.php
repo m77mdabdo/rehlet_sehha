@@ -19,6 +19,7 @@
 @endphp
 
 <x-page-shell
+    header-page="about"
     :eyebrow="__('about.eyebrow')"
     :title="__('about.page_title')"
     :lead="__('about.page_lead')"
