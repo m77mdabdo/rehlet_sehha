@@ -26,7 +26,7 @@ class SpecialtySeeder extends Seeder
         $specialties = [
             [
                 'slug' => 'medical-nutrition',
-                'icon' => 'stethoscope',
+                'icon' => 'nutrition-clinical',
                 'name' => [
                     'ar' => 'التغذية العلاجية',
                     'en' => 'Medical Nutrition',
