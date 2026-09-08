@@ -121,6 +121,14 @@ return [
         'when' => 'ميعادك',
         'timezone' => 'بتوقيت القاهرة (:zone)',
         'status_note' => 'الحجز دلوقتي بانتظار التأكيد من العيادة.',
+
+        /*
+         * What actually happened to the confirmation email — never a guess.
+         * Rendered only when there was an address to send to; a patient who
+         * gave none sees the WhatsApp record block instead.
+         */
+        'email_sent' => 'بعتنا رسالة التأكيد على :email.',
+        'email_queued' => 'رسالة التأكيد لـ :email لسه في الطريق، هتوصل خلال دقايق. رقم الحجز فوق كفاية لحد ما توصل.',
         'next_title' => 'اللي جاي',
         'next' => [
             'confirm' => 'العيادة هتأكد الميعاد خلال ساعات العمل.',

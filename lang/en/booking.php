@@ -121,6 +121,14 @@ return [
         'when' => 'Your appointment',
         'timezone' => 'Cairo time (:zone)',
         'status_note' => 'The booking is awaiting confirmation from the clinic.',
+
+        /*
+         * What actually happened to the confirmation email — never a guess.
+         * Rendered only when there was an address to send to; a patient who
+         * gave none sees the WhatsApp record block instead.
+         */
+        'email_sent' => 'We have sent the confirmation to :email.',
+        'email_queued' => 'The confirmation to :email is still on its way and should arrive within a few minutes. The reference above is enough until it does.',
         'next_title' => 'What happens next',
         'next' => [
             'confirm' => 'The clinic will confirm the time during working hours.',

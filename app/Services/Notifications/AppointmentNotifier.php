@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Notifications;
 
+use App\Enums\DeliveryOutcome;
 use App\Enums\NotificationChannel;
 use App\Models\Appointment;
 use App\Models\NotificationLog;
@@ -23,6 +24,7 @@ use App\Support\Contact;
 use Illuminate\Notifications\Notification as BaseNotification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Throwable;
 
@@ -63,9 +65,9 @@ class AppointmentNotifier
     |--------------------------------------------------------------------------
     */
 
-    public function bookingConfirmed(Appointment $appointment): void
+    public function bookingConfirmed(Appointment $appointment): DeliveryOutcome
     {
-        $this->toPatient($appointment, new BookingConfirmed($appointment));
+        return $this->toPatient($appointment, new BookingConfirmed($appointment), immediate: true);
     }
 
     public function reminder24h(Appointment $appointment): void
@@ -78,14 +80,14 @@ class AppointmentNotifier
         $this->toPatient($appointment, new AppointmentReminder1h($appointment));
     }
 
-    public function bookingCancelled(Appointment $appointment): void
+    public function bookingCancelled(Appointment $appointment): DeliveryOutcome
     {
-        $this->toPatient($appointment, new BookingCancelled($appointment));
+        return $this->toPatient($appointment, new BookingCancelled($appointment), immediate: true);
     }
 
-    public function bookingRescheduled(Appointment $appointment, Carbon $previousStartsAt): void
+    public function bookingRescheduled(Appointment $appointment, Carbon $previousStartsAt): DeliveryOutcome
     {
-        $this->toPatient($appointment, new BookingRescheduled($appointment, $previousStartsAt));
+        return $this->toPatient($appointment, new BookingRescheduled($appointment, $previousStartsAt), immediate: true);
     }
 
     /**
@@ -149,8 +151,11 @@ class AppointmentNotifier
     /**
      * Send to the patient, in the language they booked in.
      */
-    private function toPatient(Appointment $appointment, BaseNotification&LogsDelivery $notification): void
-    {
+    private function toPatient(
+        Appointment $appointment,
+        BaseNotification&LogsDelivery $notification,
+        bool $immediate = false,
+    ): DeliveryOutcome {
         $email = $appointment->patient->email;
 
         if ($email === null || trim($email) === '') {
@@ -162,20 +167,94 @@ class AppointmentNotifier
             $this->openLog($appointment, $notification->deliveryTemplate(), '—', NotificationLog::STATUS_SKIPPED)
                 ->update(['error' => 'The patient did not give an email address, so nothing could be sent.']);
 
-            return;
+            return DeliveryOutcome::Skipped;
         }
 
         $log = $this->openLog($appointment, $notification->deliveryTemplate(), $email);
         $notification->setDeliveryLogId($log->id);
 
-        Notification::route('mail', $email)
+        /*
+         * The locale is pinned to the booking, not taken from the ambient
+         * request. Reminders are rendered by a cron run that has no locale
+         * at all, and the default would quietly mail an English-speaking
+         * patient in Arabic.
+         */
+        $localised = $notification->locale($appointment->locale);
+
+        if (! $immediate) {
+            Notification::route('mail', $email)->notify($localised);
+
+            return DeliveryOutcome::Queued;
+        }
+
+        /*
+         * SENT INSIDE THE PATIENT'S OWN REQUEST, AND ALLOWED TO FAIL.
+         *
+         * The three messages that use this path are answers to something she
+         * just did — she pressed confirm, or cancel, or moved her appointment
+         * — and she is looking at the screen waiting to learn whether it
+         * worked. A minute on the queue is a minute of not knowing, on the one
+         * message the whole flow exists to produce. Everything scheduled by
+         * nature stays queued, because nobody is waiting on it.
+         *
+         * THE CATCH IS THE POINT, not defensive habit. Synchronous means the
+         * mail server is now inside the request, so an SMTP outage would turn
+         * a successful booking into an exception and an error page — the
+         * appointment written, the slot taken, and the patient told it failed.
+         * That is strictly worse than the delay this change removes.
+         *
+         * So a failure falls back to exactly the old behaviour: put it on the
+         * queue and carry on. The delivery row is already open and stays open;
+         * the queued attempt owns it from here and will move it to sent or
+         * failed as usual. The caller is told it was queued rather than sent,
+         * so the screen can say so instead of promising an inbox.
+         */
+        try {
+            Notification::route('mail', $email)->notifyNow($localised);
+
+            return DeliveryOutcome::Sent;
+        } catch (Throwable $e) {
+            Log::warning('Immediate delivery failed; falling back to the queue.', [
+                'template' => $notification->deliveryTemplate(),
+                'appointment' => $appointment->reference,
+                'delivery_log' => $log->id,
+                'reason' => $e->getMessage(),
+            ]);
+
+            Notification::route('mail', $email)->notify($localised);
+
             /*
-             * The locale is pinned to the booking, not taken from the ambient
-             * request. Reminders are rendered by a cron run that has no locale
-             * at all, and the default would quietly mail an English-speaking
-             * patient in Arabic.
+             * Put the row back to QUEUED, and say why, AFTER re-dispatching.
+             *
+             * The framework fires NotificationFailed for the attempt that just
+             * threw, so RecordNotificationDelivery has already stamped this row
+             * `failed`. That is the right description of the attempt and the
+             * wrong description of the message: it is not failed, it is on the
+             * queue, and a row reading `failed` is how somebody at the clinic
+             * ends up telephoning a patient whose confirmation is about to
+             * arrive anyway.
+             *
+             * The listener's rule — the row tracks the most recent outcome —
+             * still holds. The most recent thing that happened to this message
+             * is that it was queued, and that is what the row now says. The
+             * error survives so the failure is not hidden either; the queued
+             * attempt clears it when it succeeds.
+             *
+             * Written after the dispatch rather than before, because with a
+             * sync queue driver the job runs inside notify() and would set
+             * `sent` first — and this must not overwrite that.
              */
-            ->notify($notification->locale($appointment->locale));
+            $log->refresh();
+
+            if ($log->status === NotificationLog::STATUS_FAILED) {
+                $log->update([
+                    'status' => NotificationLog::STATUS_QUEUED,
+                    'error' => 'Immediate send failed, queued instead: '.$e->getMessage(),
+                ]);
+            }
+
+            return DeliveryOutcome::Queued;
+        }
     }
 
     /**
