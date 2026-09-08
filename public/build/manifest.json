@@ -1,0 +1,49 @@
+{
+  "node_modules/@fontsource-variable/readex-pro/files/readex-pro-arabic-wght-normal.woff2": {
+    "file": "assets/readex-pro-arabic-wght-normal-DiwT_uOQ.woff2",
+    "src": "node_modules/@fontsource-variable/readex-pro/files/readex-pro-arabic-wght-normal.woff2"
+  },
+  "node_modules/@fontsource-variable/readex-pro/files/readex-pro-latin-wght-normal.woff2": {
+    "file": "assets/readex-pro-latin-wght-normal--ekFhJJC.woff2",
+    "src": "node_modules/@fontsource-variable/readex-pro/files/readex-pro-latin-wght-normal.woff2"
+  },
+  "node_modules/@fontsource/tajawal/files/tajawal-arabic-400-normal.woff2": {
+    "file": "assets/tajawal-arabic-400-normal-CyCXRvzh.woff2",
+    "src": "node_modules/@fontsource/tajawal/files/tajawal-arabic-400-normal.woff2"
+  },
+  "node_modules/@fontsource/tajawal/files/tajawal-arabic-500-normal.woff2": {
+    "file": "assets/tajawal-arabic-500-normal-BZ8ojJNu.woff2",
+    "src": "node_modules/@fontsource/tajawal/files/tajawal-arabic-500-normal.woff2"
+  },
+  "node_modules/@fontsource/tajawal/files/tajawal-arabic-700-normal.woff2": {
+    "file": "assets/tajawal-arabic-700-normal-D2-eand5.woff2",
+    "src": "node_modules/@fontsource/tajawal/files/tajawal-arabic-700-normal.woff2"
+  },
+  "node_modules/@fontsource/tajawal/files/tajawal-latin-400-normal.woff2": {
+    "file": "assets/tajawal-latin-400-normal-BVNSOH3d.woff2",
+    "src": "node_modules/@fontsource/tajawal/files/tajawal-latin-400-normal.woff2"
+  },
+  "node_modules/@fontsource/tajawal/files/tajawal-latin-500-normal.woff2": {
+    "file": "assets/tajawal-latin-500-normal-CoYeBiSI.woff2",
+    "src": "node_modules/@fontsource/tajawal/files/tajawal-latin-500-normal.woff2"
+  },
+  "node_modules/@fontsource/tajawal/files/tajawal-latin-700-normal.woff2": {
+    "file": "assets/tajawal-latin-700-normal-BypgxfGb.woff2",
+    "src": "node_modules/@fontsource/tajawal/files/tajawal-latin-700-normal.woff2"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-DoH-Uzlv.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-BZB2L_dp.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}
