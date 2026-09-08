@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\AppointmentMode;
 use App\Enums\AppointmentStatus;
+use App\Enums\DeliveryOutcome;
 use App\Livewire\AppointmentManager;
 use App\Livewire\BookingWizard;
 use App\Models\Appointment;
@@ -34,6 +35,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
 
 /**
@@ -723,3 +725,144 @@ it('addresses backup failure alerts to a mailbox rather than to administrators',
     // It is the clinic's mailbox unless someone deliberately overrode it.
     expect($to)->toBe(env('BACKUP_ALERT_EMAIL') ?: Contact::email());
 });
+
+/*
+|------------------------------------------------------------------------------
+| The three messages that answer something the patient just did
+|------------------------------------------------------------------------------
+|
+| The confirmation, the cancellation and the reschedule are sent inside the
+| request that caused them. A minute on the queue is a minute of her not
+| knowing whether the thing she just pressed worked, on the one message the
+| booking flow exists to produce.
+|
+| Everything scheduled by nature stays queued, because nobody is waiting on it.
+*/
+
+it('delivers the confirmation with no queue worker running at all', function () {
+    $appointment = notifiableAppointment();
+
+    /*
+     * Deliberately NOT Notification::fake(). That intercepts above the queue
+     * decision, so it passes identically whether the notification was sent or
+     * queued — it cannot see the thing this test is about.
+     *
+     * Queue::fake() can. If the notification were still queued, the job would
+     * be pushed and the delivery row would sit at `queued`; the row only
+     * reaches `sent` when NotificationSent fires, which happens after the
+     * channel has actually handed the message over. So an empty queue plus a
+     * `sent` row is the proof that it went out inside this request.
+     */
+    Queue::fake();
+    Mail::fake();
+
+    $outcome = app(AppointmentNotifier::class)->bookingConfirmed($appointment);
+
+    expect($outcome)->toBe(DeliveryOutcome::Sent);
+
+    Queue::assertNothingPushed();
+
+    expect(NotificationLog::where('appointment_id', $appointment->id)
+        ->where('template', 'booking_confirmed')
+        ->value('status'))->toBe(NotificationLog::STATUS_SENT);
+});
+
+it('keeps the scheduled messages on the queue, where they belong', function () {
+    $appointment = notifiableAppointment();
+
+    Queue::fake();
+    Mail::fake();
+
+    $notifier = app(AppointmentNotifier::class);
+    $notifier->reminder24h($appointment);
+    $notifier->reminder1h($appointment);
+
+    // Two jobs pushed and nothing delivered in this request: still queued.
+    expect(count(Queue::pushedJobs()))->toBeGreaterThan(0, 'the reminders were sent immediately — they should be queued');
+
+    expect(NotificationLog::where('appointment_id', $appointment->id)
+        ->whereIn('template', ['reminder_24h', 'reminder_1h'])
+        ->pluck('status')->all())
+        ->each->toBe(NotificationLog::STATUS_QUEUED);
+});
+
+it('still produces the appointment when the mail server is down, and falls back to the queue', function () {
+    $appointment = notifiableAppointment();
+
+    /*
+     * A transport that throws on the synchronous send. This is the case the
+     * try/catch exists for: synchronous means SMTP is inside the patient's
+     * request, so an outage would otherwise turn a written booking into an
+     * error page — slot taken, appointment saved, patient told it failed.
+     */
+    failTheMailTransport();
+
+    Queue::fake();
+    $outcome = app(AppointmentNotifier::class)->bookingConfirmed($appointment);
+
+    // Fell back rather than blew up.
+    expect($outcome)->toBe(DeliveryOutcome::Queued);
+
+    // And it really did land on the queue, not vanish.
+    expect(count(Queue::pushedJobs()))->toBeGreaterThan(0, 'the failed send was not re-queued');
+
+    // The appointment is untouched and still there — the booking survived.
+    expect($appointment->fresh())->not->toBeNull()
+        ->and($appointment->fresh()->reference)->toBe($appointment->reference);
+
+    // And the reason was recorded where the clinic will actually see it.
+    $log = NotificationLog::where('appointment_id', $appointment->id)
+        ->where('template', 'booking_confirmed')->firstOrFail();
+
+    /*
+     * queued, not failed. The framework stamps `failed` for the attempt that
+     * threw, which describes the attempt correctly and the message wrongly —
+     * it is on the queue. A row reading `failed` is how somebody telephones a
+     * patient whose confirmation is about to arrive anyway.
+     */
+    expect($log->status)->toBe(NotificationLog::STATUS_QUEUED);
+    expect(str_contains((string) $log->error, 'Immediate send failed'))->toBeTrue(
+        'the delivery row does not say why the immediate send was abandoned'
+    );
+});
+
+it('does not tell a patient her confirmation was sent when it was only queued', function () {
+    /*
+     * The screen is the whole reason the outcome is returned rather than
+     * discarded. Claiming "we sent it" on a request where the send threw makes
+     * her wait for a message instead of saving the reference.
+     */
+    $appointment = notifiableAppointment();
+    $email = $appointment->patient->email;
+
+    failTheMailTransport();
+
+    Queue::fake();
+    $outcome = app(AppointmentNotifier::class)->bookingConfirmed($appointment);
+    expect($outcome)->toBe(DeliveryOutcome::Queued);
+
+    $sent = __('booking.confirmation.email_sent', ['email' => $email]);
+    $queued = __('booking.confirmation.email_queued', ['email' => $email]);
+
+    expect($sent)->not->toBe($queued, 'the two outcomes render identical copy, so the screen cannot tell them apart');
+});
+
+/**
+ * Make the mail transport throw, the way an SMTP outage does.
+ *
+ * Swapped at the transport rather than mocked at the facade, so the failure
+ * happens where a real one would — inside the channel, after the mailable has
+ * been rendered — instead of somewhere the code under test does not reach.
+ */
+function failTheMailTransport(): void
+{
+    app()->bind('mail.manager', function () {
+        return new class extends stdClass
+        {
+            public function __call($method, $arguments)
+            {
+                throw new RuntimeException('Connection could not be established with host smtp.hostinger.com');
+            }
+        };
+    });
+}
