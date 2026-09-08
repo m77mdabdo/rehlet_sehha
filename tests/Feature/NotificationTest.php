@@ -10,12 +10,14 @@ use App\Models\Appointment;
 use App\Models\IntakeForm;
 use App\Models\NotificationLog;
 use App\Models\Service;
+use App\Models\User;
 use App\Notifications\AppointmentReminder1h;
 use App\Notifications\AppointmentReminder24h;
 use App\Notifications\BookingCancelled;
 use App\Notifications\BookingCancelledAlert;
 use App\Notifications\BookingConfirmed;
 use App\Notifications\BookingRescheduled;
+use App\Notifications\DailySchedule;
 use App\Notifications\NewBookingAlert;
 use App\Notifications\PatientMailFailedAlert;
 use App\Services\Availability\AvailabilityEngine;
@@ -649,4 +651,75 @@ it('still delivers a notification whose appointment was only soft-deleted', func
 
     expect($restored->appointment->is($appointment))->toBeTrue();
     expect($restored->appointment->trashed())->toBeTrue();
+});
+
+/*
+|------------------------------------------------------------------------------
+| Who the clinic's own alerts reach — and who they must never reach
+|------------------------------------------------------------------------------
+|
+| Every operational alert is addressed to ONE configured mailbox and sent
+| on-demand — Notification::route('mail', Contact::email()) — so it reaches a
+| mailbox, never a set of User rows. That is deliberate: an administrator is
+| somebody who can operate the panel, which is not the same person as whoever
+| reads the clinic's inbox, and conflating them is how a developer account
+| starts receiving a patient's booking details.
+|
+| Nothing enumerates users today, and this test exists so nothing starts.
+| Rewriting toClinic() as User::role('admin')->get() would look tidy, would
+| pass every other test in this suite, and would quietly begin mailing
+| appointment details to every administrator ever added.
+*/
+
+it('sends the clinic alerts to the configured mailbox and to no admin user', function () {
+    Notification::fake();
+
+    // Two administrators, because the failure mode this guards is the SECOND
+    // one — an account added later that silently joins the distribution.
+    $firstAdmin = User::factory()->create(['email' => 'info-operator@example.com']);
+    $firstAdmin->assignRole('admin');
+
+    $laterAdmin = User::factory()->create(['email' => 'developer@example.com']);
+    $laterAdmin->assignRole('admin');
+
+    $appointment = notifiableAppointment();
+    $notifier = app(AppointmentNotifier::class);
+
+    $notifier->newBookingAlert($appointment);
+    $notifier->bookingCancelledAlert($appointment);
+    $notifier->dailySchedule(Carbon::now(), collect([$appointment]));
+    $notifier->alertClinicOfFailedDelivery($appointment, 'booking_confirmed', new RuntimeException('mailbox unavailable'));
+
+    // Each one went to the configured address, on demand.
+    foreach ([
+        NewBookingAlert::class,
+        BookingCancelledAlert::class,
+        DailySchedule::class,
+        PatientMailFailedAlert::class,
+    ] as $class) {
+        Notification::assertSentOnDemand(
+            $class,
+            fn ($notification, array $channels, AnonymousNotifiable $notifiable): bool => $notifiable->routes['mail'] === Contact::email(),
+        );
+    }
+
+    // And not one of them reached an administrator's own account.
+    Notification::assertNothingSentTo($firstAdmin);
+    Notification::assertNothingSentTo($laterAdmin);
+});
+
+it('addresses backup failure alerts to a mailbox rather than to administrators', function () {
+    /*
+     * spatie/backup resolves its recipient from config, not from the user
+     * table. Asserted because the alert that matters is the one saying the
+     * backups have stopped, and it must not depend on whether an admin
+     * account happens to exist or be active.
+     */
+    $to = config('backup.notifications.mail.to');
+
+    expect($to)->toBeString()->not->toBeEmpty();
+    expect(filter_var($to, FILTER_VALIDATE_EMAIL))->not->toBeFalse("backup alert address is not an email: {$to}");
+
+    // It is the clinic's mailbox unless someone deliberately overrode it.
+    expect($to)->toBe(env('BACKUP_ALERT_EMAIL') ?: Contact::email());
 });
