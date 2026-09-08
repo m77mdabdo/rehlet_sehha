@@ -151,6 +151,23 @@ class BookingWizard extends Component
 
     public bool $lateEmailSaved = false;
 
+    /**
+     * What actually happened to her confirmation email, as a DeliveryOutcome
+     * value — or null when she gave no address and none was attempted.
+     *
+     * The confirmation is sent inside this request now, so the answer is known
+     * by the time the screen renders and there is no excuse for guessing. The
+     * screen said nothing about email before, which was at least not a lie;
+     * saying "check your inbox" on a request where the send threw would be
+     * one, and she would wait for a message instead of saving the reference.
+     *
+     * A string rather than the enum itself because Livewire round-trips this
+     * through the browser between requests, and a backed enum on a public
+     * property is a hydration edge case for no gain — the view compares it to
+     * DeliveryOutcome::Sent->value.
+     */
+    public ?string $confirmationDelivery = null;
+
     public function mount(?string $service = null): void
     {
         // Deep link from the packages section: preselect and open on step 2.
@@ -421,7 +438,9 @@ class BookingWizard extends Component
 
         // Refetched so the notification reads the address that was just saved
         // rather than the null it was constructed with.
-        app(AppointmentNotifier::class)->bookingConfirmed($appointment->fresh());
+        $this->confirmationDelivery = app(AppointmentNotifier::class)
+            ->bookingConfirmed($appointment->fresh())
+            ->value;
 
         $this->lateEmailSaved = true;
     }
@@ -532,7 +551,7 @@ class BookingWizard extends Component
          * needs to pick up the phone, and the alert says so.
          */
         $notifier = app(AppointmentNotifier::class);
-        $notifier->bookingConfirmed($appointment);
+        $this->confirmationDelivery = $notifier->bookingConfirmed($appointment)->value;
         $notifier->newBookingAlert($appointment);
 
         $this->reference = $appointment->reference;

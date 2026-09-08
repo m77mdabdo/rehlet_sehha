@@ -89,6 +89,39 @@
             <p class="mt-6 rounded-md bg-sage/60 p-3 text-sm text-ink">
                 {{ __('booking.confirmation.status_note') }}
             </p>
+
+            {{--
+                WHAT ACTUALLY HAPPENED TO THE EMAIL, not what we hope happened.
+
+                The confirmation is sent inside this request, so by the time
+                this renders we know the answer. Two outcomes are possible and
+                they are told apart deliberately:
+
+                  sent   — the mail server accepted it before the response.
+                           The copy says we sent it. It does NOT say "check
+                           your inbox": SMTP acceptance is not delivery, and a
+                           bounce is still possible an hour later.
+
+                  queued — the immediate send threw and it fell back to the
+                           queue. Saying "sent" here would be the specific lie
+                           this block exists to prevent — she would sit waiting
+                           for a message instead of writing the reference down.
+
+                A patient who gave no address reaches neither: $confirmationDelivery
+                is 'skipped', and the WhatsApp record block below is her receipt
+                instead. Nothing is rendered here for her, because there is
+                nothing true to say about an email nobody attempted.
+            --}}
+            @if ($appointment->patient->email && in_array($confirmationDelivery, ['sent', 'queued'], true))
+                <p class="mt-3 text-xs leading-relaxed text-muted">
+                    {{ __(
+                        $confirmationDelivery === 'sent'
+                            ? 'booking.confirmation.email_sent'
+                            : 'booking.confirmation.email_queued',
+                        ['email' => $appointment->patient->email],
+                    ) }}
+                </p>
+            @endif
         </x-card>
 
         <div class="mt-8">
