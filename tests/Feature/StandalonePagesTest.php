@@ -589,8 +589,17 @@ it('issues a bounded number of queries on every page', function () {
          * whole and unfiltered. A paginated, categorised index cannot be
          * served from one cached array, and the two eager loads are what stop
          * it becoming N+1 across a page of nine articles.
+         *
+         * 6 -> 8 when the card's reviewer line was fixed. The card had always
+         * meant to name the reviewer and had been rendering an empty name, so
+         * nothing loaded her; naming her costs the reviewer and its roles.
+         * Both are eager loads — two queries for the page, in place of two per
+         * card, which on a full page of nine would have been eighteen. The
+         * roles one is not optional: the English spelling of her name is
+         * chosen by hasRole('doctor'), so leaving it lazy makes every card ask
+         * again. See Post::reviewerDisplayName().
          */
-        '/ar/articles' => 6,
+        '/ar/articles' => 8,
         // faqs + services + working_hours
         '/ar/faq' => 3,
         // working_hours + services
