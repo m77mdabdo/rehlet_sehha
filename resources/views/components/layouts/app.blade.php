@@ -71,6 +71,23 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {{--
+        The real Content-Security-Policy.
+
+        The host overwrites the CSP *header* on every response with a bare
+        `upgrade-insecure-requests` — see the long note in SecurityHeaders. A
+        browser enforces every policy it is handed and applies the strictest
+        answer per directive, so this meta tag reinstates the full policy
+        alongside the host's, nonce and all.
+
+        IT MUST STAY ABOVE EVERY SCRIPT AND STYLE ON THE PAGE. A policy in a
+        meta element governs only what the parser meets AFTER it; anything
+        above this line is outside the policy entirely. That is why it sits
+        directly under charset and viewport, before even the CSRF token.
+    --}}
+    <meta http-equiv="Content-Security-Policy" content="{{ request()->attributes->get('csp-policy-meta') }}">
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @php

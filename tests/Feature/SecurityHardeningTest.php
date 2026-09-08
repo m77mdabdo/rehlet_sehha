@@ -261,3 +261,112 @@ it('never sends HSTS off production', function () {
     // project on localhost included — to https for a year.
     expect($this->get('/ar')->headers->get('Strict-Transport-Security'))->toBeNull();
 });
+
+/*
+|------------------------------------------------------------------------------
+| The policy the browser actually receives
+|------------------------------------------------------------------------------
+|
+| Production overwrites the Content-Security-Policy HEADER on every response
+| with a bare `upgrade-insecure-requests` — a LiteSpeed-level directive this
+| account does not own and cannot see. Measured 2026-09-08: the origin does it
+| too, so it is not the CDN, and it is in no .htaccess under the account.
+|
+| So the header passing its assertions above proves nothing about what a
+| patient's browser enforces. The meta element is the copy that survives, and
+| these tests guard it. If they are ever deleted as duplicates of the header
+| tests, the site silently loses its entire CSP.
+*/
+
+/** Pull the meta policy out of a rendered page, entity-decoded. */
+function metaPolicy(string $html): ?string
+{
+    if (! preg_match('#<meta http-equiv="Content-Security-Policy" content="([^"]*)">#i', $html, $m)) {
+        return null;
+    }
+
+    return html_entity_decode($m[1], ENT_QUOTES, 'UTF-8');
+}
+
+it('publishes the policy as a meta tag, because the host overwrites the header', function (string $path) {
+    $response = $this->get($path)->assertOk();
+    $meta = metaPolicy($response->getContent());
+
+    expect($meta)->not->toBeNull("{$path} sends no meta Content-Security-Policy.");
+
+    // Same policy as the header, directive for directive, minus the one a meta
+    // element is not allowed to carry.
+    $header = (string) $response->headers->get('Content-Security-Policy');
+    $expected = str_replace("; frame-ancestors 'none'", '', $header);
+
+    expect($meta)->toBe($expected, "{$path}: meta policy has drifted from the header policy.");
+})->with(['/ar', '/en', '/ar/articles', '/ar/booking', '/ar/contact']);
+
+it('carries the same nonce in the meta policy as on the inline script', function () {
+    $html = $this->get('/ar')->assertOk()->getContent();
+
+    preg_match('#<script nonce="([^"]+)"#', $html, $script);
+    expect($script[1] ?? null)->not->toBeNull('The inline script lost its nonce.');
+
+    expect(str_contains(metaPolicy($html) ?? '', "'nonce-{$script[1]}'"))->toBeTrue(
+        'The meta policy does not authorise the nonce the page actually used — '
+        .'the motion bootstrap would be blocked in production.'
+    );
+});
+
+it('puts the meta policy above everything it governs', function (string $path) {
+    /*
+     * A policy in a meta element applies only to what the parser meets AFTER
+     * it. A script or stylesheet above the tag is outside the policy entirely,
+     * which is the failure mode this whole approach has: it does not error, it
+     * just quietly does not cover the thing that was moved.
+     */
+    $html = $this->get($path)->assertOk()->getContent();
+
+    $meta = stripos($html, '<meta http-equiv="Content-Security-Policy"');
+    expect($meta)->not->toBeFalse("{$path} sends no meta Content-Security-Policy.");
+
+    $checked = 0;
+
+    foreach (['<script', '<style', '<link'] as $tag) {
+        $first = stripos($html, $tag);
+
+        if ($first === false) {
+            continue;
+        }
+
+        $checked++;
+        expect($first)->toBeGreaterThan($meta, "{$path}: a {$tag} tag sits ABOVE the meta policy and is not covered by it.");
+    }
+
+    // Without this the loop asserts nothing on a page that happens to contain
+    // none of the three, and passes while proving it.
+    expect($checked)->toBeGreaterThan(0, "{$path} has no script, style or link tag to check the ordering against.");
+})->with(['/ar', '/en', '/ar/articles', '/ar/booking', '/ar/contact']);
+
+it('leaves frame-ancestors out of the meta policy and covers it with X-Frame-Options', function () {
+    /*
+     * frame-ancestors is ignored in a meta element by specification, and
+     * browsers warn about it on every page load. X-Frame-Options: DENY says
+     * the same thing and — unlike CSP — production does not overwrite it.
+     */
+    $response = $this->get('/ar')->assertOk();
+
+    expect(str_contains(metaPolicy($response->getContent()) ?? '', 'frame-ancestors'))->toBeFalse(
+        'frame-ancestors in a meta policy is ignored and logs a console warning on every page load.'
+    );
+
+    expect($response->headers->get('X-Frame-Options'))->toBe('DENY');
+});
+
+it('gives the admin panel a meta policy too', function () {
+    // Filament renders its own layout, so the public one cannot supply this.
+    // The login page is enough: it is the same head, and needs no session.
+    $meta = metaPolicy($this->get('/admin/login')->assertOk()->getContent());
+
+    expect($meta)->not->toBeNull('The admin panel sends no meta Content-Security-Policy.');
+
+    foreach (["default-src 'self'", "form-action 'self'", "base-uri 'self'", "object-src 'none'"] as $directive) {
+        expect(str_contains($meta, $directive))->toBeTrue("The panel policy is missing {$directive}.");
+    }
+});

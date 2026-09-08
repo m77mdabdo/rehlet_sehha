@@ -78,6 +78,30 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::SIMPLE_LAYOUT_START,
                 fn (): string => view('filament.auth.login-brand')->render(),
             )
+            /*
+             * The panel's Content-Security-Policy, as a meta element.
+             *
+             * The public layout carries the same tag for the same reason: the
+             * host replaces the CSP *header* on every response with a bare
+             * `upgrade-insecure-requests`, so the header this application sends
+             * never reaches a browser. See the note in SecurityHeaders.
+             *
+             * HEAD_START, not HEAD_END — a meta policy governs only what the
+             * parser meets after it, and Filament's own styles and scripts are
+             * emitted inside this head. Placed last they would be outside the
+             * policy; placed first the panel is covered.
+             *
+             * The panel's policy is the weaker of the two — Filament emits
+             * inline scripts that cannot be nonced without patching it — but
+             * default-src, form-action, base-uri and object-src still hold,
+             * and those are what stop a compromised admin session posting
+             * anywhere but here.
+             */
+            ->renderHook(
+                PanelsRenderHook::HEAD_START,
+                fn (): string => '<meta http-equiv="Content-Security-Policy" content="'
+                    .e(request()->attributes->get('csp-policy-meta')).'">',
+            )
             ->passwordReset()
             ->profile(isSimple: false)
             ->brandName('رحلة صحة')

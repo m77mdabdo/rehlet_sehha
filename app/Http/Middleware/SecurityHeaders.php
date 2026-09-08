@@ -41,11 +41,39 @@ class SecurityHeaders
          * shared nonce is the same as no nonce at all.
          */
         $nonce = Str::random(24);
+        $isAdmin = $request->is('admin', 'admin/*');
+
         $request->attributes->set('csp-nonce', $nonce);
 
-        $response = $next($request);
+        /*
+         * THE POLICY IS ALSO PUBLISHED AS A <meta> TAG, BECAUSE THE HOST
+         * OVERWRITES THE HEADER.
+         *
+         * Measured against production on 2026-09-08: every response from
+         * rehletsehha.com — PHP, static files, and Apache's own 404s alike —
+         * carries `Content-Security-Policy: upgrade-insecure-requests` and
+         * nothing else. It is not the CDN (the origin returns it too, bypassing
+         * hcdn), it is not in any .htaccess under the account, and it survives
+         * everything the application sets. It is a LiteSpeed-level `Header set`
+         * we do not own and cannot see. The other four security headers this
+         * middleware sends arrive intact; CSP is the only one replaced.
+         *
+         * A browser enforces EVERY policy it is given, from every source, and
+         * the effective result is the intersection. So the meta tag does not
+         * fight the header — it adds a second policy alongside it, and the
+         * strict one wins on every directive the host's does not mention.
+         * That restores the whole policy without needing the host to cooperate,
+         * and it keeps the per-request nonce, which a static server-side header
+         * could never carry.
+         *
+         * This is computed BEFORE $next so Blade can read it while rendering.
+         */
+        $request->attributes->set(
+            'csp-policy-meta',
+            $this->contentSecurityPolicy($nonce, $isAdmin, forMeta: true),
+        );
 
-        $isAdmin = $request->is('admin', 'admin/*');
+        $response = $next($request);
 
         foreach ($this->headers($nonce, $isAdmin) as $name => $value) {
             // Never overwrite a header a route set deliberately — the token
@@ -110,7 +138,10 @@ class SecurityHeaders
         return $headers;
     }
 
-    private function contentSecurityPolicy(string $nonce, bool $isAdmin): string
+    /**
+     * @param  bool  $forMeta  Drop the directives a <meta> element may not carry.
+     */
+    private function contentSecurityPolicy(string $nonce, bool $isAdmin, bool $forMeta = false): string
     {
         /*
          * 'unsafe-eval' IS REQUIRED, EVERYWHERE, AND IT IS NOT OPTIONAL.
@@ -172,7 +203,17 @@ class SecurityHeaders
             "form-action 'self'",
 
             "base-uri 'self'",
-            "frame-ancestors 'none'",
+
+            /*
+             * frame-ancestors is IGNORED when a policy arrives in a <meta>
+             * element — the spec says so, and browsers log a console warning
+             * on every page load if you send it anyway. Omitting it from the
+             * meta variant costs nothing here: X-Frame-Options: DENY says the
+             * same thing, it is the header the host does NOT overwrite, and it
+             * was confirmed arriving intact in production.
+             */
+            ...($forMeta ? [] : ["frame-ancestors 'none'"]),
+
             "object-src 'none'",
         ]);
     }
