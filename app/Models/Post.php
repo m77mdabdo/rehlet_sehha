@@ -524,6 +524,45 @@ class Post extends Model
     }
 
     /**
+     * The reviewer's name as it should appear to THIS page's reader.
+     *
+     * A person has one name, so users.name is deliberately not translatable.
+     * But an Arabic name set mid-sentence in a Latin paragraph — "Clinically
+     * reviewed by د. رنا سالم" — reads as a rendering fault rather than as a
+     * name, so English pages get a transliteration of the same name from
+     * config. Not a second name: a second spelling.
+     *
+     * THIS LIVES HERE BECAUSE IT HAS TWO CONSUMERS AND HAD ONE RULE.
+     * The byline applied the transliteration and the JSON-LD did not, so an
+     * English article told a reader "Dr Rana Salem" and told a crawler
+     * "أ. رنا محمد أحمد سالم" — the exact disagreement the transliteration
+     * exists to prevent, in the half nobody looks at. Anything that names the
+     * reviewer calls this.
+     *
+     * SINGLE-PRACTITIONER ASSUMPTION, stated rather than hidden: config holds
+     * one transliteration, so a second clinician would wrongly get the first's
+     * English name. At that point the spelling belongs on the user row, not in
+     * config — which is why this is a method and not a config read at the call
+     * site: there is one place to change.
+     */
+    public function reviewerDisplayName(): ?string
+    {
+        $reviewer = $this->reviewer;
+
+        if ($reviewer === null) {
+            return null;
+        }
+
+        $englishName = config('clinic.practitioner.display_name_en');
+
+        if (Locales::current() === 'en' && $englishName && $reviewer->hasRole('doctor')) {
+            return (string) $englishName;
+        }
+
+        return $reviewer->name;
+    }
+
+    /**
      * @return BelongsTo<Category, $this>
      */
     public function category(): BelongsTo

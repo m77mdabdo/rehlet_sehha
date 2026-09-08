@@ -78,7 +78,10 @@
                                     <svg class="size-3.5 shrink-0 text-teal" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                         <path d="m4 10.5 4 4 8-9" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
-                                    {{ __('articles.reviewed_by', ['name' => $post->reviewedBy?->name]) }}
+                                    {{-- reviewerDisplayName(), not reviewedBy — there is no such relation on
+                                         Post, so this rendered "روجعت إكلينيكيًا بمعرفة" with an empty name on
+                                         every card. The guard above reads the COLUMN and was always right. --}}
+                                    {{ __('articles.reviewed_by', ['name' => $post->reviewerDisplayName()]) }}
                                 </span>
                             @endif
 

@@ -1,6 +1,4 @@
 @php
-    use App\Support\Contact;
-    use App\Support\PageSchema;
     use App\Support\Photo;
 
     $hasCover = $post->cover_path && Photo::has($post->cover_path);
@@ -8,24 +6,12 @@
     /*
      * The reviewer's name, transliterated on the English page.
      *
-     * Matched on the doctor ROLE rather than on the spelling of the name:
-     * users.name holds 'د. رنا سالم' while config holds her full legal name,
-     * so a string comparison would silently never match.
-     *
-     * SINGLE-PRACTITIONER ASSUMPTION, stated rather than hidden: config holds
-     * one transliteration, so if the practice ever has two clinicians the
-     * second would wrongly get the first's English name. At that point the
-     * spelling belongs on the user row, not in config. Until then this is one
-     * config key instead of a migration.
+     * The rule moved to Post::reviewerDisplayName() because the JSON-LD needs
+     * the same answer and was computing its own — an English page named
+     * "Dr Rana Salem" to the reader and "أ. رنا محمد أحمد سالم" to a crawler.
+     * Read that method before changing anything here.
      */
-    $reviewerName = $post->reviewer?->name;
-    $englishName = config('clinic.practitioner.display_name_en');
-
-    if (App\Support\Locales::current() === 'en'
-        && $englishName
-        && $post->reviewer?->hasRole('doctor')) {
-        $reviewerName = $englishName;
-    }
+    $reviewerName = $post->reviewerDisplayName();
     $url = url()->current();
 @endphp
 
