@@ -378,3 +378,60 @@ it('keeps an empty category out of the sitemap', function () {
         'An empty category page is in the sitemap. It is a thin page with nothing on it.'
     );
 });
+
+/*
+|------------------------------------------------------------------------------
+| The reviewer's name, on the page and in the markup
+|------------------------------------------------------------------------------
+|
+| One rule, two consumers. The byline transliterated her name on English pages
+| and the JSON-LD did not, so an English article credited "Dr Rana Salem" to a
+| reader and "أ. رنا محمد أحمد سالم" to a crawler — precisely the disagreement
+| the transliteration exists to avoid, in the half nobody opens. Both now go
+| through Post::reviewerDisplayName().
+*/
+
+it('gives the reader and the crawler the same spelling of the reviewer', function (string $locale, string $expected) {
+    $post = publishableArticle();
+
+    $html = $this->get("/{$locale}/articles/{$post->slug}")->assertOk()->getContent();
+
+    // The visible byline.
+    expect(str_contains($html, $expected))->toBeTrue(
+        "the {$locale} byline does not name the reviewer as {$expected}"
+    );
+
+    // And the structured data, which is the half that was wrong.
+    preg_match('#<script[^>]*application/ld\+json[^>]*>(.*?)</script>#s', $html, $m);
+    $graph = json_decode(html_entity_decode($m[1], ENT_QUOTES, 'UTF-8'), true);
+    $nodes = $graph['@graph'] ?? [$graph];
+
+    $article = collect($nodes)->firstWhere('@type', 'Article');
+    expect($article)->not->toBeNull('no Article node in the JSON-LD');
+
+    expect($article['reviewedBy']['name'] ?? null)->toBe($expected, "{$locale} JSON-LD reviewedBy disagrees with the byline");
+    expect($article['author']['name'] ?? null)->toBe($expected, "{$locale} JSON-LD author disagrees with the byline");
+})->with([
+    ['ar', 'د. رنا سالم'],
+    ['en', 'Dr Rana Salem'],
+]);
+
+it('names the reviewer on an article card, not an empty string', function () {
+    /*
+     * The card said "روجعت إكلينيكيًا بمعرفة" followed by nothing, live, on
+     * every article in the index: the guard read the reviewed_by COLUMN and
+     * was right, while the name read $post->reviewedBy — a relation that does
+     * not exist on Post — and resolved to null every time.
+     */
+    // The line lives in the cover overlay, so the card needs a cover.
+    $post = publishableArticle(['cover_path' => 'blood-pressure-reading']);
+
+    $html = $this->get('/ar/articles')->assertOk()->getContent();
+
+    expect(str_contains($html, 'روجعت إكلينيكيًا بمعرفة'))->toBeTrue('the card shows no reviewer line at all');
+
+    $name = $post->reviewer->name;
+    expect(str_contains($html, __('articles.reviewed_by', ['name' => $name])))->toBeTrue(
+        "the card's reviewer line does not carry the name — it rendered with an empty :name"
+    );
+});

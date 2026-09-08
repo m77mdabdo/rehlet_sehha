@@ -56,7 +56,7 @@ class ArticlesController extends Controller
             ->reorder()
             ->orderByDesc('is_featured')
             ->orderByDesc('published_at')
-            ->with(['category', 'tags'])
+            ->with(['category', 'tags', 'reviewer.roles'])
             ->paginate(self::PER_PAGE)
             ->withQueryString();
 
@@ -88,7 +88,7 @@ class ArticlesController extends Controller
             'heading' => $category->name,
             'lead' => $category->description,
             'metaDescription' => $category->meta_description ?: $category->description,
-            'posts' => $category->posts()->published()->with(['category', 'tags'])->paginate(self::PER_PAGE),
+            'posts' => $category->posts()->published()->with(['category', 'tags', 'reviewer.roles'])->paginate(self::PER_PAGE),
             'crumb' => $category->name,
             'footerServices' => PublicContent::services(),
         ]);
@@ -108,7 +108,7 @@ class ArticlesController extends Controller
              */
             'lead' => __('articles.tag_lead', ['tag' => $tag->name]),
             'metaDescription' => __('articles.tag_lead', ['tag' => $tag->name]),
-            'posts' => $tag->posts()->published()->with(['category', 'tags'])->paginate(self::PER_PAGE),
+            'posts' => $tag->posts()->published()->with(['category', 'tags', 'reviewer.roles'])->paginate(self::PER_PAGE),
             'crumb' => $tag->name,
             'footerServices' => PublicContent::services(),
         ]);

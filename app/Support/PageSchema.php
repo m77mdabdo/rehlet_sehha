@@ -72,7 +72,8 @@ final class PageSchema
      */
     private static function article(Post $post): array
     {
-        $reviewer = $post->reviewer?->name;
+        // The same spelling the byline shows — see Post::reviewerDisplayName().
+        $reviewer = $post->reviewerDisplayName();
 
         return array_filter([
             '@type' => 'Article',
