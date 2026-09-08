@@ -225,11 +225,28 @@ Never run `config:cache` while `APP_DEBUG=true`.
 
 ## 11. Cron
 
-One line. hPanel → Advanced → Cron Jobs:
+**`crontab` does not exist on this plan, so this step cannot be done over SSH.**
+Checked on the live host 2026-09-08: no `crontab` on the PATH, none in
+`/usr/bin`, `/bin` or `/usr/sbin`, and no `/var/spool/cron/crontabs` entry for
+the account. hPanel → Advanced → Cron Jobs is the only route, which also means
+this is the one deployment step that cannot be scripted or verified from the
+deploy machine.
+
+One line:
 
 ```
-* * * * * cd ~/domains/rehletsehha.com/app && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /home/u109745148/domains/rehletsehha.com/public_html && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
 ```
+
+Two details in that line, both of which this document previously had wrong:
+
+- **`public_html`, not `app`.** The whole project lives in `public_html` on
+  this host — see step 3 — and `~/domains/rehletsehha.com/app` does not exist.
+  An entry pointing there fails silently once a minute forever.
+- **`/usr/bin/php`, spelled out.** It is 8.5.4 and matches the FPM version the
+  site actually runs (table C, row 2). hPanel's cron form does not necessarily
+  inherit the shell's PATH, and a cron running a different PHP is exactly the
+  mismatch row 2 exists to catch.
 
 This single entry drives everything:
 
@@ -241,12 +258,25 @@ This single entry drives everything:
 | `model:prune` | 03:30 | Log retention |
 | `clinic:send-daily-schedule` | 07:00 Cairo | The clinic's day |
 | `clinic:send-review-requests` | 10:00 Cairo | Review invitations |
+| `backup:run --only-db` | 23:30 | The nightly encrypted dump — step 14 |
+| `backup:clean` | 23:00 | Applies the retention policy |
+| `scheduler-heartbeat` | every 5 min | Writes the file `/up` reads. Nothing else proves cron is alive |
 
-- [ ] `php artisan schedule:list` shows all six.
+- [ ] `php artisan schedule:list` shows all nine.
+- [ ] Fifteen minutes later, `/up` reports `"scheduler":true` **with nobody
+      having run `schedule:run` by hand.** This distinction is the whole point
+      of the heartbeat and it is easy to fool yourself here: running
+      `schedule:run` manually turns the flag green for fifteen minutes and says
+      nothing at all about whether cron works. Set the entry, walk away, come
+      back. If it has gone false again, cron is not running.
 
 ### If Hostinger enforces a 5-minute minimum
 
-Some plans do. The consequences, precisely:
+Some plans do, and **which one this account is on cannot be read from the
+shell** — the cron form in hPanel is the only place the allowed cadence is
+stated. Look at it before deciding this section does not apply.
+
+The consequences, precisely:
 
 - **Confirmation emails arrive up to 5 minutes late.** The booking itself is
   instant; only the mail waits. Acceptable.
@@ -552,6 +582,7 @@ over SSH **before** step 8, because each one changes what you do next.
 | 15 | **`/up` answers honestly** | `curl -s https://rehletsehha.com/up?format=json` | `"status":"ok"` with all six checks `true` | Expect `scheduler` to be `false` until cron has run once, and `backup` to be `false` until the first dump. Both going green is how you know steps 11 and 14 really worked. |
 | 16 | **Compression is actually on** | `curl -sI -H 'Accept-Encoding: gzip' https://rehletsehha.com/build/assets/app-*.css \| grep -i content-encoding` | `Content-Encoding: gzip` | The largest single performance lever on the site, and `.htaccess` only asks — Apache obeys if `mod_deflate` is loaded and `AllowOverride` permits it. Measured locally: CSS 59.8 KB → 10.6 KB, Livewire 251 KB → 82.8 KB, a rendered page 179 KB → 19.4 KB. If this returns nothing, the booking page is shipping ~460 KB to a phone instead of ~140 KB. Ask support to enable `mod_deflate`. |
 | 17 | **WebP, WOFF2 and MP4 have a Content-Type** | `curl -sI https://rehletsehha.com/media/kitchen-hands-herbs-lg.webp \| grep -i content-type` | `image/webp` | The Apache this was tested against returned **no Content-Type at all** for these three. `.htaccess` now declares them, so this should pass regardless — check it anyway, because a video with no type is a video Safari may refuse to play, and it is the first thing on the homepage. |
+| 18 | **The CSP header survives the host** | `curl -sI https://rehletsehha.com/ar \| grep -i content-security` | The full policy | **It does not, and on this host it cannot.** Measured 2026-09-08: every response — PHP, static files, and Apache's own 404s — comes back with `Content-Security-Policy: upgrade-insecure-requests` and nothing else. Not the CDN (the origin returns it too, with the edge bypassed), not in any `.htaccess` under the account, not exposed in hPanel: a LiteSpeed-level `Header set` this account does not own. The application therefore also publishes the policy as a `<meta http-equiv>` element, which the host does not touch — a browser enforces every policy it is handed and takes the strictest answer per directive, so the meta tag reinstates the whole thing, nonce included. **Check the meta tag, not the header:** `curl -s https://rehletsehha.com/ar \| grep -o 'http-equiv="Content-Security-Policy"[^>]*'`. `SecurityHardeningTest` guards it. |
 
 ---
 

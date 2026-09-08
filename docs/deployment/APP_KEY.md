@@ -58,6 +58,32 @@ Neither may be rotated casually. Regenerating `APP_KEY` destroys every
 encrypted clinical field; changing `BACKUP_ARCHIVE_PASSWORD` makes every
 archive written before the change permanently unopenable.
 
+#### Where they are, as of 2026-09-08
+
+Production's `APP_KEY` was rotated on 2026-09-08 and `BACKUP_ARCHIVE_PASSWORD`
+was set for the first time on the same day — until then the nightly archives
+were **unencrypted**, because `config/backup.php` reads the password from an
+env var that did not exist and a null password silently disables encryption.
+Any archive written before that date is a plain zip of every patient record and
+should be destroyed rather than filed.
+
+Both secrets are currently held only on the developer machine, at mode 600,
+outside the repository:
+
+```
+~/backups/rehlet-sehha/keys/production-appkey-20260908.txt
+~/backups/rehlet-sehha/keys/backup-archive-password-20260908.txt
+```
+
+**That is one machine, and one machine is not a backup.** Rule 2 above asks for
+two independent places; this is one. Copy both into the password manager entry
+before treating this as done.
+
+Production's key fingerprint after the rotation is `bc9cad31b13fa92c…`, which
+`clinic:verify-key` prints. It deliberately no longer matches the development
+key `47400945ec3c51e3…` — the two environments shared one key until this date,
+which meant a compromised laptop decrypted live patient records.
+
 ### 3. Verify the key as the first step of every deploy
 
 ```bash
