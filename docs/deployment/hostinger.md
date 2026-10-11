@@ -301,6 +301,75 @@ The consequences, precisely:
 
 ---
 
+## 11b. REDEPLOYING after a push — the sequence, in this order
+
+Sections 1-11 describe a *first* deploy. This is what to run on the server for
+every deploy after it, and it exists because skipping one line of it took the
+admin panel down for 33 days without a single error in the log.
+
+```bash
+cd ~/domains/rehletsehha.com/public_html
+
+git fetch origin
+git checkout -f main            # the tree is a deploy artefact, not a workspace
+git reset --hard origin/main
+
+composer install --no-dev --optimize-autoloader --no-interaction   # NOT OPTIONAL
+
+php artisan config:cache        # AFTER composer, never before — see below
+php artisan route:cache
+php artisan view:clear
+php artisan migrate --force     # only if the push contains migrations
+```
+
+### Why `composer install` is not optional on a deploy that changed no packages
+
+Three directories the panel cannot run without are **generated, and
+gitignored** (see `.gitignore`, and the note beside those entries):
+
+```
+public/css/filament    public/js/filament    public/fonts/filament
+```
+
+They are produced by `php artisan filament:upgrade`, which runs from
+composer's `post-autoload-dump` hook. So they arrive *only* through
+`composer install`. Nothing else creates them:
+
+- **hPanel's git deployment does not run composer.** It clones to
+  `~/.git_clones/git_clone_*` and copies the tree across. Composer scripts
+  never fire.
+- **`git pull` / `git reset --hard` does not run composer either**, and
+  because the files are ignored, git will never report them missing.
+- The clone is **shallow** (`depth 1`), so `git log` shows one commit and
+  older commit SHAs do not resolve. That is normal here, not corruption.
+
+Deploy without it and the panel serves HTML with **every** Filament asset
+404ing: no CSS at all, `Alpine Expression Error: filamentSchemaComponent is
+not defined` on every control, `Alpine.store('sidebar')` undefined. Sign-in
+still works — Livewire's own JS is served by a route, not a file — so the
+delivery log, the database and `/up` all look healthy while the panel is
+unusable. There is nothing in `laravel.log`, because nothing threw.
+
+### Why the caches come after, not before
+
+`filament:upgrade` ends by clearing the config, route and view caches. Cache
+them before it runs and you are left uncached — `php artisan config:cache`
+has to be the step *after* composer, or the site runs on uncached config and
+`.env` is read on every request.
+
+### The one check that proves it worked
+
+```bash
+curl -sI https://rehletsehha.com/css/filament/filament/app.css?v=5.7.6.0 | head -1
+```
+
+`200` and roughly 600 KB. A `404` means `composer install` did not run, and
+no amount of cache clearing will fix it. In a browser, the panel's computed
+`font-family` is `Tajawal` when the CSS is live and the browser default when
+it is not.
+
+---
+
 ## 12. Post-deploy verification
 
 ```bash
