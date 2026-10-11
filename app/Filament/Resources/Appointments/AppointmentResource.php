@@ -56,26 +56,46 @@ class AppointmentResource extends Resource
     }
 
     /**
-     * How many appointments today, on the sidebar.
+     * How many bookings nobody has acted on, on the sidebar. Any date.
      *
-     * The number a receptionist actually wants at a glance when she opens the
-     * panel, and the reason the badge counts TODAY rather than everything
-     * pending: a total of 340 tells nobody anything.
+     * THIS USED TO COUNT TODAY, and that is the defect rather than a style
+     * choice. The old note argued that today is "the number a receptionist
+     * actually wants at a glance", because a running total of everything
+     * pending tells nobody anything. The first half was right and the second
+     * half answered a question nobody asked: `pending` is not a backlog of
+     * everything, it is the set of bookings waiting for a human — which for
+     * this clinic is normally nought, occasionally one.
+     *
+     * Counting today meant the badge was blank on every morning that mattered.
+     * A booking made on 26 September for the 27th showed a badge on exactly one
+     * day, which nobody happened to look at, and then went quiet while still
+     * unconfirmed. Its date passed. A second did the same two weeks later.
+     *
+     * Today's number has not been lost: ClinicOverview carries it on the
+     * dashboard and TodaySchedule lists the appointments themselves. The
+     * sidebar is now the only place that answers "is anything waiting for me",
+     * and it answers it regardless of when the appointment happens to fall.
      */
     public static function getNavigationBadge(): ?string
     {
-        $zone = config('clinic.timezone');
-        $start = now($zone)->startOfDay();
-
-        $count = Appointment::query()
-            ->countsTowardWorkload()
-            ->whereBetween('starts_at', [
-                $start->clone()->utc(),
-                $start->clone()->endOfDay()->utc(),
-            ])
-            ->count();
+        $count = Appointment::query()->awaitingConfirmation()->count();
 
         return $count > 0 ? (string) $count : null;
+    }
+
+    /**
+     * Never grey. A booking waiting on a human is the one thing on this
+     * sidebar that is asking for something, and it should not look like a
+     * count of how busy today is.
+     */
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return Appointment::query()->awaitingConfirmation()->count() > 0 ? 'warning' : null;
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'حجوزات مستنية تأكيد من العيادة';
     }
 
     public static function form(Schema $schema): Schema
