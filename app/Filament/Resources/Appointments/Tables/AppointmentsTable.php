@@ -114,9 +114,23 @@ class AppointmentsTable
             ])
             ->filters([
                 /*
-                 * Defaults to TODAY. Filament applies default filter state on
-                 * first load, so the screen opens on the day the clinic is
-                 * working rather than on every appointment ever made.
+                 * Defaults to TODAY ONWARDS — open at the bottom, no top.
+                 *
+                 * It used to default `until` to today as well, which made the
+                 * clinic's main screen a view of one single day. That is how
+                 * two real bookings went unseen: one made on 26 September for
+                 * the 27th, one made on 11 October for the 12th. Neither was
+                 * ever "today", so the screen the clinic opens every morning
+                 * showed an empty table while both sat there unconfirmed, and
+                 * the 27th came and went.
+                 *
+                 * A date filter that hides the future is the wrong default for
+                 * a booking system: the question a clinic asks on opening the
+                 * screen is "what is coming", not "what is happening in the
+                 * next few hours". Past appointments are still one click away
+                 * — clear `from`, or set it back — which is the right place to
+                 * put the extra effort, because reviewing history is a
+                 * deliberate act and noticing a new booking is not.
                  */
                 Filter::make('date_range')
                     ->label('التاريخ')
@@ -124,9 +138,11 @@ class AppointmentsTable
                         DatePicker::make('from')
                             ->label('من')
                             ->default(fn () => now(config('clinic.timezone'))->toDateString()),
+
+                        // No default. An upper bound is something the user asks
+                        // for, never something the screen assumes.
                         DatePicker::make('until')
-                            ->label('إلى')
-                            ->default(fn () => now(config('clinic.timezone'))->toDateString()),
+                            ->label('إلى'),
                     ])
                     ->query(function (Builder $query, array $data) use ($zone): Builder {
                         /*
