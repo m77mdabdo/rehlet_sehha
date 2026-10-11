@@ -289,6 +289,31 @@ class Appointment extends Model
     }
 
     /**
+     * Answers ONE question: what has nobody at the clinic acted on yet?
+     *
+     * A booking arrives `pending` and stays there until a human confirms or
+     * cancels it. So this is the clinic's inbox, and the only query in this
+     * model with NO DATE BOUND AT ALL — deliberately.
+     *
+     * Every other view of appointments is anchored to a date, and that is what
+     * lost two real patients: the list defaulted to today, the sidebar badge
+     * counted today, and a booking made on 26 September for the 27th was never
+     * "today" on any morning anybody looked. It sat pending until its date had
+     * passed. Being overdue is exactly when a booking most needs to be seen,
+     * and a date window is guaranteed to stop showing it at that point.
+     *
+     * Oldest first, because the one that has been waiting longest is the one
+     * that is about to become an appointment nobody attended.
+     *
+     * @param  Builder<self>  $query
+     */
+    public function scopeAwaitingConfirmation(Builder $query): void
+    {
+        $query->where('status', AppointmentStatus::Pending->value)
+            ->orderBy('starts_at');
+    }
+
+    /**
      * Answers ONE question: is this hour still occupied?
      *
      * Use this, and only this, for anything to do with availability. For

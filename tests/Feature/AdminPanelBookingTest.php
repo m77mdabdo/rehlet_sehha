@@ -5,10 +5,13 @@ declare(strict_types=1);
 use App\Enums\AppointmentMode;
 use App\Enums\AppointmentStatus;
 use App\Filament\Pages\ClinicSettingsPage;
+use App\Filament\Resources\Appointments\AppointmentResource;
 use App\Filament\Resources\Appointments\Pages\CreateAppointment;
 use App\Filament\Resources\Appointments\Pages\EditAppointment;
+use App\Filament\Resources\Appointments\Pages\ListAppointments;
 use App\Filament\Resources\Appointments\RelationManagers\IntakeRelationManager;
 use App\Filament\Resources\Services\Pages\CreateService;
+use App\Filament\Widgets\AwaitingConfirmation;
 use App\Models\ActivityLog;
 use App\Models\Appointment;
 use App\Models\IntakeForm;
@@ -400,4 +403,126 @@ it('still refuses an over-long service at the model, with the form rule bypassed
         'sessions_count' => 1,
         'is_active' => true,
     ]))->toThrow(LogicException::class);
+});
+
+/*
+|------------------------------------------------------------------------------
+| The clinic has to be able to SEE a booking
+|------------------------------------------------------------------------------
+|
+| Two real patients booked and nobody at the clinic saw either one. Every view
+| of appointments was anchored to a date, so each went quiet on the mornings
+| that mattered and stayed quiet once its date had passed. These tests pin the
+| three places that has to stop being true.
+*/
+
+it('shows tomorrow on the default appointments view, not just today', function () {
+    /*
+     * The exact shape of what was missed: booked today, for tomorrow. The old
+     * filter defaulted `until` to today as well, so this row was invisible on
+     * the screen the clinic opens every morning.
+     */
+    $zone = config('clinic.timezone');
+
+    $tomorrow = Appointment::factory()->create([
+        'service_id' => Service::active()->firstOrFail()->id,
+        'starts_at' => now($zone)->addDay()->setTime(8, 0)->utc(),
+        'status' => AppointmentStatus::Pending,
+    ]);
+
+    $today = Appointment::factory()->create([
+        'service_id' => Service::active()->firstOrFail()->id,
+        'starts_at' => now($zone)->setTime(16, 0)->utc(),
+        'status' => AppointmentStatus::Pending,
+    ]);
+
+    $lastWeek = Appointment::factory()->create([
+        'service_id' => Service::active()->firstOrFail()->id,
+        'starts_at' => now($zone)->subWeek()->setTime(9, 0)->utc(),
+        'status' => AppointmentStatus::Pending,
+    ]);
+
+    Livewire::actingAs(panelUser('receptionist'))
+        ->test(ListAppointments::class)
+        // Today onwards: both of these are in front of the clinic.
+        ->assertCanSeeTableRecords([$today, $tomorrow])
+        // The default still opens at today, so history stays out of the way.
+        ->assertCanNotSeeTableRecords([$lastWeek]);
+});
+
+it('reaches a past appointment once the filter is widened', function () {
+    // The other half of the bargain: history is one click away, not gone.
+    $zone = config('clinic.timezone');
+
+    $lastWeek = Appointment::factory()->create([
+        'service_id' => Service::active()->firstOrFail()->id,
+        'starts_at' => now($zone)->subWeek()->setTime(9, 0)->utc(),
+        'status' => AppointmentStatus::Pending,
+    ]);
+
+    Livewire::actingAs(panelUser('receptionist'))
+        ->test(ListAppointments::class)
+        ->assertCanNotSeeTableRecords([$lastWeek])
+        ->filterTable('date_range', ['from' => now($zone)->subMonth()->toDateString()])
+        ->assertCanSeeTableRecords([$lastWeek]);
+});
+
+it('surfaces an unconfirmed booking whatever its date, and hides the widget when there are none', function () {
+    /*
+     * The widget that cannot go quiet. An overdue pending booking is the worst
+     * case, not an expired one — so it is asserted FIRST, because that is the
+     * row every date-windowed view had stopped showing.
+     */
+    expect(AwaitingConfirmation::canView())->toBeFalse('the widget shows itself when nothing is waiting');
+
+    $zone = config('clinic.timezone');
+
+    $overdue = Appointment::factory()->create([
+        'service_id' => Service::active()->firstOrFail()->id,
+        'starts_at' => now($zone)->subWeeks(2)->setTime(9, 0)->utc(),
+        'status' => AppointmentStatus::Pending,
+    ]);
+
+    $tomorrow = Appointment::factory()->create([
+        'service_id' => Service::active()->firstOrFail()->id,
+        'starts_at' => now($zone)->addDay()->setTime(8, 0)->utc(),
+        'status' => AppointmentStatus::Pending,
+    ]);
+
+    $confirmed = Appointment::factory()->create([
+        'service_id' => Service::active()->firstOrFail()->id,
+        'starts_at' => now($zone)->addDays(2)->setTime(8, 0)->utc(),
+        'status' => AppointmentStatus::Confirmed,
+    ]);
+
+    expect(AwaitingConfirmation::canView())->toBeTrue();
+
+    Livewire::actingAs(panelUser('receptionist'))
+        ->test(AwaitingConfirmation::class)
+        ->assertCanSeeTableRecords([$overdue, $tomorrow])
+        // Confirmed means somebody acted. It is not waiting on anyone.
+        ->assertCanNotSeeTableRecords([$confirmed]);
+});
+
+it('badges the sidebar with what is waiting, not with how busy today is', function () {
+    $zone = config('clinic.timezone');
+
+    // Confirmed, today: the old badge counted this and nothing else.
+    Appointment::factory()->create([
+        'service_id' => Service::active()->firstOrFail()->id,
+        'starts_at' => now($zone)->setTime(16, 0)->utc(),
+        'status' => AppointmentStatus::Confirmed,
+    ]);
+
+    expect(AppointmentResource::getNavigationBadge())->toBeNull('a confirmed appointment is not waiting on anybody');
+
+    // Pending, two weeks ago: invisible to the old badge on every morning.
+    Appointment::factory()->create([
+        'service_id' => Service::active()->firstOrFail()->id,
+        'starts_at' => now($zone)->subWeeks(2)->setTime(9, 0)->utc(),
+        'status' => AppointmentStatus::Pending,
+    ]);
+
+    expect(AppointmentResource::getNavigationBadge())->toBe('1');
+    expect(AppointmentResource::getNavigationBadgeColor())->toBe('warning');
 });
