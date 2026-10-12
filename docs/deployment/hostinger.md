@@ -299,6 +299,41 @@ The consequences, precisely:
   hours, a patient three hours from her appointment is told it is tomorrow.
   That is a cron-outage failure, not a cadence one — monitor step 13.
 
+### Which PHP the scheduler actually runs
+
+Two different binaries are involved and it is worth keeping them apart.
+
+**What cron invokes** is whatever the hPanel entry names. **What Laravel then
+uses for the subprocesses it spawns** — `queue:work`, `clinic:send-reminders`,
+and `schedule:finish` — is resolved by Symfony's `PhpExecutableFinder`, and on
+this host that resolves to:
+
+```
+/opt/alt/php85/usr/bin/php
+```
+
+not `/usr/bin/php`. Confirmed from the hPanel cron output on 2026-10-12:
+
+```
+17:55:02  queue:work --stop-when-empty --max-time=50 --tries=3   DONE
+17:55:02  clinic:send-reminders                      393.20ms    DONE
+17:55:02  scheduler-heartbeat                          1.18ms    DONE
+```
+
+It does not currently matter, because both binaries are the same build —
+measured 2026-10-12, `/usr/bin/php` and `/opt/alt/php85/usr/bin/php` are both
+**PHP 8.5.11**. It would matter the moment the host runs two versions, which it
+has done before: the CLI and FPM versions are separately switchable in hPanel
+(table C, row 2). If they ever diverge, the scheduler's subprocesses follow the
+alt-php path regardless of what the cron entry says, so checking the cron
+entry's binary alone would be checking the wrong one.
+
+The fast way to see which it is:
+
+```bash
+php artisan schedule:run          # the ⇂ lines print the resolved binary
+```
+
 ---
 
 ## 11b. REDEPLOYING after a push — the sequence, in this order
