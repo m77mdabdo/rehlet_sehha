@@ -406,26 +406,118 @@ php artisan schedule:run          # the ⇂ lines print the resolved binary
 
 ---
 
-## 11b. REDEPLOYING after a push — the sequence, in this order
+## 11b. DEPLOYING — the push is step one, not a step before it
 
-Sections 1-11 describe a *first* deploy. This is what to run on the server for
-every deploy after it, and it exists because skipping one line of it took the
-admin panel down for 33 days without a single error in the log.
+Sections 1-11 describe a *first* deploy. This is every deploy after it.
+
+**Read this part before the commands.** `git push` is not the thing you do
+before deploying. On this host it *is* the deploy, or rather half of one, and
+the half it performs leaves production in a state that can be broken.
+
+### What a push does on its own
+
+hPanel's git deployment fires on the push and runs unattended. From the live
+repo's own reflog, 2026-10-12:
+
+```
+18:17:13  clone: from https://github.com/m77mdabdo/rehlet_sehha.git
+18:17:14  checkout: moving from main to 6031bb5...
+```
+
+It **clones fresh** into `~/.git_clones/<random>`, checks out a detached HEAD,
+copies the tree across, and discards the clone. Three consequences:
+
+- **New code is live the moment you push.** Nobody ran anything.
+- **The autoloader is dumped** — `bootstrap/cache/packages.php` is rewritten,
+  so `package:discover` and `filament:upgrade` have run.
+- **The route and config caches are NOT rebuilt**, and `--no-dev` is NOT
+  applied, so dev packages come back into `vendor/`.
+
+So between the push and the sequence below there is a window in which
+production runs **new code against old caches**.
+
+### What breaks in that window
+
+A route-only change survives it. Here is one that did not, on 2026-10-12:
+
+`PractitionerProfilePage` was added. Filament **discovers** pages by scanning
+`app/Filament/Pages`, so the moment the file landed it began rendering a
+sidebar item and calling `route()` for it. The cached route table was three
+hours old and had no such route. Result:
+
+```
+Route [filament.admin.pages.practitioner-profile-page] not defined.
+(View: vendor/filament/filament/resources/views/livewire/sidebar.blade.php)
+```
+
+**A 500 on every authenticated panel page**, eighteen seconds after the push.
+
+The shape of it is what makes it dangerous. The sidebar renders on every panel
+page *except the login screen*, which uses Filament's simple layout. So from
+outside everything looked fine — `/admin` returned its usual 302 to login,
+`/admin/login` returned 200, the public site was untouched, and `/up` reported
+all six checks green. Only somebody actually signed in saw it. An uptime check
+would not have noticed, and did not.
+
+**Anything that adds a route, a discovered Filament page or resource, a new
+config key, or a new middleware alias has this failure mode.**
+
+### What to run, immediately after the push
 
 ```bash
 cd ~/domains/rehletsehha.com/public_html
 
 git fetch origin
 git checkout -f main            # the tree is a deploy artefact, not a workspace
-git reset --hard origin/main
+git reset --hard origin/main    # usually a no-op: the auto-deploy already moved it
 
 composer install --no-dev --optimize-autoloader --no-interaction   # NOT OPTIONAL
 
+php artisan migrate --force     # only if the push contains migrations
 php artisan config:cache        # AFTER composer, never before — see below
 php artisan route:cache
 php artisan view:clear
-php artisan migrate --force     # only if the push contains migrations
 ```
+
+If the push adds routes or a Filament page, put the site in maintenance first
+and take it out last, so nobody meets the window:
+
+```bash
+php artisan down --retry=60
+# … the sequence above …
+php artisan up
+```
+
+**Rebuild the caches BEFORE `php artisan up`, never after.** Running
+`route:cache` on a live site rewrites `bootstrap/cache/routes-v7.php` in place,
+and a request landing in that gap gets
+`require(routes-v7.php): Failed to open stream`. That happened once on
+2026-10-12, at 18:24:01, because the site had already been brought up and the
+caches were rebuilt again afterwards. One request, one 500, entirely avoidable.
+
+### Can this be automated? No, and here is the proof
+
+Git hooks cannot close the window. The deploy **clones fresh every time**, and
+a fresh clone's `.git/hooks` contains nothing but `.sample` files — so a
+`post-merge` or `post-checkout` hook installed in the live repo is destroyed by
+the very next deploy, before it could ever fire. Checked on the host: only
+`.sample` files present, and the reflog above shows `clone` rather than `pull`.
+
+That leaves two possibilities, and only one of them is checkable from a
+terminal:
+
+- **A post-deploy command field in hPanel → Git.** If it exists, it closes the
+  window completely and the sequence above becomes its contents. This cannot be
+  verified over SSH; somebody has to look at the panel.
+- **A scheduled watcher.** Now that cron works, a minutely task could compare
+  `git rev-parse HEAD` against a recorded value and run the rebuild when it
+  changes. It would close the window to under a minute without depending on
+  hPanel — at the cost of a self-modifying deploy step with its own failure
+  modes, including firing while the tree is still being copied.
+
+Until one of those is in place, **the push and the sequence are one operation
+and should not be separated in time.** Push when you are at a terminal that can
+run the rest.
 
 ### Why `composer install` is not optional on a deploy that changed no packages
 
