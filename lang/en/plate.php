@@ -68,5 +68,86 @@ return [
         'balanced' => 'This plate is balanced: vegetables, protein and starch together. That is the shape to aim for.',
     ],
 
+    /*
+    | Household measures. See App\Enums\PortionUnit for why there are no grams
+    | in this list and never will be.
+    |
+    | Singular and plural are separate keys rather than a trans_choice string,
+    | because a selector like [2,10] would put literal digits in this file —
+    | and the rule that no digit appears in any plate string is still absolute
+    | here. The count is interpolated by the component, inside the scoped
+    | quantity element.
+    */
+    'units' => [
+        'spoon' => 'spoon',
+        'cup' => 'cup',
+        'loaf' => 'loaf',
+        'piece' => 'piece',
+        'whole' => 'whole',
+        'small_plate' => 'small plate',
+    ],
+
+    'units_plural' => [
+        'spoon' => 'spoons',
+        'cup' => 'cups',
+        'loaf' => 'loaves',
+        'piece' => 'pieces',
+        'whole' => 'whole',
+        'small_plate' => 'small plates',
+    ],
+
+    'portions' => [
+        'more' => 'More :food',
+        'less' => 'Less :food',
+        'remove' => 'Remove :food from the plate',
+        'amount' => 'Amount',
+    ],
+
+    /*
+    | THE ESTIMATE.
+    |
+    | A SPAN, never one figure, and never a target. Read the header of
+    | PlateFeedbackHasNoNumbersTest before touching any of these: no goal, no
+    | remaining count, no daily total, no percentage, no progress bar, no
+    | streak, no history, and no wording a patient can fall short of.
+    |
+    | "About" is load-bearing. It is the difference between an estimate and a
+    | measurement, and it stays on the front of the number.
+    */
+    'estimate' => [
+        'label' => 'Rough energy estimate',
+        'value' => 'About :min–:max calories',
+        'pending' => 'No estimate yet for what is on this plate.',
+        'partial' => 'This covers only the foods we have reviewed figures for.',
+        'varies' => 'Composite dishes like koshari and mesaqaa vary a great deal between households, so the span is deliberately wide.',
+
+        /*
+        | Permanent, not dismissible. This line is the condition the
+        | practitioner attached to showing a number at all.
+        */
+        'caveat' => 'This is a rough estimate and portions vary from household to household. It is not a target to reach — your own plan comes from a consultation, based on your history and your bloodwork.',
+    ],
+
+    /*
+    | A food the patient adds herself. Marked as HER estimate wherever it
+    | appears, so it is never mistaken for a sourced figure.
+    */
+    'custom' => [
+        'add' => 'Add a food that is not listed',
+        'name' => 'Food name',
+        'group' => 'Group',
+        'portion' => 'Amount',
+        'energy_mode' => 'Energy',
+        'like' => 'Like a listed food',
+        'own' => 'I will enter it myself',
+        'own_value' => 'Your energy estimate',
+        'own_hint' => 'If you are unsure, pick a similar food from the list instead.',
+        'save' => 'Add to the plate',
+        'cancel' => 'Cancel',
+        'badge' => 'your estimate',
+        'badge_title' => 'You added this food, and the figure is your own estimate rather than a reviewed, sourced value.',
+        'not_saved' => 'Foods you add are not saved by us, and disappear when you close the page.',
+    ],
+
     'disclaimer' => 'This tool is for illustration only, and is not a substitute for a plan from a practitioner.',
 ];
