@@ -392,6 +392,14 @@ it('keeps an empty category out of the sitemap', function () {
 */
 
 it('gives the reader and the crawler the same spelling of the reviewer', function (string $locale, string $expected) {
+    // The dataset is literal, so prove it still matches the configured value
+    // rather than quietly testing a name nobody uses any more.
+    $configured = $locale === 'en'
+        ? config('clinic.practitioner.display_name_en')
+        : config('clinic.practitioner.name_ar');
+
+    expect($expected)->toBe($configured, 'This test’s expected name has drifted from config/clinic.php.');
+
     $post = publishableArticle();
 
     $html = $this->get("/{$locale}/articles/{$post->slug}")->assertOk()->getContent();
@@ -412,7 +420,19 @@ it('gives the reader and the crawler the same spelling of the reviewer', functio
     expect($article['reviewedBy']['name'] ?? null)->toBe($expected, "{$locale} JSON-LD reviewedBy disagrees with the byline");
     expect($article['author']['name'] ?? null)->toBe($expected, "{$locale} JSON-LD author disagrees with the byline");
 })->with([
-    ['ar', 'د. رنا سالم'],
+    /*
+     * BOTH come from config now. The Arabic used to come from users.name,
+     * which meant the about page and the byline could disagree — and did.
+     * Since the practitioner's details became editable from the panel, one
+     * name field per locale has to reach the byline, the reviewer line and
+     * the structured data together, so both read the same place.
+     *
+     * Written out rather than read from config, because a dataset is built
+     * before the application boots and config() is null there. The assertion
+     * at the top of the test is what stops these drifting from the real
+     * values in silence.
+     */
+    ['ar', 'أ. رنا محمد أحمد سالم'],
     ['en', 'Dr Rana Salem'],
 ]);
 
@@ -430,7 +450,10 @@ it('names the reviewer on an article card, not an empty string', function () {
 
     expect(str_contains($html, 'روجعت إكلينيكيًا بمعرفة'))->toBeTrue('the card shows no reviewer line at all');
 
-    $name = $post->reviewer->name;
+    // The displayed name, not the account name. For the practitioner these are
+    // now different things on purpose: the account name is who signs in, the
+    // configured name is what a patient reads.
+    $name = $post->reviewerDisplayName();
     expect(str_contains($html, __('articles.reviewed_by', ['name' => $name])))->toBeTrue(
         "the card's reviewer line does not carry the name — it rendered with an empty :name"
     );

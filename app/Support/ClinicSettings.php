@@ -51,6 +51,40 @@ final class ClinicSettings
         'clinic.booking.horizon_days',
         'clinic.booking.buffer_minutes',
         'clinic.booking.reschedule_min_hours',
+
+        /*
+         * The practitioner's own details, added 2026-10-12.
+         *
+         * These were only changeable by editing config/clinic.php, which meant
+         * a code change and a deploy to correct a licence year. They are the
+         * clinic's to own.
+         *
+         * STILL AN ALLOW-LIST, and that is the whole point: this writes into
+         * application configuration, so a row keyed 'app.debug' must not be
+         * able to turn debug mode on in production. Adding a key here is a
+         * deliberate act; a stray one is ignored on write and on read.
+         *
+         * NOT HERE, DELIBERATELY: the philosophy paragraph and the specialty
+         * descriptions. They live in the translation files and stay there —
+         * see the note beside lang/ar/about.php's `philosophy` entry.
+         */
+        'clinic.practitioner.name_ar',
+        'clinic.practitioner.display_name_en',
+        'clinic.practitioner.title_ar',
+        'clinic.practitioner.title_en',
+        'clinic.practitioner.degree_ar',
+        'clinic.practitioner.licence_body_ar',
+        'clinic.practitioner.licence_number',
+        'clinic.practitioner.licence_year',
+
+        // A list of {institution_ar, programme_ar, hours, year}. The Setting
+        // model casts `value` to array, so a list survives the round trip.
+        'clinic.training',
+
+        // A list of platform slugs the consultation can happen on.
+        'clinic.platforms',
+
+        'clinic.contact.area_served',
     ];
 
     /**

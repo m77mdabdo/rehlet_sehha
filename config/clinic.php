@@ -281,7 +281,23 @@ return [
     | act on, and one nobody can trace is worse than no number at all.
     */
     'practitioner' => [
-        'name_ar' => 'رنا محمد أحمد سالم',
+        /*
+         * THE NAME AS IT APPEARS TO A PATIENT, in both the about page and the
+         * article byline — those read the same value now, through
+         * Post::reviewerDisplayName().
+         *
+         * The honorific is part of it. Until 2026-10-12 the byline took its
+         * Arabic name from users.name, which carries «أ.», while this key did
+         * not — so the about page said «رنا محمد أحمد سالم» and thirteen
+         * article bylines said «أ. رنا محمد أحمد سالم». Unifying them meant
+         * picking one, and the byline's form is the one with thirteen
+         * published pages and their structured data behind it.
+         *
+         * This is the FALLBACK. The clinic owns this value from the
+         * practitioner profile screen; this is only what renders before
+         * anybody has saved it.
+         */
+        'name_ar' => 'أ. رنا محمد أحمد سالم',
 
         // Evidence: syndicate licence card.
         /*

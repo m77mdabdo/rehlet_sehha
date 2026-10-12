@@ -33,7 +33,7 @@ class PostController extends Controller
          * are certain to be touched on every article page.
          */
         $post = Post::published()
-            ->with(['reviewer', 'category', 'tags', 'citations'])
+            ->with(['reviewer.roles', 'category', 'tags', 'citations'])
             ->where('slug', $slug)
             ->firstOrFail();
 
