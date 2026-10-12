@@ -261,6 +261,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Deployment
+    |--------------------------------------------------------------------------
+    |
+    | The deployment watcher finishes the deploy hPanel starts — see
+    | App\Console\Commands\WatchDeployment and section 11b of the runbook.
+    |
+    | The composer path is absolute and configurable for one reason each.
+    | ABSOLUTE because cron's PATH is not a shell's: measured on this host,
+    | `composer` is not on the minimal /usr/bin:/bin a stripped environment
+    | gets, so a bare `composer` would simply not be found — silently, which is
+    | the failure mode this whole watcher exists to prevent. CONFIGURABLE so a
+    | test can point it at something that fails on purpose, because a failure
+    | path nobody has executed is a guess.
+    */
+    'deploy' => [
+        'composer' => env('DEPLOY_COMPOSER_BINARY', '/usr/local/bin/composer'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | The practitioner
     |--------------------------------------------------------------------------
     |

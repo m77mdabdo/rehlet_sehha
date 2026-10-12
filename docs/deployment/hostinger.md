@@ -414,6 +414,11 @@ Sections 1-11 describe a *first* deploy. This is every deploy after it.
 before deploying. On this host it *is* the deploy, or rather half of one, and
 the half it performs leaves production in a state that can be broken.
 
+Since 2026-10-12 a scheduled watcher finishes the other half by itself, about a
+minute after the push — see *What closes the window* below. **The manual
+sequence is still documented, and still has to work**, because the watcher is
+one more thing that can break and the window reopens the moment it does.
+
 ### What a push does on its own
 
 hPanel's git deployment fires on the push and runs unattended. From the live
@@ -456,13 +461,98 @@ The shape of it is what makes it dangerous. The sidebar renders on every panel
 page *except the login screen*, which uses Filament's simple layout. So from
 outside everything looked fine — `/admin` returned its usual 302 to login,
 `/admin/login` returned 200, the public site was untouched, and `/up` reported
-all six checks green. Only somebody actually signed in saw it. An uptime check
+all six checks it had that day green — the seventh, `deploy`, is the one that
+was added *because* of this. Only somebody actually signed in saw it. An uptime
+check
 would not have noticed, and did not.
 
 **Anything that adds a route, a discovered Filament page or resource, a new
 config key, or a new middleware alias has this failure mode.**
 
-### What to run, immediately after the push
+### What closes the window: the deployment watcher
+
+`clinic:watch-deployment`, every minute, from the scheduler. It compares the
+commit the working tree is on against the last commit it finished building, and
+when they differ it runs the sequence below for you.
+
+```
+app/Console/Commands/WatchDeployment.php   the command, and the reasoning
+app/Support/DeploymentState.php            what is deployed vs what was built
+routes/console.php                         Schedule::command(…)->everyMinute()
+tests/Feature/DeploymentWatcherTest.php    twelve tests, one per failure mode
+```
+
+**Normal timing: a push is fully live between 60 and 120 seconds later.** The
+first cycle that sees a new commit does not act on it — it records it and
+waits. The next cycle acts. That deliberate one-cycle delay is the mid-copy
+guard, below.
+
+It reads `.git/HEAD` directly rather than shelling out to `git rev-parse`,
+because `/up` calls the same code on every request and a health check should
+not spawn a process to answer.
+
+**Four ways a watcher like this is worse than the problem, and what stops
+each:**
+
+| Failure | What stops it |
+|---|---|
+| **Firing mid-copy.** The deploy clones *then* copies, so HEAD points at the new commit while the tree is still being written. Rebuilding against a half-copied tree is worse than stale caches. | A commit must sit **unchanged for 50 seconds** — one full cycle — before the watcher touches it. Measured on this host, clone to autoloader-dump was about ten seconds, so 50 is comfortably clear. |
+| **Two runs at once.** A rebuild takes longer than the one-minute schedule, so overlap is certain, and two `composer install`s into one `vendor/` is a broken site. | An **`flock` on disk**, non-blocking: a second run gives up its slot rather than queueing. |
+| **Failing in a loop.** A build that fails every minute and alerts every minute is noise, and muted noise is not an alert. | The failure is recorded **against the commit that caused it** and never retried. The next push clears it. One alert, to the clinic address, sent synchronously because the queue is one of the things that may be broken. |
+| **Leaving the site down.** A rebuild killed mid-flight leaves maintenance mode on for ever. | `up` runs in a `finally`, including after a failure. A stale marker older than 15 minutes is cleared at the start of the next run. Only the watcher's *own* marker is honoured, so a deliberate `php artisan down` by a human is never undone. |
+
+**Why stability-over-time and not a marker the deploy writes.** Keying off
+`bootstrap/cache/packages.php` changing would have been faster and was
+rejected: it depends on an undocumented detail of somebody else's deployment
+tool, which can change without warning and would fail *silently* when it did. A
+commit that has not moved for a full cycle depends on nothing.
+
+**The caches-before-`up` rule applies here too**, and is why the order inside
+the command is `down` → composer → migrate → caches → `up`, with nothing after
+`up`. See the note under the manual sequence.
+
+#### How to tell whether it is working
+
+`/up` carries a seventh check, `deploy`, which is true when the deployed commit
+is the one that was last built:
+
+```bash
+curl -s https://rehletsehha.com/up?format=json | jq .checks.deploy
+```
+
+This is the check that notices **when the watcher itself has stopped** — the
+one failure nothing else on this server would catch. We have had three silent
+failures on this project (a cron entry that never fired, a seeder that was
+never run, a build directory that was gitignored) and every one of them looked
+healthy from outside for weeks. The pattern is always that the thing meant to
+notice was the thing that was broken.
+
+It reports **true when it cannot tell** — no repository, or a state file never
+written — deliberately. "Cannot tell" is not "broken", and a check that goes
+red because it cannot tell is a check people learn to ignore.
+
+The state file itself, and the log:
+
+```bash
+cat storage/app/private/deployment-state.json
+grep -i 'Deployment watcher' storage/logs/laravel.log | tail -20
+```
+
+#### Running it by hand
+
+```bash
+php artisan clinic:watch-deployment            # respects the guards
+php artisan clinic:watch-deployment --force    # rebuild now, ignore the guards
+```
+
+`--force` is what to use after fixing whatever made a build fail, since the
+watcher will not retry that commit on its own.
+
+### The manual sequence — the fallback
+
+This is what the watcher runs. Run it by hand when the watcher is the thing
+that broke, when `/up`'s `deploy` check is false and the log says a build
+failed, or when you cannot wait the two minutes.
 
 ```bash
 cd ~/domains/rehletsehha.com/public_html
@@ -495,29 +585,30 @@ and a request landing in that gap gets
 2026-10-12, at 18:24:01, because the site had already been brought up and the
 caches were rebuilt again afterwards. One request, one 500, entirely avoidable.
 
-### Can this be automated? No, and here is the proof
+### Why it had to be a watcher, and not something tidier
 
-Git hooks cannot close the window. The deploy **clones fresh every time**, and
-a fresh clone's `.git/hooks` contains nothing but `.sample` files — so a
-`post-merge` or `post-checkout` hook installed in the live repo is destroyed by
-the very next deploy, before it could ever fire. Checked on the host: only
-`.sample` files present, and the reflog above shows `clone` rather than `pull`.
+Two tidier options were investigated first. Both are closed.
 
-That leaves two possibilities, and only one of them is checkable from a
-terminal:
+**Git hooks cannot do it.** The deploy **clones fresh every time**, and a fresh
+clone's `.git/hooks` contains nothing but `.sample` files — so a `post-merge`
+or `post-checkout` hook installed in the live repo is destroyed by the very
+next deploy, before it could ever fire. Checked on the host: only `.sample`
+files present, and the reflog above shows `clone` rather than `pull`.
 
-- **A post-deploy command field in hPanel → Git.** If it exists, it closes the
-  window completely and the sequence above becomes its contents. This cannot be
-  verified over SSH; somebody has to look at the panel.
-- **A scheduled watcher.** Now that cron works, a minutely task could compare
-  `git rev-parse HEAD` against a recorded value and run the rebuild when it
-  changes. It would close the window to under a minute without depending on
-  hPanel — at the cost of a self-modifying deploy step with its own failure
-  modes, including firing while the tree is still being copied.
+**hPanel has no post-deploy command field.** Its Git page offers a repository,
+a branch, an auto-deploy toggle, a redeploy button and a deployment log, and
+nothing else. Confirmed in the panel on 2026-10-12. If a future hPanel adds
+one, its contents are the manual sequence above and the watcher becomes
+redundant — but leave the watcher in place anyway, as the thing that notices
+when the field stops being honoured.
 
-Until one of those is in place, **the push and the sequence are one operation
-and should not be separated in time.** Push when you are at a terminal that can
-run the rest.
+So: a scheduled watcher, which depends on nothing but cron.
+
+**Push when you like.** Before the watcher existed this section said the push
+and the sequence were one operation that must not be separated in time. That is
+no longer true, and it was never a realistic instruction — the person who can
+push is not always at a terminal that can SSH, which is exactly how the
+three-hour window on 2026-10-12 happened.
 
 ### Why `composer install` is not optional on a deploy that changed no packages
 
@@ -892,7 +983,7 @@ over SSH **before** step 8, because each one changes what you do next.
 | 12 | **Timezone of the CLI** | `php -r 'echo date_default_timezone_get();'` | Anything — the app pins UTC internally | Only matters if it disagrees wildly; scheduled times are computed by Laravel, not the shell. |
 | 13 | **`mysqldump` exists and is reachable** | `php artisan backup:run --only-db` | `Backup completed!` and a zip under `storage/app/private/` | The single assumption the whole backup story rests on, and one the local machine cannot settle. Some shared hosts do not ship the MySQL client binaries at all. If it is missing, set `'dump_binary_path'` in `config/database.php` to wherever it lives, and if it genuinely is not installed, say so — **do not go live believing there are backups.** |
 | 14 | **The archive can be reopened on the server** | `php artisan clinic:unpack-backup --to=/tmp/restore-drill && ls /tmp/restore-drill/db-dumps && rm -rf /tmp/restore-drill` | A `.sql` file | Proves the password in `.env` actually opens the archive the server just wrote. Do this on **launch day**, not on the day of an incident. |
-| 15 | **`/up` answers honestly** | `curl -s https://rehletsehha.com/up?format=json` | `"status":"ok"` with all six checks `true` | Expect `scheduler` to be `false` until cron has run once, and `backup` to be `false` until the first dump. Both going green is how you know steps 11 and 14 really worked. |
+| 15 | **`/up` answers honestly** | `curl -s https://rehletsehha.com/up?format=json` | `"status":"ok"` with all seven checks `true` | Expect `scheduler` to be `false` until cron has run once, and `backup` to be `false` until the first dump. Both going green is how you know steps 11 and 14 really worked. `deploy` starts `true` — it reports true when it cannot yet tell; see §11b. |
 | 16 | **Compression is actually on** | `curl -sI -H 'Accept-Encoding: gzip' https://rehletsehha.com/build/assets/app-*.css \| grep -i content-encoding` | `Content-Encoding: gzip` | The largest single performance lever on the site, and `.htaccess` only asks — Apache obeys if `mod_deflate` is loaded and `AllowOverride` permits it. Measured locally: CSS 59.8 KB → 10.6 KB, Livewire 251 KB → 82.8 KB, a rendered page 179 KB → 19.4 KB. If this returns nothing, the booking page is shipping ~460 KB to a phone instead of ~140 KB. Ask support to enable `mod_deflate`. |
 | 17 | **WebP, WOFF2 and MP4 have a Content-Type** | `curl -sI https://rehletsehha.com/media/kitchen-hands-herbs-lg.webp \| grep -i content-type` | `image/webp` | The Apache this was tested against returned **no Content-Type at all** for these three. `.htaccess` now declares them, so this should pass regardless — check it anyway, because a video with no type is a video Safari may refuse to play, and it is the first thing on the homepage. |
 | 18 | **The CSP header survives the host** | `curl -sI https://rehletsehha.com/ar \| grep -i content-security` | The full policy | **It does not, and on this host it cannot.** Measured 2026-09-08: every response — PHP, static files, and Apache's own 404s — comes back with `Content-Security-Policy: upgrade-insecure-requests` and nothing else. Not the CDN (the origin returns it too, with the edge bypassed), not in any `.htaccess` under the account, not exposed in hPanel: a LiteSpeed-level `Header set` this account does not own. The application therefore also publishes the policy as a `<meta http-equiv>` element, which the host does not touch — a browser enforces every policy it is handed and takes the strictest answer per directive, so the meta tag reinstates the whole thing, nonce included. **Check the meta tag, not the header:** `curl -s https://rehletsehha.com/ar \| grep -o 'http-equiv="Content-Security-Policy"[^>]*'`. `SecurityHardeningTest` guards it. |
@@ -981,7 +1072,7 @@ incomplete deploy; an SMTP error means item 8 of section C was never true.
 - [ ] `php artisan backup:run --only-db` — the launch-day archive, taken by the
       same machinery that will take every one after it. A dump written by hand
       with `mysqldump` proves nothing about whether the scheduled backups work.
-- [ ] `curl -s https://rehletsehha.com/up?format=json` — all six `true`. This is
+- [ ] `curl -s https://rehletsehha.com/up?format=json` — all seven `true`. This is
       the last check because it is the only one that can now answer honestly:
       cron has run, the queue has drained, and a backup exists.
 - [ ] Point an uptime monitor at `https://rehletsehha.com/up` and alert on the

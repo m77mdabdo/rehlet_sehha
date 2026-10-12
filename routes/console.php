@@ -94,6 +94,26 @@ Schedule::command('queue:work --stop-when-empty --max-time=50 --tries=3')
     ->runInBackground();
 
 /*
+ * Finish the deploy hPanel started.
+ *
+ * The push IS the deploy on this host — hPanel clones, checks out and copies,
+ * then stops without rebuilding the route or config caches. That window took
+ * the admin panel down for three hours on 2026-10-12. There is no post-deploy
+ * hook available (checked: no hPanel field, and git hooks die with the fresh
+ * clone), so a minutely watcher is what closes it.
+ *
+ * It does nothing at all on the overwhelming majority of runs: two small file
+ * reads to compare the deployed commit against the last one built.
+ *
+ * withoutOverlapping() is the scheduler's guard; the command also takes an
+ * flock of its own, because a cache-backed lock is no use in a command whose
+ * job includes clearing caches.
+ */
+Schedule::command('clinic:watch-deployment')
+    ->everyMinute()
+    ->withoutOverlapping(15);
+
+/*
  * Appointment reminders, 24 hours and 1 hour ahead.
  *
  * Every minute, because a reminder window is a moment rather than a slot: an
