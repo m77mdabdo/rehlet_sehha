@@ -141,11 +141,24 @@ class PlateFoodSeeder extends Seeder
                 190, 260, [[6, 9], [38, 50], [1, 5]], self::USDA,
                 'Cooked, per cup, sauce not included.'],
 
+            /*
+             * ONE CHIP, DELIBERATELY. DO NOT SPLIT THIS INTO BOILED AND FRIED.
+             *
+             * Reviewed by the practitioner on 2026-10-12, who was asked whether
+             * she wanted them separated and said no. The wide span is the
+             * honest thing here: splitting them would ask a patient to classify
+             * her own cooking before the tool will talk to her, and the whole
+             * point of a household-measures tool is that she answers from
+             * memory about a meal she already ate. A span that admits boiled
+             * and fried are different is better than a precise figure she had
+             * to pick a category to get.
+             */
             ['🥔', FoodGroup::Starch, 'بطاطس', 'Potatoes', PortionUnit::SmallPlate, 1,
                 110, 350, [[2, 5], [25, 45], [0, 18]], self::USDA,
-                'The widest non-composite span in the file, and it is honest: boiled potatoes and chips '
-                .'are the same food to a patient choosing a chip on this screen. Flagged for the '
-                .'practitioner — she may want these split into two foods.'],
+                'ONE CHIP ON PURPOSE — practitioner decision, 2026-10-12. The widest non-composite span '
+                .'in the file and the point of it: boiled potatoes and chips are the same food to a '
+                .'patient choosing a chip on this screen, and the span is honest about the difference '
+                .'rather than making her classify her own cooking. Do not split this into two foods.'],
 
             ['🍲', FoodGroup::Starch, 'كشري', 'Koshari', PortionUnit::SmallPlate, 1,
                 300, 650, [[10, 20], [55, 110], [5, 20]], self::EGYPT,
@@ -159,7 +172,7 @@ class PlateFoodSeeder extends Seeder
                 110, 135, [[0, 0], [0, 0], [12, 15]], self::USDA,
                 'PER SPOON. The span is how full the spoon is, which is the only variable.'],
 
-            ['🥜', FoodGroup::Fat, 'طحينة', 'Tahina', PortionUnit::Spoon, 1,
+            ['🫙', FoodGroup::Fat, 'طحينة', 'Tahina', PortionUnit::Spoon, 1,
                 85, 110, [[2, 4], [2, 4], [7, 10]], self::USDA,
                 'PER SPOON, plain tahina paste rather than the thinned salad.'],
 
@@ -167,10 +180,55 @@ class PlateFoodSeeder extends Seeder
                 110, 180, [[1, 3], [5, 10], [10, 17]], self::USDA,
                 'PER HALF, which is why the default portion is a half rather than one.'],
 
-            ['🌰', FoodGroup::Fat, 'مكسرات', 'Nuts', PortionUnit::Spoon, 1,
-                80, 110, [[2, 4], [2, 5], [7, 10]], self::USDA,
-                'PER SPOON, mixed and unsalted. Flagged: the practitioner may want to name a specific nut, '
-                .'since almonds and cashews are not interchangeable figures.'],
+            /*
+             * NAMED NUTS, replacing a generic «مكسرات» entry on the
+             * practitioner's instruction, 2026-10-12.
+             *
+             * The generic chip was flagged in the first draft precisely because
+             * almonds and cashews are not interchangeable figures, and a span
+             * wide enough to cover every nut would have been uninformative
+             * rather than honest.
+             *
+             * All five are per SPOON, unsalted and unroasted-in-oil. The spans
+             * are mostly how heaped the spoon is, which for nuts is a real
+             * variable — they do not pack like a powder.
+             *
+             * ON THE EMOJI: there are exactly two nut glyphs in the whole
+             * vocabulary, 🥜 and 🌰, so five nuts cannot each have their own.
+             * The peanut emoji goes to the actual peanut and the four tree
+             * nuts share the generic one; طحينة moved off 🥜 because sesame
+             * paste sitting under a peanut icon next to real peanuts reads as
+             * a mistake. The label carries the meaning here, not the picture —
+             * the emoji is aria-hidden for exactly that reason.
+             *
+             * None were dropped. Every value in this file was drafted from
+             * memory with no way to check it, so my confidence is uniform
+             * across the five and picking a "less confident" one to drop would
+             * have been an invented distinction. All five are flagged like
+             * everything else; she verifies or deletes them.
+             */
+            ['🌰', FoodGroup::Fat, 'لوز', 'Almonds', PortionUnit::Spoon, 1,
+                55, 75, [[2, 3], [2, 3], [5, 7]], self::USDA,
+                'PER SPOON, whole and unsalted.'],
+
+            ['🌰', FoodGroup::Fat, 'عين جمل', 'Walnuts', PortionUnit::Spoon, 1,
+                50, 75, [[1, 2], [1, 2], [5, 8]], self::USDA,
+                'PER SPOON, halves. The lightest of the five by volume, which is why the span sits low '
+                .'despite walnuts being the fattiest here by weight.'],
+
+            ['🌰', FoodGroup::Fat, 'كاجو', 'Cashews', PortionUnit::Spoon, 1,
+                55, 80, [[2, 3], [3, 4], [4, 6]], self::USDA,
+                'PER SPOON, unsalted. The highest carbohydrate of the five, which is the reason a patient '
+                .'might be asked to tell them apart at all.'],
+
+            ['🥜', FoodGroup::Fat, 'فول سوداني', 'Peanuts', PortionUnit::Spoon, 1,
+                65, 85, [[3, 4], [2, 3], [5, 7]], self::USDA,
+                'PER SPOON, unsalted. The one most actually eaten here, and the densest per spoon because '
+                .'it packs tighter than the others.'],
+
+            ['🌰', FoodGroup::Fat, 'بندق', 'Hazelnuts', PortionUnit::Spoon, 1,
+                55, 80, [[1, 2], [1, 2], [5, 8]], self::USDA,
+                'PER SPOON, whole and unsalted.'],
 
             // ---- Fruit.
             ['🍊', FoodGroup::Fruit, 'برتقال', 'Orange', PortionUnit::Whole, 1,
@@ -250,6 +308,31 @@ class PlateFoodSeeder extends Seeder
                     'is_active' => true,
                 ],
             );
+        }
+
+        /*
+         * REMOVE FOODS THIS SEEDER NO LONGER LISTS.
+         *
+         * updateOrCreate only ever adds and updates, so replacing the generic
+         * «مكسرات» with five named nuts would otherwise have left the generic
+         * chip on the plate beside them — still active, still tappable, and
+         * still carrying the span the practitioner asked to be replaced.
+         *
+         * Safe to prune rather than deactivate because this seeder is the ONLY
+         * source for this table: there is no PlateFoodResource in the admin
+         * panel, so nothing can have been added by hand and lost here. If a
+         * panel for these is ever built, this has to become a deactivation
+         * instead — a prune would then silently delete somebody's work.
+         */
+        $listed = array_map(static fn (array $row): string => $row[2], $foods);
+
+        $removed = PlateFood::query()
+            ->whereNotIn('name->ar', $listed)
+            ->get();
+
+        foreach ($removed as $food) {
+            $this->command?->line('  removed '.$food->getTranslation('name', 'ar', false).' — no longer in the seeder');
+            $food->delete();
         }
     }
 }

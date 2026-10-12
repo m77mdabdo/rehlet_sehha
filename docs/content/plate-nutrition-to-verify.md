@@ -3,7 +3,7 @@
 > **Generated file.** `php artisan clinic:export-review-docs`. Edit the values in
 > `database/seeders/PlateFoodSeeder.php`, not this document.
 
-29 foods. **29 awaiting sign-off, 0 signed off.**
+33 foods. **33 awaiting sign-off, 0 signed off.**
 
 ## Why this document exists
 
@@ -290,7 +290,7 @@ tight-looking number for a dish nobody measures is worse than an honest one.
 | Source | USDA FoodData Central |
 | Status | awaiting sign-off — **no estimate shown to patients** |
 
-> The widest non-composite span in the file, and it is honest: boiled potatoes and chips are the same food to a patient choosing a chip on this screen. Flagged for the practitioner — she may want these split into two foods.
+> ONE CHIP ON PURPOSE — practitioner decision, 2026-10-12. The widest non-composite span in the file and the point of it: boiled potatoes and chips are the same food to a patient choosing a chip on this screen, and the span is honest about the difference rather than making her classify her own cooking. Do not split this into two foods.
 
 ### [ ] 🍲 كشري — Koshari
 
@@ -322,7 +322,7 @@ tight-looking number for a dish nobody measures is worse than an honest one.
 
 > PER SPOON. The span is how full the spoon is, which is the only variable.
 
-### [ ] 🥜 طحينة — Tahina
+### [ ] 🫙 طحينة — Tahina
 
 | | |
 |---|---|
@@ -350,19 +350,75 @@ tight-looking number for a dish nobody measures is worse than an honest one.
 
 > PER HALF, which is why the default portion is a half rather than one.
 
-### [ ] 🌰 مكسرات — Nuts
+### [ ] 🌰 لوز — Almonds
 
 | | |
 |---|---|
 | Portion | one spoon, default 1 |
-| **Energy, per spoon** | **80–110** |
-| Protein (g) | 2–4 |
-| Carbs (g) | 2–5 |
-| Fat (g) | 7–10 |
+| **Energy, per spoon** | **55–75** |
+| Protein (g) | 2–3 |
+| Carbs (g) | 2–3 |
+| Fat (g) | 5–7 |
 | Source | USDA FoodData Central |
 | Status | awaiting sign-off — **no estimate shown to patients** |
 
-> PER SPOON, mixed and unsalted. Flagged: the practitioner may want to name a specific nut, since almonds and cashews are not interchangeable figures.
+> PER SPOON, whole and unsalted.
+
+### [ ] 🌰 عين جمل — Walnuts
+
+| | |
+|---|---|
+| Portion | one spoon, default 1 |
+| **Energy, per spoon** | **50–75** |
+| Protein (g) | 1–2 |
+| Carbs (g) | 1–2 |
+| Fat (g) | 5–8 |
+| Source | USDA FoodData Central |
+| Status | awaiting sign-off — **no estimate shown to patients** |
+
+> PER SPOON, halves. The lightest of the five by volume, which is why the span sits low despite walnuts being the fattiest here by weight.
+
+### [ ] 🌰 كاجو — Cashews
+
+| | |
+|---|---|
+| Portion | one spoon, default 1 |
+| **Energy, per spoon** | **55–80** |
+| Protein (g) | 2–3 |
+| Carbs (g) | 3–4 |
+| Fat (g) | 4–6 |
+| Source | USDA FoodData Central |
+| Status | awaiting sign-off — **no estimate shown to patients** |
+
+> PER SPOON, unsalted. The highest carbohydrate of the five, which is the reason a patient might be asked to tell them apart at all.
+
+### [ ] 🥜 فول سوداني — Peanuts
+
+| | |
+|---|---|
+| Portion | one spoon, default 1 |
+| **Energy, per spoon** | **65–85** |
+| Protein (g) | 3–4 |
+| Carbs (g) | 2–3 |
+| Fat (g) | 5–7 |
+| Source | USDA FoodData Central |
+| Status | awaiting sign-off — **no estimate shown to patients** |
+
+> PER SPOON, unsalted. The one most actually eaten here, and the densest per spoon because it packs tighter than the others.
+
+### [ ] 🌰 بندق — Hazelnuts
+
+| | |
+|---|---|
+| Portion | one spoon, default 1 |
+| **Energy, per spoon** | **55–80** |
+| Protein (g) | 1–2 |
+| Carbs (g) | 1–2 |
+| Fat (g) | 5–8 |
+| Source | USDA FoodData Central |
+| Status | awaiting sign-off — **no estimate shown to patients** |
+
+> PER SPOON, whole and unsalted.
 
 ## فاكهة  (fruit)
 
