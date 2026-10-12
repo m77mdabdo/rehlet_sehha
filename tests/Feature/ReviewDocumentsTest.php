@@ -3,14 +3,21 @@
 declare(strict_types=1);
 
 use App\Models\Citation;
+use App\Models\PlateFood;
 use App\Models\Post;
 use Database\Seeders\CategorySeeder;
+use Database\Seeders\PlateFoodSeeder;
 use Database\Seeders\PostSeeder;
 use Database\Seeders\TagSeeder;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * THE TWO DOCUMENTS SHE WORKS FROM MUST DESCRIBE THE ARTICLES THAT EXIST.
+ * THE THREE DOCUMENTS SHE WORKS FROM MUST DESCRIBE WHAT ACTUALLY EXISTS.
+ *
+ * Two are about the articles. The third, added 2026-10-12, is the plate
+ * builder's energy values — which is why PlateFoodSeeder is part of the
+ * fixture now: a generated document compared against an empty table passes
+ * --check only by describing nothing.
  *
  * Both are generated, and a generated file committed to git has exactly one
  * failure mode: somebody edits the source and forgets to regenerate. It fails
@@ -25,9 +32,10 @@ beforeEach(function () {
     $this->seed(CategorySeeder::class);
     $this->seed(TagSeeder::class);
     $this->seed(PostSeeder::class);
+    $this->seed(PlateFoodSeeder::class);
 });
 
-it('has both review documents committed and current', function () {
+it('has all three review documents committed and current', function () {
     $this->artisan('clinic:export-review-docs --check')->assertSuccessful();
 });
 
@@ -106,4 +114,35 @@ it('tells the reader of the citation list what to do when a source cannot be fou
     expect($document)->toContain('Delete the citation');
     expect($document)->toContain('the sentence it supports');
     expect($document)->toContain('makes things worse');
+});
+
+it('lists every plate food with its span, its source and its status', function () {
+    /*
+     * Independent of the generator, like the citation check above: counted
+     * from the table, compared against the committed file. --check only
+     * proves the file matches the generator, not that the generator covers
+     * reality.
+     */
+    $document = (string) file_get_contents(base_path('docs/content/plate-nutrition-to-verify.md'));
+
+    expect($document)->not->toBeEmpty();
+
+    foreach (PlateFood::all() as $food) {
+        $name = (string) $food->getTranslation('name', 'ar', false);
+
+        expect(str_contains($document, $name))
+            ->toBeTrue("«{$name}» is not in plate-nutrition-to-verify.md.");
+
+        if ($food->energy_min !== null) {
+            expect(str_contains($document, $food->energy_min.'–'.$food->energy_max))
+                ->toBeTrue("«{$name}» is listed without its span.");
+
+            expect(str_contains($document, (string) $food->source))
+                ->toBeTrue("«{$name}» is listed without its source.");
+        }
+    }
+
+    // The sheet exists so she can see what is NOT yet signed off. If it ever
+    // stops saying so, it has become a list rather than a worksheet.
+    expect(str_contains($document, 'awaiting sign-off'))->toBeTrue();
 });
