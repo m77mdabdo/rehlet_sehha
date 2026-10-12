@@ -553,10 +553,34 @@ class Post extends Model
             return null;
         }
 
-        $englishName = config('clinic.practitioner.display_name_en');
+        /*
+         * FOR THE PRACTITIONER, BOTH LOCALES READ CONFIG. For anybody else,
+         * the name on their account.
+         *
+         * This used to be asymmetric: English came from config and Arabic came
+         * from users.name. That meant the about page (config) and the article
+         * byline (users.name) could disagree — and on 2026-10-12 they did, the
+         * page showing «رنا محمد أحمد سالم» and the byline «أ. رنا محمد أحمد
+         * سالم». Harmless until the practitioner's details became editable
+         * from the panel, at which point changing her name would have updated
+         * the about page and silently left thirteen article bylines on the old
+         * one.
+         *
+         * So the settings screen has ONE name field per locale and it reaches
+         * everything: byline, reviewer line, and the reviewedBy in the
+         * structured data, which all come through this method.
+         *
+         * users.name is still the account's name — who is signed in, what the
+         * panel's user list shows. It is not the public byline any more.
+         */
+        if ($reviewer->hasRole('doctor')) {
+            $configured = Locales::current() === 'en'
+                ? config('clinic.practitioner.display_name_en')
+                : config('clinic.practitioner.name_ar');
 
-        if (Locales::current() === 'en' && $englishName && $reviewer->hasRole('doctor')) {
-            return (string) $englishName;
+            if (filled($configured)) {
+                return (string) $configured;
+            }
         }
 
         return $reviewer->name;

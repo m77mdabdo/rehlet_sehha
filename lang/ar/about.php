@@ -46,6 +46,27 @@ return [
      * Four paragraphs separated by a blank line, rendered as four <p> by
      * <x-prose-paragraphs>. The blank lines are structure, not formatting.
      */
+    /*
+     * IF THIS EVER BECOMES EDITABLE FROM THE PANEL, IT IS DOCTOR-ONLY.
+     *
+     * Asked and answered on 2026-10-12, when the practitioner's details moved
+     * to a settings screen: this paragraph and the specialty descriptions
+     * stayed here on purpose. A settings screen is for what the clinic owns
+     * day to day — a phone number, a licence year. It is not for the one
+     * paragraph that exists because nobody else could write it.
+     *
+     * So if a future change does move it, two things come with it and neither
+     * is optional:
+     *
+     *   1. The field is restricted to the DOCTOR role. PractitionerProfilePage
+     *      is doctor AND admin; putting this on that screen as it stands would
+     *      quietly let an administrator rewrite her words.
+     *   2. PlateFeedbackHasNoNumbersTest's sibling rule applies — the
+     *      PRACTITIONER_VOICE guard that stops anybody else writing in her
+     *      voice has to cover it, the way it covers the articles.
+     *
+     * Read that before starting, not after.
+     */
     'philosophy' => <<<'COPY'
         أول جملة بسمعها من أغلب اللي بييجي لي: "محتاجة أخس وأبقى أحسن." والحاجة التانية اللي بسمعها بعد كام أسبوع من أي نظام تاني جربوه: "زهقت."
 
