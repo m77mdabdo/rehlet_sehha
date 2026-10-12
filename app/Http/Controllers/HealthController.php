@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Support\DeploymentState;
 use App\Support\Heartbeat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -72,6 +73,7 @@ final class HealthController extends Controller
             'scheduler' => $this->scheduler(),
             'queue' => $this->queue(),
             'backup' => $this->backup(),
+            'deploy' => $this->deploy(),
         ];
 
         $healthy = ! in_array(false, $checks, true);
@@ -158,6 +160,31 @@ final class HealthController extends Controller
     private function scheduler(): bool
     {
         return Heartbeat::isFresh();
+    }
+
+    /**
+     * Is the code that is deployed the code that was last built?
+     *
+     * The push IS the deploy on this host: hPanel clones, checks out and
+     * copies, then stops without rebuilding the route or config caches. A
+     * minutely watcher finishes the job — and this is what notices when the
+     * watcher itself has stopped, which is the failure nothing else would
+     * catch.
+     *
+     * We have had three silent failures on this project: a cron entry that
+     * never fired, a seeder that was never called, and a build directory that
+     * was gitignored. Each looked healthy from outside for weeks. The pattern
+     * is always the same — the thing that was supposed to notice was the thing
+     * that was broken — so the watcher gets a check that does not depend on
+     * the watcher running.
+     *
+     * TRUE when there is nothing to compare, deliberately: no repository, or a
+     * state file never written. "Cannot tell" is not "broken", and a check
+     * that goes red because it cannot tell is a check people learn to ignore.
+     */
+    private function deploy(): bool
+    {
+        return DeploymentState::isUpToDate();
     }
 
     /**

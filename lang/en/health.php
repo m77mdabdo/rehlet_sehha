@@ -51,5 +51,11 @@ return [
             'ok' => 'The most recent dump was taken on time.',
             'failed' => 'There is no recent backup. Nothing is lost yet, but there is nothing to restore from.',
         ],
+
+        'deploy' => [
+            'label' => 'Last update',
+            'ok' => 'The deployed code has been fully built.',
+            'failed' => 'New code was deployed but never finished building. The site is serving, but some pages may error. Needs a developer.',
+        ],
     ],
 ];
