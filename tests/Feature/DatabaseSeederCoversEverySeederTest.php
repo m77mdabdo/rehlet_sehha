@@ -54,7 +54,14 @@ it('seeds the plate builder with food, in every group', function () {
 
     $foods = PlateFood::query()->active()->get();
 
-    expect($foods)->toHaveCount(29);
+    /*
+     * 33 since 2026-10-12: the generic «مكسرات» chip was replaced with five
+     * named nuts on the practitioner's instruction, because almonds and
+     * cashews are not interchangeable figures. The count is asserted rather
+     * than left loose so that a food silently disappearing from the seeder —
+     * which now PRUNES anything it no longer lists — fails here.
+     */
+    expect($foods)->toHaveCount(33);
 
     $byGroup = $foods->groupBy(fn (PlateFood $f): string => $f->group->value);
 
@@ -65,7 +72,7 @@ it('seeds the plate builder with food, in every group', function () {
         expect($byGroup[$group->value])->not->toBeEmpty();
     }
 
-    expect($byGroup->map->count()->sort()->values()->all())->toBe([3, 4, 5, 5, 6, 6]);
+    expect($byGroup->map->count()->sort()->values()->all())->toBe([3, 5, 5, 6, 6, 8]);
 
     // Both languages, because the homepage renders in either.
     $first = $foods->first();
