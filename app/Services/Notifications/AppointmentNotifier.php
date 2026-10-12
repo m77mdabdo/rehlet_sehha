@@ -111,14 +111,14 @@ class AppointmentNotifier
     |--------------------------------------------------------------------------
     */
 
-    public function newBookingAlert(Appointment $appointment): void
+    public function newBookingAlert(Appointment $appointment): DeliveryOutcome
     {
-        $this->toClinic($appointment, new NewBookingAlert($appointment));
+        return $this->toClinic($appointment, new NewBookingAlert($appointment), immediate: true);
     }
 
-    public function bookingCancelledAlert(Appointment $appointment): void
+    public function bookingCancelledAlert(Appointment $appointment): DeliveryOutcome
     {
-        $this->toClinic($appointment, new BookingCancelledAlert($appointment));
+        return $this->toClinic($appointment, new BookingCancelledAlert($appointment), immediate: true);
     }
 
     /**
@@ -265,21 +265,83 @@ class AppointmentNotifier
      * own daily schedule in English because one patient happened to book in
      * English would be absurd.
      */
-    private function toClinic(?Appointment $appointment, BaseNotification&LogsDelivery $notification): void
-    {
+    private function toClinic(
+        ?Appointment $appointment,
+        BaseNotification&LogsDelivery $notification,
+        bool $immediate = false,
+    ): DeliveryOutcome {
         $email = Contact::email();
 
         if ($email === null) {
             // Nothing is configured to receive this. Nothing to do, and
             // nothing to log against — there is no recipient to record.
-            return;
+            return DeliveryOutcome::Skipped;
         }
 
         $log = $this->openLog($appointment, $notification->deliveryTemplate(), $email);
         $notification->setDeliveryLogId($log->id);
 
-        Notification::route('mail', $email)
-            ->notify($notification->locale(config('app.locale')));
+        $localised = $notification->locale(config('app.locale'));
+
+        if (! $immediate) {
+            Notification::route('mail', $email)->notify($localised);
+
+            return DeliveryOutcome::Queued;
+        }
+
+        /*
+         * SENT INSIDE THE BOOKING REQUEST, FOR THE SAME REASON THE PATIENT'S
+         * CONFIRMATION IS — and this one is the half that was actually broken.
+         *
+         * The patient's confirmation went synchronous on 2026-09-08 and has
+         * been arriving ever since. The clinic's alert stayed on the queue,
+         * and the queue was not draining: a real booking made on 26 September
+         * sat unseen until 11 October, by which time the appointment date had
+         * passed. The patient had her email; nobody at the clinic had anything.
+         *
+         * Cron is running again now, so this is no longer the only thing
+         * standing between a booking and the clinic knowing about it. It is
+         * still the right place for it: a booking alert that arrives a minute
+         * later is a minute the clinic cannot answer the phone about a patient
+         * who just booked, and the whole point of the alert is immediacy.
+         *
+         * THE CATCH IS NOT OPTIONAL. Synchronous means the mail server is
+         * inside the patient's booking request. An SMTP outage must never turn
+         * her successful booking into an error page, and — just as important —
+         * must not change what her confirmation screen tells her. The clinic's
+         * alert failing is the clinic's problem, not hers.
+         */
+        try {
+            Notification::route('mail', $email)->notifyNow($localised);
+
+            return DeliveryOutcome::Sent;
+        } catch (Throwable $e) {
+            Log::warning('Immediate clinic alert failed; falling back to the queue.', [
+                'template' => $notification->deliveryTemplate(),
+                'appointment' => $appointment?->reference,
+                'delivery_log' => $log->id,
+                'reason' => $e->getMessage(),
+            ]);
+
+            Notification::route('mail', $email)->notify($localised);
+
+            /*
+             * Put the row back to QUEUED after re-dispatching — see the same
+             * note in toPatient(). The framework stamps `failed` for the
+             * attempt that threw, which describes the attempt correctly and
+             * the message wrongly: it is on the queue.
+             */
+            $log->refresh();
+
+            if ($log->status === NotificationLog::STATUS_FAILED) {
+                $log->update([
+                    'status' => NotificationLog::STATUS_QUEUED,
+                    'error' => 'Immediate send failed, queued instead: '.$e->getMessage(),
+                ]);
+            }
+
+            return DeliveryOutcome::Queued;
+        }
     }
 
     /**

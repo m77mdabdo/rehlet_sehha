@@ -866,3 +866,140 @@ function failTheMailTransport(): void
         };
     });
 }
+
+/*
+|------------------------------------------------------------------------------
+| The clinic's own alert, now immediate too
+|------------------------------------------------------------------------------
+|
+| The patient's confirmation went synchronous first and has been arriving ever
+| since. The clinic's alert stayed queued, and the queue was not draining — a
+| real booking on 26 September went unseen until 11 October, by which time the
+| appointment date had passed. She had her email; nobody at the clinic had
+| anything.
+*/
+
+it('tells the clinic about a booking with no queue worker running', function () {
+    $appointment = notifiableAppointment();
+
+    Queue::fake();
+    Mail::fake();
+
+    $outcome = app(AppointmentNotifier::class)->newBookingAlert($appointment);
+
+    expect($outcome)->toBe(DeliveryOutcome::Sent);
+
+    Queue::assertNothingPushed();
+
+    expect(NotificationLog::where('appointment_id', $appointment->id)
+        ->where('template', 'new_booking_alert')
+        ->value('status'))->toBe(NotificationLog::STATUS_SENT);
+});
+
+it('tells the clinic about a cancellation the same way', function () {
+    $appointment = notifiableAppointment();
+
+    Queue::fake();
+    Mail::fake();
+
+    expect(app(AppointmentNotifier::class)->bookingCancelledAlert($appointment))
+        ->toBe(DeliveryOutcome::Sent);
+
+    Queue::assertNothingPushed();
+});
+
+it('still books, still confirms the patient, when the clinic alert cannot be sent', function () {
+    /*
+     * The whole point of the catch. Synchronous puts the mail server inside
+     * her booking request; the clinic's alert failing is the clinic's problem
+     * and must not reach her — not as an error page, and not as different
+     * wording on her confirmation screen.
+     */
+    $appointment = notifiableAppointment();
+
+    failTheMailTransport();
+    Queue::fake();
+
+    $notifier = app(AppointmentNotifier::class);
+
+    // Her confirmation falls back, and still reports honestly.
+    expect($notifier->bookingConfirmed($appointment))->toBe(DeliveryOutcome::Queued);
+
+    // The clinic's alert falls back too, and does NOT throw.
+    expect($notifier->newBookingAlert($appointment))->toBe(DeliveryOutcome::Queued);
+
+    // The appointment is untouched.
+    expect($appointment->fresh()->reference)->toBe($appointment->reference);
+
+    // Both were re-queued rather than lost.
+    expect(count(Queue::pushedJobs()))->toBeGreaterThan(0);
+
+    // And the clinic's row says why, where the clinic will see it.
+    $log = NotificationLog::where('appointment_id', $appointment->id)
+        ->where('template', 'new_booking_alert')->firstOrFail();
+
+    expect($log->status)->toBe(NotificationLog::STATUS_QUEUED);
+    expect(str_contains((string) $log->error, 'Immediate send failed'))->toBeTrue();
+});
+
+it('completes the booking and still answers the patient when the mail server is down', function () {
+    /*
+     * The booking flow end to end with no mail server at all — which is the
+     * only way to observe the promise that matters: a failure anywhere in the
+     * notification layer must not reach her as an error page, and her
+     * confirmation screen must still say something honest.
+     *
+     * Her screen reads confirmationDelivery, which is set from HER message's
+     * outcome and nothing else. The clinic's alert is dispatched afterwards
+     * and its result is deliberately discarded by the wizard, so it cannot
+     * change a word of what she is shown.
+     */
+    $service = Service::active()->firstOrFail();
+
+    $slot = app(AvailabilityEngine::class)->availableSlots(
+        CarbonImmutable::now()->utc(),
+        CarbonImmutable::now()->addDays(7)->utc(),
+        null,
+        $service,
+    )->firstOrFail();
+
+    failTheMailTransport();
+    Queue::fake();
+
+    $component = Livewire::test(BookingWizard::class)
+        ->call('selectService', $service->id)
+        ->call('next')
+        ->call('selectSlot', $slot->key())
+        ->call('next');
+
+    CarbonImmutable::setTestNow(CarbonImmutable::getTestNow()->addSeconds(30));
+    Carbon::setTestNow(CarbonImmutable::getTestNow());
+
+    $component
+        ->set([
+            'name' => 'راوية غانم',
+            'phone' => '01012345678',
+            'email' => 'rawia@example.com',
+            'birthDate' => '1990-04-11',
+            'goal' => 'weight_management',
+            'consent' => true,
+        ])
+        ->call('submit')
+        // No error page, no validation failure: she reached the confirmation.
+        ->assertHasNoErrors()
+        ->assertSet('step', 4)
+        // And the screen has an honest answer rather than a blank or a claim
+        // that her message was sent.
+        ->assertSet('confirmationDelivery', DeliveryOutcome::Queued->value);
+
+    // The booking itself exists, which is the thing that must never be lost.
+    $appointment = Appointment::query()->latest('id')->firstOrFail();
+    expect($appointment->reference)->not->toBeEmpty();
+
+    // Both messages fell back to the queue rather than vanishing.
+    expect(count(Queue::pushedJobs()))->toBeGreaterThan(0);
+
+    expect(NotificationLog::where('appointment_id', $appointment->id)->pluck('template')->all())
+        ->toContain('booking_confirmed')
+        ->toContain('new_booking_alert');
+});
