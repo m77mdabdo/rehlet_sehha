@@ -350,6 +350,53 @@ still works — Livewire's own JS is served by a route, not a file — so the
 delivery log, the database and `/up` all look healthy while the panel is
 unusable. There is nothing in `laravel.log`, because nothing threw.
 
+### The other generated files: the Vite build
+
+`composer install` fixes the Filament assets. It does **nothing** for the
+compiled CSS and JavaScript, and those fail the same way for the same reason.
+
+There is no Node on this plan, so the build cannot run during deployment — it
+has to travel in the repository. Laravel's stock `.gitignore` ignores
+`/public/build`, which is correct for a project that builds on deploy and
+wrong for this one. It was force-added once, in 68fb233, and that worked
+exactly once: the next build produced new hashed filenames, `git add -A`
+skipped them in silence, and the same commit deleted the previously tracked
+files. `manifest.json` is tracked, so it was updated to point at files that
+never left the developer's machine.
+
+The result on 2026-10-12 was a homepage that returned **200 with no stylesheet
+and no script**. Nothing alerted, because nothing was broken from the server's
+point of view — it served exactly what it had.
+
+`/public/build` is no longer ignored, and `BuiltAssetsAreCommittedTest` fails
+the build if it is ignored again or if the manifest names a file git does not
+track. After changing anything under `resources/js` or `resources/css`:
+
+```bash
+npm run build
+git add public/build            # no -f needed any more, and there should not be
+git status --porcelain public/build   # expect the new hashed files as A, the old as D
+```
+
+### The check that catches both
+
+```bash
+curl -sI https://rehletsehha.com/css/filament/filament/app.css | head -1   # Filament
+curl -s https://rehletsehha.com/ar | grep -oE '/build/assets/app-[^"]+' \
+  | sort -u | while read -r a; do printf '%s %s\n' "$(curl -sI -o /dev/null -w '%{http_code}' "https://rehletsehha.com$a")" "$a"; done
+```
+
+Every line must be `200`. A `404` on the first means `composer install` did not
+run; a `404` on the others means the build never left your machine.
+
+Note that Hostinger's CDN caches 404s. After fixing either, the first few
+requests may still fail — check the origin directly before concluding the fix
+did not work:
+
+```bash
+curl -sI --resolve rehletsehha.com:443:147.93.93.96 https://rehletsehha.com/build/assets/<file>
+```
+
 ### Why the caches come after, not before
 
 `filament:upgrade` ends by clearing the config, route and view caches. Cache
