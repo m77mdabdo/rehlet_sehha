@@ -23,7 +23,25 @@
 # config/photos.php. See docs/media/photography.md for where the originals are.
 /public/photos
 
-/public/build
+# THE VITE BUILD IS COMMITTED, DELIBERATELY. Do not re-add /public/build here.
+#
+# Laravel ignores this by default, on the assumption that the build runs during
+# deployment. It cannot here: there is no Node on the Hostinger plan, which is
+# why the runbook says not to run `composer setup`. The compiled CSS and JS are
+# the only copy that will ever exist on the server, so they have to travel with
+# the repository.
+#
+# This was ignored until 2026-10-12 and the build was force-added once, in
+# 68fb233, which worked exactly once. The next build produced new hashed
+# filenames, `git add -A` skipped them in silence because they matched this
+# rule, and the commit deleted the old tracked files while adding nothing in
+# their place. Production served a homepage with no stylesheet and no script
+# until it was spotted — the second time in this project that a generated,
+# gitignored file took the site down after a deploy, after the Filament assets
+# did the same thing.
+#
+# /public/hot is still ignored: that is the dev-server marker and must never
+# reach production.
 /public/hot
 /public/storage
 /storage/*.key
