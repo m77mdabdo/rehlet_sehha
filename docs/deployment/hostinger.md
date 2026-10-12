@@ -232,21 +232,33 @@ the account. hPanel → Advanced → Cron Jobs is the only route, which also mea
 this is the one deployment step that cannot be scripted or verified from the
 deploy machine.
 
-One line:
+One line, and **copy it exactly**:
 
 ```
-* * * * * cd /home/u109745148/domains/rehletsehha.com/public_html && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
+* * * * * /usr/bin/php /home/u109745148/domains/rehletsehha.com/public_html/artisan schedule:run
 ```
 
-Two details in that line, both of which this document previously had wrong:
+Three details in that line, every one of which this document has had wrong at
+some point, and the first two cost 33 days between them:
 
+- **No `cd`, and no shell syntax of any kind.** Not `&&`, not a pipe, not a
+  redirect. The absolute path to `artisan` is how the working directory is
+  established. hPanel's runner does not put this string through a shell, and
+  `cd` is a shell builtin — there is no `/bin/cd` — so an entry beginning
+  `cd … &&` cannot execute at all. It fails in complete silence. See the
+  post-mortem below; this document prescribed exactly that entry until
+  2026-10-12.
+- **No `>> /dev/null 2>&1`.** hPanel's عرض النتائج is the only window into what
+  cron did, and redirecting output closes it. Add it later if you must, never
+  while proving an entry.
 - **`public_html`, not `app`.** The whole project lives in `public_html` on
   this host — see step 3 — and `~/domains/rehletsehha.com/app` does not exist.
   An entry pointing there fails silently once a minute forever.
-- **`/usr/bin/php`, spelled out.** It is 8.5.4 and matches the FPM version the
-  site actually runs (table C, row 2). hPanel's cron form does not necessarily
-  inherit the shell's PATH, and a cron running a different PHP is exactly the
-  mismatch row 2 exists to catch.
+
+`/usr/bin/php` is spelled out because hPanel's cron form does not necessarily
+inherit the shell's PATH. Note that Laravel then resolves a *different* binary
+for the subprocesses it spawns — see "Which PHP the scheduler actually runs"
+below.
 
 This single entry drives everything:
 
@@ -298,6 +310,64 @@ The consequences, precisely:
   **It stops being true if cron stops.** If the scheduler is down for six
   hours, a patient three hours from her appointment is told it is tomorrow.
   That is a cron-outage failure, not a cadence one — monitor step 13.
+
+### The entry that silently never ran, and why — 2026-09-08 to 2026-10-11
+
+**This is the actual cause, established from hPanel's own result view on
+2026-10-12, not a guess.** It is written out because the failure left no trace
+of any kind and cost 33 days.
+
+The entry that never fired:
+
+```
+cd /home/u109745148/domains/rehletsehha.com/public_html && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
+```
+
+The entry that works:
+
+```
+/usr/bin/php /home/u109745148/domains/rehletsehha.com/public_html/artisan schedule:run
+```
+
+**The command was never wrong. It was wrong FOR HPANEL'S RUNNER**, and that
+distinction is the whole lesson. Measured on the host:
+
+| | |
+|---|---|
+| the directory exists | yes |
+| the `cd` form under `/bin/sh -c` | **exit 0**, scheduler runs, heartbeat advances |
+| `cd` as an executable | `/usr/bin/env: 'cd': No such file or directory` |
+
+`cd` is a shell builtin. There is no `/bin/cd`. So a runner that executes the
+string through a shell handles that line perfectly — which is why it passed
+every test done over SSH — and a runner that does not cannot execute it at all.
+hPanel's is the second kind.
+
+**So: cron commands here use an absolute path to `artisan` and no shell syntax.
+No `cd`, no `&&`, no pipes, no redirection.** Not because those are bad
+practice, but because there may be no shell to interpret them, and the failure
+mode when there isn't is total silence.
+
+That silence is the part worth dwelling on. `&&` means the right-hand side runs
+only if the left succeeds, so a failed `cd` produces **no error, no log line, no
+exit code anybody sees, and no trace anywhere on the system**. From outside it
+is indistinguishable from an entry that is working. For 33 days `/up` reported
+`scheduler:false`, which is exactly what it is for, and the obvious reading —
+"cron isn't configured yet" — was wrong in a way nothing contradicted.
+
+**And never `>> /dev/null 2>&1` on a scheduler entry.** It was not the cause
+here, but it is what made the cause invisible: hPanel's عرض النتائج (view
+results) is the only window into what cron did, and redirecting output closes
+it. Add the redirect once the entry is proven, if at all. The output is small
+— three lines a minute — and it is the only diagnostic that exists.
+
+Confirmed working, from the result view:
+
+```
+17:55:02  queue:work --stop-when-empty --max-time=50 --tries=3   DONE
+17:55:02  clinic:send-reminders                      393.20ms    DONE
+17:55:02  scheduler-heartbeat                          1.18ms    DONE
+```
 
 ### Which PHP the scheduler actually runs
 
