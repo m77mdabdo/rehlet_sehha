@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Enums\CitationConfidence;
+use App\Enums\FoodGroup;
 use App\Models\Citation;
+use App\Models\PlateFood;
 use App\Models\Post;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
@@ -41,11 +43,13 @@ class ExportReviewDocs extends Command
     protected $signature = 'clinic:export-review-docs
                             {--check : Fail if the committed files are out of date, and write nothing}';
 
-    protected $description = 'Regenerate the clinical prompt list and the citation verification list from the articles';
+    protected $description = 'Regenerate the clinical prompt list, the citation verification list and the plate nutrition sign-off sheet';
 
     private const PROMPTS = 'docs/content/clinical-prompts.md';
 
     private const CITATIONS = 'docs/content/citations-to-verify.md';
+
+    private const NUTRITION = 'docs/content/plate-nutrition-to-verify.md';
 
     public function handle(): int
     {
@@ -60,6 +64,7 @@ class ExportReviewDocs extends Command
         $files = [
             self::PROMPTS => $this->prompts($posts),
             self::CITATIONS => $this->citations($posts),
+            self::NUTRITION => $this->nutrition(PlateFood::query()->orderBy('sort_order')->get()),
         ];
 
         $stale = [];
@@ -89,12 +94,145 @@ class ExportReviewDocs extends Command
                 return self::FAILURE;
             }
 
-            $this->info('Both review documents are current.');
+            $this->info('All three review documents are current.');
 
             return self::SUCCESS;
         }
 
         return self::SUCCESS;
+    }
+
+    /**
+     * The plate builder's energy estimates, for the practitioner to sign off.
+     *
+     * Same discipline as the citations sheet, for the same reason: these
+     * figures were drafted without internet access, from memory of what the
+     * named sources say. Every one is flagged `needs_review` and shows no
+     * estimate to a patient until she has checked it.
+     *
+     * @param  Collection<int, PlateFood>  $foods
+     */
+    private function nutrition($foods): string
+    {
+        $pending = $foods->where('needs_review', true);
+        $signed = $foods->where('needs_review', false);
+
+        $lines = [$this->nutritionHeader($foods->count(), $pending->count(), $signed->count())];
+
+        foreach (FoodGroup::cases() as $group) {
+            $inGroup = $foods->where('group', $group);
+
+            if ($inGroup->isEmpty()) {
+                continue;
+            }
+
+            $lines[] = '## '.$group->label().'  ('.$group->value.')';
+            $lines[] = '';
+
+            foreach ($inGroup as $food) {
+                $ar = $food->getTranslation('name', 'ar', false);
+                $en = $food->getTranslation('name', 'en', false);
+                $box = $food->needs_review ? '[ ]' : '[x]';
+
+                $lines[] = "### {$box} {$food->emoji} {$ar} — {$en}";
+                $lines[] = '';
+                $lines[] = '| | |';
+                $lines[] = '|---|---|';
+                $lines[] = '| Portion | one '.$food->unit->value.', default '.rtrim(rtrim(number_format($food->default_portion, 2), '0'), '.').' |';
+                $lines[] = '| **Energy, per '.$food->unit->value.'** | **'.$food->energy_min.'–'.$food->energy_max.'** |';
+
+                $macros = $food->macros ?? [];
+
+                foreach (['protein', 'carbs', 'fat'] as $macro) {
+                    if (isset($macros[$macro])) {
+                        $lines[] = '| '.ucfirst($macro).' (g) | '.$macros[$macro][0].'–'.$macros[$macro][1].' |';
+                    }
+                }
+
+                $lines[] = '| Source | '.($food->source ?? '**none — must not publish**').' |';
+                $lines[] = '| Status | '.($food->needs_review
+                    ? 'awaiting sign-off — **no estimate shown to patients**'
+                    : 'signed off '.$food->reviewed_at?->toDateString()).' |';
+                $lines[] = '';
+
+                if (filled($food->source_note)) {
+                    $lines[] = '> '.$food->source_note;
+                    $lines[] = '';
+                }
+            }
+        }
+
+        return implode("\n", $lines);
+    }
+
+    private function nutritionHeader(int $total, int $pending, int $signed): string
+    {
+        return <<<MD
+            # Plate nutrition — values to verify
+
+            > **Generated file.** `php artisan clinic:export-review-docs`. Edit the values in
+            > `database/seeders/PlateFoodSeeder.php`, not this document.
+
+            {$total} foods. **{$pending} awaiting sign-off, {$signed} signed off.**
+
+            ## Why this document exists
+
+            The plate builder showed no numbers at all until 2026-10-12, by design and
+            with a test enforcing it. The practitioner decided an honest energy estimate,
+            kept secondary to the proportion feedback and free of any target, is more
+            useful to her patients than silence. This sheet is the condition attached to
+            that decision.
+
+            **Every figure below was drafted without internet access, from memory of what
+            USDA FoodData Central and the Egyptian food composition tables say.** That is
+            a legitimate way to draft and an indefensible way to publish. A plausible
+            calorie figure on a clinic's homepage, under a licensed practitioner's name,
+            borrows a nutritional authority's credibility for a number that authority may
+            never have published.
+
+            So nothing here reaches a patient until it is checked. A food awaiting
+            sign-off still appears on the plate and still counts towards the proportion
+            feedback — it simply carries no estimate and is left out of the total. With
+            every food pending, the feature behaves exactly as it did before the change.
+
+            ## What verifying means here
+
+            Not "is this number plausible" — it is, that is why it was easy to draft.
+            The question is **does the named source actually say this, for this portion**.
+
+            Three outcomes, all useful:
+
+            1. **Confirmed.** Tick the box, record the edition or FDC ID in the source
+               note, and set `needs_review => false` with your name against it.
+            2. **The source says something different.** Replace the span with what it
+               actually says. The span may get wider; that is fine and usually better.
+            3. **The source does not cover this food.** Either name a different source
+               or leave the food with no estimate. A food with no figure is a working
+               part of this tool, not a gap.
+
+            ## Why every value is a span and never a single figure
+
+            The unit is a household measure — a spoon, a cup, a baladi loaf. A spoon is
+            not a calibrated volume, so anything derived from one is a range before the
+            food itself varies at all. `PlateFood` refuses to save a row where the
+            minimum equals the maximum, so a single figure cannot enter the database even
+            by accident.
+
+            The four composite dishes — كشري، مسقعة، ملوخية، كرنب محشي — carry
+            deliberately wide spans. Nobody measures the oil in molokhia or the pasta in
+            koshari. Those are the rows where the span is the whole point: a
+            tight-looking number for a dish nobody measures is worse than an honest one.
+
+            ## Two foods flagged for a decision, not just a check
+
+            - **بطاطس** spans 110–350 because boiled potatoes and chips are the same chip
+              on this screen. You may want them as two foods.
+            - **مكسرات** is "nuts" generally; almonds and cashews are not interchangeable
+              figures. You may want to name one.
+
+            ---
+
+            MD;
     }
 
     /**

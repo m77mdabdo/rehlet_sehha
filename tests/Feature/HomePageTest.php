@@ -10,6 +10,7 @@ use App\Models\Testimonial;
 use App\Support\PublicContent;
 use Database\Seeders\DoctorUserSeeder;
 use Database\Seeders\FaqSeeder;
+use Database\Seeders\PlateFoodSeeder;
 use Database\Seeders\PostSeeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\ServiceSeeder;
@@ -32,6 +33,11 @@ beforeEach(function () {
     $this->seed(FaqSeeder::class);
     $this->seed(TestimonialSeeder::class);
     $this->seed(PostSeeder::class);
+    // The plate builder, so the assertions below actually see it. Without this
+    // the section renders its empty state and every guard on it passes
+    // vacuously — which is how the calorie-word ban came to be checked
+    // against a page that had no plate on it.
+    $this->seed(PlateFoodSeeder::class);
 
     Cache::flush();
 });
@@ -208,19 +214,50 @@ it('busts the cache when content changes', function () {
     $this->get('/ar')->assertOk()->assertSee('باقة اتغيرت', false);
 });
 
-it('shows no weight, bmi or calorie figures anywhere', function (string $locale) {
+it('shows no weight, bmi or calorie figures anywhere but the plate estimate', function (string $locale) {
     /*
      * A standing clinical and brand rule, not a preference — see the comment
      * at the top of the hero section. Asserted rather than trusted, because
      * this is exactly the sort of thing a future "improvement" adds back.
+     *
+     * NARROWED ON 2026-10-12, DELIBERATELY, AND BY ONE EXEMPTION ONLY.
+     *
+     * The practitioner approved an energy estimate inside the plate builder,
+     * so the copy for that estimate necessarily names the unit. Its payload is
+     * carried on a single attribute — data-plate-estimate-strings — and that
+     * attribute is the whole of the exemption. Everything else on the page,
+     * including every other attribute and all of its visible prose, is still
+     * held to the original ban.
+     *
+     * TWO THINGS THAT WOULD HAVE BEEN EASIER AND ARE NOT DONE HERE:
+     *
+     * The Arabic estimate reads «سعر حراري», which does not literally contain
+     * «سعرة» or «سعرات» and so would have slipped past the list below
+     * untouched. Relying on that would have left the guard looking intact
+     * while meaning nothing, which is worse than narrowing it in the open.
+     *
+     * And this test used to pass for the wrong reason entirely: HomePageTest
+     * never seeded PlateFoodSeeder, so the plate rendered its empty state and
+     * none of these terms were ever checked against it. A blatant calorie
+     * counter in the plate would have passed. The seeder is now in the
+     * fixture, which is what made this exemption necessary — and visible.
      */
     $content = $this->get("/{$locale}")->assertOk()->getContent();
+
+    $exempt = (string) preg_replace('/data-plate-estimate-strings="[^"]*"/', '', $content);
 
     $forbidden = ['كيلو', 'كجم', 'سعرة', 'سعرات', 'مؤشر كتلة', 'BMI', 'kcal', 'calorie', 'Calorie'];
 
     foreach ($forbidden as $term) {
-        expect(str_contains($content, $term))->toBeFalse("The page mentions «{$term}».");
+        expect(str_contains($exempt, $term))->toBeFalse("The page mentions «{$term}» outside the plate estimate.");
     }
+
+    // And the exemption is not a blank cheque: the estimate payload is the
+    // only thing it covers, and it has to actually be there. If the plate
+    // stops rendering, this test must stop passing vacuously again.
+    expect(str_contains($content, 'data-plate-estimate-strings'))->toBeTrue(
+        'The plate estimate payload is missing, so this guard is not checking anything.'
+    );
 
     // "kg" and "lb" as standalone words, so "kg" inside a hashed asset name
     // does not trip it.
@@ -341,10 +378,21 @@ it('uses a native details accordion rather than javascript', function () {
      * holds the buying questions that live on the packages page — and this
      * assertion counting every active row is what caught the homepage
      * quietly growing by six answers about refunds when those were seeded.
+     *
+     * SCOPED TO THE FAQ SECTION, which it was not before. Counting <details>
+     * across the whole page silently also asserted "the FAQ is the only
+     * accordion on the homepage" — true when it was written, and it failed
+     * the day the plate builder gained a collapsible panel for adding your
+     * own food. That is a different feature and not what this test is about;
+     * the count it cares about is the number of questions.
      */
-    expect(substr_count($content, '<details'))
+    preg_match('/<section id="faq".*?<\/section>/su', $content, $faq);
+
+    expect($faq)->not->toBeEmpty('The FAQ section did not render.');
+
+    expect(substr_count($faq[0], '<details'))
         ->toBe(Faq::active()->category(Faq::CATEGORY_GENERAL)->count());
-    expect($content)->toContain('<summary');
+    expect($faq[0])->toContain('<summary');
 });
 
 it('reads the stats band from config', function () {

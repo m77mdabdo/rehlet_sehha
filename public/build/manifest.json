@@ -32,7 +32,7 @@
     "src": "node_modules/@fontsource/tajawal/files/tajawal-latin-700-normal.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-DoH-Uzlv.css",
+    "file": "assets/app-CbT_YxL9.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -41,7 +41,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-BZB2L_dp.js",
+    "file": "assets/app-D03oQVo-.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
