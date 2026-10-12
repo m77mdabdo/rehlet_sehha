@@ -121,8 +121,33 @@ function catalogueFor(string $page, string $locale): array
 
     if ($page === 'about') {
         // The same facts about the same person, correctly repeated.
-        $entries[] = (string) __('about.name', [], $locale);
-        $entries[] = (string) __('about.title', [], $locale);
+
+        /*
+         * READ FROM CONFIG, NOT FROM A TRANSLATION KEY — and this is the
+         * second time that distinction has bitten this function. The note a
+         * few lines below describes `about.credentials` silently resolving to
+         * its own name; `about.name` and `about.title` were doing exactly the
+         * same thing, and had been all along. A missing key does not fail, it
+         * returns the key, so the catalogue was being handed the literal
+         * strings "about.name" and "about.title" and the practitioner's actual
+         * name and title were never excluded.
+         *
+         * It passed anyway, because the old name was short enough that the
+         * five-word runs it shared stayed under the threshold. Lengthening it
+         * to «أ. رنا محمد أحمد سالم» on 2026-10-12 pushed the English overlap
+         * to 22.2% and surfaced it — a test that was measuring the right thing
+         * for the wrong reason, which is the kind that fails on an unrelated
+         * change years later.
+         *
+         * Both names are here because the two locales render different values:
+         * the Arabic page the Arabic name, the English page the
+         * transliteration.
+         */
+        $entries[] = (string) config('clinic.practitioner.name_ar');
+        $entries[] = (string) config('clinic.practitioner.display_name_en');
+        $entries[] = (string) config('clinic.practitioner.title_ar');
+        $entries[] = (string) config('clinic.practitioner.title_en');
+
         $entries[] = (string) __('about.philosophy', [], $locale);
         $entries[] = (string) __('about.registration', [], $locale);
 
@@ -621,12 +646,20 @@ it('issues a bounded number of queries on every page', function () {
          * None is avoidable by denormalising onto the post. A stored category
          * name is how an index ends up disagreeing with the article on it.
          *
+         * 8 -> 9 on 2026-10-12, when the Arabic byline started reading the
+         * configured practitioner name instead of users.name. The choice is
+         * gated on hasRole('doctor'), so the roles relation is now needed on
+         * every article page and is eager-loaded as `reviewer.roles`. That is
+         * one extra query, once, rather than one per reviewer — the cheap
+         * direction, and the alternative was leaving it lazy and paying it
+         * anyway without the eager load making it visible here.
+         *
          * 7 -> 8 when the references section landed. The eighth is the
          * citations eager load, and it is the cheap direction of the trade:
          * one query for every reference on the page instead of one per
          * reference, on articles carrying up to seven of them.
          */
-        '/ar/articles/'.liveArticle()->slug => 8,
+        '/ar/articles/'.liveArticle()->slug => 9,
     ];
 
     foreach ($bounds as $path => $expected) {

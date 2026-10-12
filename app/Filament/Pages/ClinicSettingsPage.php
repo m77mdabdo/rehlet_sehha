@@ -99,8 +99,17 @@ class ClinicSettingsPage extends Page
                             ->label('إيميل العيادة')
                             ->email()
                             ->required()
+                            /*
+                             * ROUTABLE, not merely well-formed. This address
+                             * receives every booking alert, the daily
+                             * schedule and the backup-failure warning — a
+                             * typo'd domain here is silence that looks like
+                             * calm. rfc,dns makes the domain prove it has a
+                             * mail exchanger before this is saved.
+                             */
+                            ->rules(['email:rfc,dns'])
                             ->extraInputAttributes(['dir' => 'ltr'])
-                            ->helperText('كل رسايل المرضى بترد على الإيميل ده.'),
+                            ->helperText('كل رسايل المرضى بترد على الإيميل ده، وكل تنبيهات الحجوزات كمان.'),
 
                         TextInput::make('clinic__contact__phone')
                             ->label('رقم التليفون (بصيغة دولية)')
