@@ -3,6 +3,14 @@
 .env
 .env.backup
 .env.production
+# Every other environment file too (.env.local, .env.staging, .env.testing…).
+# This repository is public and these hold credentials; only the template is
+# committed.
+.env.*
+!.env.example
+# Database dumps. Every one of them holds patient records.
+*.sql
+*.sql.gz
 .phpactor.json
 .phpunit.result.cache
 /.fleet

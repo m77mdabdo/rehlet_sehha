@@ -114,8 +114,14 @@ The real protection is rule 3.
 
 ## Deploying to Hostinger
 
-Hostinger deploys are typically a git pull plus a handful of Artisan commands.
-Order matters:
+Deploys are now automatic: a push to `main` is cloned by hPanel and finished by
+the scheduled `clinic:watch-deployment` command — see
+[hostinger.md](hostinger.md). **That command does not run
+`clinic:verify-key`**, so on the automatic path a wrong key is caught only by
+the daily 03:00 run, not before the deploy migrates. Changing `.env` on the
+server is therefore the moment to run `php artisan clinic:verify-key` by hand.
+
+For a manual deploy, the order below still applies:
 
 ```bash
 cd ~/domains/DOMAIN/public_html

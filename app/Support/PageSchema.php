@@ -46,7 +46,7 @@ final class PageSchema
 
         return json_encode(
             ['@context' => 'https://schema.org', '@graph' => $graph],
-            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR,
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_THROW_ON_ERROR,
         );
     }
 
