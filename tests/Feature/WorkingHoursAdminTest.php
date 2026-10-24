@@ -55,7 +55,7 @@ function scheduleStaff(string $role): User
 }
 
 it('lets the doctor and the admin reach the schedule, and nobody else', function (string $role, bool $allowed) {
-    $user = staffWithRole($role);
+    $user = scheduleStaff($role);
 
     $response = $this->actingAs($user)->get('/admin/working-hours');
 

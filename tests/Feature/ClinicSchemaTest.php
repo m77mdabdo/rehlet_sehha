@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\WorkingHour;
 use App\Support\ClinicSchema;
+use App\Support\PageSchema;
 use App\Support\PublicContent;
 use Database\Seeders\DoctorUserSeeder;
 use Database\Seeders\RoleSeeder;
@@ -144,3 +145,22 @@ it('points at the current locale url', function (string $locale) {
     expect($schema['url'])->toEndWith('/'.$locale);
     expect($schema['inLanguage'])->toBe($locale);
 })->with(['ar', 'en']);
+
+it('cannot be closed early by text that reaches the markup', function () {
+    /*
+     * The JSON-LD is printed raw inside a <script> element, and titles and
+     * breadcrumb labels are staff-editable. With slashes left unescaped, a
+     * title containing "</script>" ended the element there and the rest of it
+     * became HTML on a public page. JSON_HEX_TAG writes < and > as < and
+     * >, which every JSON parser reads back as the same characters.
+     */
+    $label = '</script><img src=x onerror=alert(1)>';
+
+    foreach ([ClinicSchema::toJson(), PageSchema::toJson([['label' => $label, 'url' => null]])] as $json) {
+        expect($json)->not->toContain('<')->not->toContain('>');
+    }
+
+    $decoded = json_decode(PageSchema::toJson([['label' => $label, 'url' => null]]), true, 512, JSON_THROW_ON_ERROR);
+
+    expect($decoded['@graph'][1]['itemListElement'][0]['name'])->toBe($label);
+});

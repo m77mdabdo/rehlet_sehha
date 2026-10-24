@@ -2,9 +2,9 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
-    "license": "MIT",
+    "description": "Bilingual (Arabic/English) website, online booking and staff panel for a clinical nutrition practice.",
+    "keywords": ["laravel", "filament", "livewire", "clinic", "appointments", "arabic", "rtl"],
+    "license": "proprietary",
     "require": {
         "php": "^8.2",
         "filament/filament": "^5.7",

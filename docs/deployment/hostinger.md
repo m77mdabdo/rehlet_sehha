@@ -96,10 +96,12 @@ A `200` on either of the first two means **stop and fix the document root.**
 
 ## 4. PHP version and extensions
 
-- [ ] hPanel → Advanced → PHP Configuration → **PHP 8.2 or newer**.
+- [ ] hPanel → Advanced → PHP Configuration → **PHP 8.4.1 or newer** (8.5 recommended).
 
-The code targets `^8.2` and has been developed on 8.5. No 8.3-or-later syntax
-is used, but it has never been executed below 8.5 — see
+`composer.json` says `^8.2`, but that is not the real floor: the locked
+dependencies (the Symfony 8 components) require **PHP 8.4.1**, and
+`composer install` refuses to run below it. The application has been developed
+and run in production on 8.5 and has never been executed below it — see
 [what-must-be-verified-on-the-host](#c--what-only-the-host-can-confirm).
 
 Required extensions: `gd` (with WebP), `intl`, `mbstring`, `pdo_mysql`,

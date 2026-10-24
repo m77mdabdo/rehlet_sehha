@@ -158,20 +158,7 @@ class IntakeRelationManager extends RelationManager
         $intake = $appointment->intakeForm;
 
         if (! (auth()->user()?->can('viewAny', IntakeForm::class) ?? false)) {
-            /*
-             * The refusal is recorded before it is enforced.
-             *
-             * Somebody asked this component for a patient's medical history
-             * and was told no. That is a more interesting row than any
-             * permitted read: reaching here means the request was for the
-             * clinical component specifically, not an ordinary page load that
-             * happened to ask whether a tab should exist.
-             */
-            if ($intake !== null) {
-                ClinicalAccessLog::denied($intake, 'appointment.intake');
-            }
-
-            abort(403);
+            $this->refuse($intake);
         }
 
         parent::mount();
@@ -179,5 +166,45 @@ class IntakeRelationManager extends RelationManager
         if ($intake !== null) {
             ClinicalAccessLog::read($intake, 'appointment.intake');
         }
+    }
+
+    /**
+     * Filament's own mount-time gate, which now refuses BEFORE mount() runs.
+     *
+     * Filament after 5.7.6 added the CanAuthorizeAccess trait, which aborts
+     * with a 403 from this boot hook, so an unauthorised mount never reaches mount() above —
+     * the refusal was still enforced, but no `denied` row was written, and
+     * nothing failed except ClinicalReadAuditTest. The check is repeated here
+     * so the refusal is logged on the path that actually refuses; the one in
+     * mount() stays for the day this hook is renamed or removed upstream.
+     */
+    public function bootCanAuthorizeAccess(): void
+    {
+        if (! $this->hasAuthorizedAccess
+            && ! static::canViewForRecord($this->getOwnerRecord(), $this->pageClass ?? static::class)) {
+            /** @var Appointment $appointment */
+            $appointment = $this->getOwnerRecord();
+
+            $this->refuse($appointment->intakeForm);
+        }
+
+        parent::bootCanAuthorizeAccess();
+    }
+
+    /**
+     * The refusal is recorded before it is enforced.
+     *
+     * Somebody asked this component for a patient's medical history and was
+     * told no. That is a more interesting row than any permitted read: reaching
+     * here means the request was for the clinical component specifically, not
+     * an ordinary page load that happened to ask whether a tab should exist.
+     */
+    private function refuse(?IntakeForm $intake): never
+    {
+        if ($intake !== null) {
+            ClinicalAccessLog::denied($intake, 'appointment.intake');
+        }
+
+        abort(403);
     }
 }
